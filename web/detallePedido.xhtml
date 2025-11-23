@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      lang="es">
+
+    <h:head>
+        <title>Detalle del Pedido</title>
+        </h:head>
+
+    <h:body>
+        
+        <f:metadata>
+            <f:viewParam name="pedidoId" value="#{pedidoDetalleBean.pedidoId}" required="true"/>
+            <f:event type="preRenderView" listener="#{pedidoDetalleBean.cargarDetallePedido}"/>
+        </f:metadata>
+
+        <div class="main-content">
+            <h2>Detalle del Pedido #<h:outputText value="#{pedidoDetalleBean.pedidoId}"/></h2>
+            
+            <h:panelGroup rendered="#{not empty pedidoDetalleBean.pedido}">
+                <p:panel header="Información General del Pedido" style="margin-bottom: 20px;">
+                    <h:panelGrid columns="2" cellpadding="5">
+                        
+                        <h:outputLabel value="ID:"/>
+                        <h:outputText value="#{pedidoDetalleBean.pedido.idPedido}"/>
+                        
+                        <h:outputLabel value="Proveedor:"/>
+                        <h:outputText value="#{pedidoDetalleBean.pedido.nombreProveedor}"/>
+                        
+                        <h:outputLabel value="Fecha de Pedido:"/>
+                        <h:outputText value="#{pedidoDetalleBean.pedido.fechaPedido}">
+                             <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                        </h:outputText>
+                        
+                        <h:outputLabel value="Estado:"/>
+                        <h:outputText value="#{pedidoDetalleBean.pedido.estado}" style="font-weight: bold;"/>
+                        
+                        <h:outputLabel value="Descripción:"/>
+                        <h:outputText value="#{pedidoDetalleBean.pedido.descripcionPedido}"/>
+                        
+                    </h:panelGrid>
+                </p:panel>
+                
+            </h:panelGroup>
+            
+            <h:panelGroup rendered="#{empty pedidoDetalleBean.pedido}">
+                <div class="alert alert-warning" role="alert" style="margin-top: 20px;">
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    <strong>Pedido no encontrado.</strong> El ID del pedido no es válido o no existe.
+                </div>
+            </h:panelGroup>
+            
+            <p:button value="Volver a Pedidos" outcome="/pedidosProveedores.xhtml?faces-redirect=true" styleClass="mt-3"/>
+
+        </div>
+        
+    </h:body>
+</html>

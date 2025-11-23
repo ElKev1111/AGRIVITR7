@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Mi Carrito | AgriviApp</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+        <style>
+            body {
+                background-color: #e6f5ed;
+                font-family: 'Inter', sans-serif;
+            }
+            .header {
+                background-color: #0b9446;
+            }
+            .btn-checkout {
+                background-color: #f59e0b;
+                color: white;
+                transition: background-color 0.2s;
+            }
+            .btn-checkout:hover {
+                background-color: #d97706;
+            }
+            .btn-remove {
+                background-color: #ef4444;
+                color: white;
+                transition: background-color 0.2s;
+            }
+            .btn-remove:hover {
+                background-color: #dc2626;
+            }
+            .btn-edit {
+                background-color: #3b82f6;
+                color: white;
+                transition: background-color 0.2s;
+            }
+            .btn-edit:hover {
+                background-color: #2563eb;
+            }
+            .card {
+                background-color: #ffffff;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+                border-radius: 0.5rem;
+            }
+            .table-header {
+                background-color: #0b9446;
+                color: white;
+            }
+            .nav-link {
+                color: #ffffff;
+                padding: 0.5rem 1rem;
+                border-radius: 0.375rem;
+                transition: background-color 0.2s;
+            }
+            .nav-link:hover {
+                background-color: #097a3a;
+            }
+        </style>
+    </h:head>
+
+    <h:body>
+        <header class="header text-white p-4 shadow-md">
+            <div class="container mx-auto flex justify-between items-center">
+                <h1 class="text-2xl font-bold">
+                    <h:link outcome="dashboardCliente" value="AgriviApp" style="color: white; text-decoration: none;"/>
+                </h1>
+                <h:form id="navForm">
+                    <h:link value="Volver al Catálogo" 
+                            outcome="dashboardCliente" 
+                            styleClass="nav-link bg-green-700 hover:bg-green-800" />
+                </h:form>
+            </div>
+        </header>
+
+        <main class="container mx-auto p-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-8 text-center">Mi Carrito de Compras</h1>
+
+            <h:messages id="messages" globalOnly="true" 
+                        infoStyle="color: #097a3a; font-weight: bold;" 
+                        warnStyle="color: orange;" 
+                        errorStyle="color: red; font-weight: bold;"
+                        styleClass="mb-6"/>
+
+            <h:form id="carritoForm">
+                <!-- Diálogo para editar cantidad -->
+                <p:dialog header="Editar Cantidad" widgetVar="editQuantityDialog" modal="true" resizable="false">
+                    <div class="p-4">
+                        <p id="editProductName">¿Cuántas unidades deseas?</p>
+                        <p:inputNumber id="editQuantityInput"
+                                      value="#{carritoBean.cantidadTemporal}" 
+                                      minValue="1" 
+                                      styleClass="w-full mt-2" />
+                        <div class="flex justify-end mt-4 space-x-2">
+                            <p:commandButton value="Cancelar" 
+                                            onclick="PF('editQuantityDialog').hide()" 
+                                            styleClass="bg-gray-500 text-white px-4 py-2 rounded" />
+                            <p:commandButton value="Actualizar" 
+                                            action="#{carritoBean.actualizarCantidad}"
+                                            update=":carritoForm :messages"
+                                            oncomplete="PF('editQuantityDialog').hide()"
+                                            styleClass="bg-green-600 text-white px-4 py-2 rounded" />
+                        </div>
+                    </div>
+                </p:dialog>
+
+                <h:panelGroup rendered="#{carritoBean.vacio}">
+                    <div class="card p-10 text-center rounded-lg">
+                        <p class="text-xl text-gray-600 mb-4">Tu carrito está vacío. ¡Añade algunos productos!</p>
+                        <h:link outcome="dashboardCliente" value="Ir al Catálogo" 
+                                styleClass="px-6 py-2 bg-green-600 text-white rounded-md font-semibold hover:bg-green-700"/>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{!carritoBean.vacio}">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Lista de Productos -->
+                        <div class="lg:col-span-2">
+                            <div class="card rounded-lg overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="table-header">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left">Producto</th>
+                                            <th class="px-4 py-3 text-right">Precio Unitario</th>
+                                            <th class="px-4 py-3 text-center">Cantidad</th>
+                                            <th class="px-4 py-3 text-right">Subtotal</th>
+                                            <th class="px-4 py-3 text-center">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <ui:repeat value="#{carritoBean.items}" var="item">
+                                            <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                                <td class="px-4 py-3">
+                                                    <span class="font-semibold text-green-700">#{item.producto.nombreProducto}</span>
+                                                </td>
+                                                <td class="px-4 py-3 text-right">
+                                                    $<h:outputText value="#{item.producto.precioProducto}">
+                                                        <f:convertNumber pattern="#,##0.00" />
+                                                    </h:outputText>
+                                                </td>
+                                                <td class="px-4 py-3 text-center">
+                                                    <span class="font-semibold">#{item.cantidad}</span>
+                                                </td>
+                                                <td class="px-4 py-3 text-right font-semibold">
+                                                    $<h:outputText value="#{item.subtotal}">
+                                                        <f:convertNumber pattern="#,##0.00" />
+                                                    </h:outputText>
+                                                </td>
+                                                <td class="px-4 py-3 text-center">
+                                                    <div class="flex justify-center space-x-2">
+                                                        <!-- BOTÓN EDITAR CORREGIDO -->
+                                                        <p:commandButton value="Editar" 
+                                                                         action="#{carritoBean.prepararEditarCantidad(item)}"
+                                                                         oncomplete="document.getElementById('editProductName').textContent = '¿Cuántas unidades de #{item.producto.nombreProducto} deseas?'; PF('editQuantityDialog').show();"
+                                                                         styleClass="btn-edit px-3 py-1 rounded text-sm">
+                                                            <f:setPropertyActionListener value="#{item}" target="#{carritoBean.itemEdicion}" />
+                                                        </p:commandButton>
+                                                        <p:commandButton value="Eliminar" 
+                                                                         action="#{carritoBean.eliminarItem(item)}"
+                                                                         update=":carritoForm :messages"
+                                                                         styleClass="btn-remove px-3 py-1 rounded text-sm"/>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </ui:repeat>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Resumen -->
+                        <div class="lg:col-span-1">
+                            <div class="card p-6 rounded-lg">
+                                <h3 class="text-2xl font-bold mb-4 border-b pb-2">Resumen</h3>
+                                <div class="flex justify-between text-lg mb-2">
+                                    <span>Productos:</span>
+                                    <span class="font-semibold">#{carritoBean.totalItems}</span>
+                                </div>
+                                <div class="flex justify-between text-xl font-semibold mb-6 pt-2 border-t">
+                                    <span>Total a Pagar:</span>
+                                    <span class="text-green-700">
+                                        $<h:outputText value="#{carritoBean.totalCompra}">
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputText>
+                                    </span>
+                                </div>
+                                
+                                <!-- Botón de pago funcional -->
+                                <p:commandButton value="Proceder al Pago" 
+                                                 action="#{carritoBean.procederAlPago}" 
+                                                 styleClass="w-full py-3 rounded-md font-semibold btn-checkout"
+                                                 update=":messages"/>
+                                
+                                <h:link outcome="dashboardCliente" value="Seguir Comprando" 
+                                        styleClass="block text-center mt-4 text-gray-500 hover:text-gray-700"/>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+            </h:form>
+        </main>
+
+        <footer class="bg-gray-800 text-white p-8 mt-12">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">AgriviApp</h3>
+                    <p class="text-gray-300">
+                        Conectando agricultores y consumidores con productos frescos y sostenibles.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Enlaces Rápidos</h4>
+                    <ul class="space-y-2">
+                        <li><h:link outcome="index" value="Inicio" styleClass="text-gray-300 hover:text-white" /></li>
+                        <li><h:link outcome="catalogo" value="Catálogo" styleClass="text-gray-300 hover:text-white" /></li>
+                        <li><a href="#about-section" class="text-gray-300 hover:text-white">Sobre Nosotros</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Contacto</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            <span>Av. Agricultura 123, Ciudad</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-2"></i>
+                            <span>+1 234 567 890</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2"></i>
+                            <span>info@agriviapp.com</span>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Síguenos</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-white">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-white">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-white">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
+                <p>&#169; 2025 AgriviApp. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+    </h:body>
+</html>

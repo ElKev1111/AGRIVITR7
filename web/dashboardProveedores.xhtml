@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      lang="es">
+
+    <h:head>
+        <title>Dashboard de Proveedores</title>
+
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+
+        <style>
+            body {
+                font-family: 'Poppins', sans-serif;
+                background-color: #f4f6f9;
+                margin: 0;
+            }
+
+            /* Sidebar */
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                width: 230px; /* Ancho ajustado */
+                background: #008631; /* Fondo Verde */
+                color: white;
+                z-index: 1000;
+                overflow-y: auto;
+                transition: all 0.3s ease;
+            }
+
+            .sidebar-header {
+                padding: 2rem 1.5rem;
+                padding-bottom: 10px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                text-align: center;
+            }
+
+            .sidebar-header h4 {
+                margin-bottom: 0.5rem;
+                font-weight: 700;
+            }
+            
+            /* Nombre del Panel */
+            .sidebar-header p {
+                 font-size: 0.9em;
+                 margin-bottom: 0;
+            }
+
+            .sidebar-nav .nav-link {
+                display: flex;
+                align-items: center;
+                padding: 10px 18px;
+                color: rgba(255, 255, 255, 0.8);
+                text-decoration: none;
+                gap: 10px;
+            }
+
+            .sidebar-nav .nav-link:hover {
+                background: rgba(255, 255, 255, 0.1);
+                color: white;
+            }
+
+            .sidebar-nav .nav-link.active {
+                background: rgba(255, 255, 255, 0.2);
+                color: white;
+                border-right: 4px solid #ffd700; /* Borde amarillo activo */
+            }
+
+            .sidebar-footer {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 1.5rem;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            /* Main content */
+            .main-content {
+                margin-left: 230px; /* Ajuste para el ancho del sidebar */
+                padding: 0;
+                flex: 1;
+            }
+
+            .top-bar {
+                background-color: gainsboro ;
+                padding: 1.5rem 2rem;
+                border-bottom: 1px solid #e9ecef;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .top-bar h2 {
+                margin: 0;
+                color: #495057;
+                font-weight: 600;
+            }
+
+            .user-info {
+                display: flex;
+                align-items: center;
+            }
+
+            /* Contenido de la página (donde van la tabla y botones) */
+            .page-content {
+                padding: 2rem;
+            }
+
+            /* DataTable y Paneles */
+            .data-panel {
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .panel-title {
+                font-size: 1.5em;
+                font-weight: 600;
+                margin-bottom: 15px;
+                color: #333;
+            }
+
+            /* Estilos de badges */
+            .status-badge {
+                display: inline-block;
+                padding: 4px 12px;
+                border-radius: 0.5rem;
+                font-size: 0.8em;
+                font-weight: 600;
+                text-align: center;
+            }
+
+            .status-active {
+                background-color: #d4edda;
+                color: #155724;
+            }
+
+            .status-inactive {
+                background-color: #f8d7da;
+                color: #721c24;
+            }
+
+            .price-highlight {
+                font-weight: 600;
+                color: #008631;
+            }
+            
+            /* Ajuste para botones de PrimeFaces/Bootstrap */
+            .action-buttons {
+                 margin-bottom: 20px;
+                 display: flex;
+                 justify-content: flex-end;
+            }
+            
+            .ui-datatable.table {
+                 border-collapse: separate !important;
+                 border-spacing: 0;
+            }
+            
+            /* Ajuste para quitar el borde de la tabla de PrimeFaces */
+            .ui-datatable.table > .ui-datatable-tablewrapper > table {
+                border-collapse: collapse;
+            }
+        </style>
+    </h:head>
+
+    <h:body>
+
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h4><i class="fa fa-leaf"></i> Agrivi</h4>
+                <p>Panel Admin</p> 
+            </div>
+
+            <nav class="sidebar-nav">
+                <h:link outcome="/HomeAdmin1.xhtml" styleClass="nav-link">
+                    <i class="fas fa-chart-line"></i> Dashboard
+                </h:link>
+                <h:link outcome="/HomeAdmin2.xhtml" styleClass="nav-link">
+                    <i class="fas fa-users"></i> Usuarios
+                </h:link>
+                <h:link outcome="/HomeAdmin3.xhtml" styleClass="nav-link">
+                    <i class="fas fa-box-open"></i> Productos
+                </h:link>
+                <h:link outcome="/Correos.xhtml" styleClass="nav-link">
+                    <i class="fas fa-envelope"></i> Correos
+                </h:link>
+                <h:link outcome="/HomeAdmin4.xhtml" styleClass="nav-link">
+                    <i class="fas fa-shopping-cart"></i> Ventas
+                </h:link>
+                <h:link outcome="/HomeAdmin5.xhtml" styleClass="nav-link">
+                    <i class="fas fa-briefcase"></i> Empleados
+                </h:link>
+                <h:link outcome="/PedidosProveedores.xhtml" styleClass="nav-link">
+                    <i class="fas fa-truck-loading"></i> Pedidos Proveedores
+                </h:link>
+                <h:link outcome="/dashboardProveedores.xhtml" styleClass="nav-link">
+                    <i class="fas fa-warehouse"></i> Proveedores
+                </h:link>
+            </nav>
+
+            <h:form>
+                <div class="sidebar-footer">
+                    <h:commandLink action="#{usuarioBean.logout()}" styleClass="btn btn-outline-light btn-sm w-100">
+                           <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                       </h:commandLink>
+                </div>
+            </h:form>
+        </div>
+
+        <div class="main-content">
+
+            <div class="top-bar">
+                <h2><i class="fas fa-truck"></i> Gestión de Proveedores</h2>
+                <div class="user-info">
+                    <span class="me-3">Bienvenido, 
+                        <h:outputText value="#{usuarioBean.usuario.nombre}" style="font-weight: bold;"/>
+                    </span>
+
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <p:commandLink onclick="PF('perfilDialog').show();" style="text-decoration:none; color:blue;">
+                                    <i class="fas fa-user"></i> Perfil
+                                </p:commandLink>
+                            </li>
+                            <li><h:outputLink value="#"><i class="fas fa-cog"></i> Configuración</h:outputLink></li>
+                            <li><hr class="dropdown-divider" /></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-content">
+
+                <h:form id="form">
+                    <p:growl id="messages" showDetail="true" life="3000" />
+
+                    <div class="action-buttons">
+                        <p:commandButton value=" Agregar Proveedor" 
+                                         icon="fas fa-plus-circle"
+                                         styleClass="p-button-success ui-button-sm"
+                                         oncomplete="PF('dialogoAgregar').show()"
+                                         update=":form:messages"/>
+                    </div>
+
+                    <div class="data-panel">
+                        <div class="panel-title">📋 Lista de Proveedores</div>
+                        <p:dataTable id="dt-proveedores" 
+                                     var="proveedor" 
+                                     value="#{proveedorBean.listaProveedores}"
+                                     paginator="false" 
+                                     rows="10"
+                                     
+                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {NextPageLink} {LastPageLink}" 
+                                     rowsPerPageTemplate="5,10,15"
+                                     emptyMessage="No se encontraron proveedores"
+                                     styleClass="ui-datatable table table-hover"
+                                     widgetVar="tablaProveedores"
+                                     
+                                     >
+
+                            <p:column headerText="ID" style="width: 80px; text-align: center;" sortBy="#{proveedor.idProveedor}">
+                                <h:outputText value="#{proveedor.idProveedor}" />
+                            </p:column>
+
+                            <p:column headerText="Nombre Proveedor" sortBy="#{proveedor.nombreProveedor}">
+                                <h:outputText value="#{proveedor.nombreProveedor}" />
+                            </p:column>
+
+                            <p:column headerText="Correo" sortBy="#{proveedor.correo}">
+                                <h:outputText value="#{proveedor.correo}" />
+                            </p:column>
+
+                            <p:column headerText="Celular" sortBy="#{proveedor.celular}">
+                                <h:outputText value="#{proveedor.celular}" />
+                            </p:column>
+
+                            <p:column headerText="Dirección" sortBy="#{proveedor.direccion}">
+                                <h:outputText value="#{proveedor.direccion}" />
+                            </p:column>
+
+                            <p:column headerText="Producto" sortBy="#{proveedor.producto}">
+                                <h:outputText value="#{proveedor.producto}" />
+                            </p:column>
+
+                            <p:column headerText="Precio" style="width: 120px; text-align: right;" sortBy="#{proveedor.precio}">
+                                <h:outputText value="#{proveedor.precio}" styleClass="price-highlight">
+                                    <f:convertNumber type="currency" currencySymbol="$" minFractionDigits="2" maxFractionDigits="2" />
+                                </h:outputText>
+                            </p:column>
+
+                            <p:column headerText="Estado" style="width: 100px; text-align: center;" sortBy="#{proveedor.estado}">
+                                <span class="status-badge #{proveedor.estado == 'Activo' ? 'status-active' : 'status-inactive'}">
+                                       <h:outputText value="#{proveedor.estado}"/>
+                                </span>
+                            </p:column>
+
+                            <p:column headerText="Acciones" style="width: 120px; text-align: center;" exportable="false">
+                                <div class="d-flex gap-2 justify-content-center">
+                                    <p:commandButton icon="fas fa-edit" 
+                                                     styleClass="p-button-warning p-button-rounded p-button-text"
+                                                     title="Editar"
+                                                     oncomplete="PF('dialogoEditar').show()"
+                                                     update=":editForm">
+                                        <f:setPropertyActionListener value="#{proveedor}" 
+                                                                     target="#{proveedorBean.proveedorSeleccionado}" />
+                                    </p:commandButton>
+
+                                    <p:commandButton icon="fas fa-trash-alt" 
+                                                     styleClass="p-button-danger p-button-rounded p-button-text"
+                                                     title="Eliminar"
+                                                     update=":form:messages, :form:dt-proveedores"
+                                                     action="#{proveedorBean.eliminarProveedor}">
+                                        <f:setPropertyActionListener value="#{proveedor}" 
+                                                                     target="#{proveedorBean.proveedorSeleccionado}" />
+                                        <p:confirm header="Confirmación" 
+                                                     message="¿Está seguro de eliminar el proveedor #{proveedor.nombreProveedor}?" 
+                                                     icon="pi pi-exclamation-triangle" />
+                                    </p:commandButton>
+                                </div>
+                            </p:column>
+                        </p:dataTable>
+
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Sí" type="button" styleClass="p-button-confirm" icon="fas fa-check"/>
+                            <p:commandButton value="No" type="button" styleClass="p-button-secondary" icon="fas fa-times"/>
+                        </p:confirmDialog>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+
+        <p:dialog header="➕ Agregar Nuevo Proveedor" 
+                  widgetVar="dialogoAgregar" 
+                  modal="true" 
+                  showEffect="fade" 
+                  hideEffect="fade"
+                  resizable="false"
+                  style="width: 600px"
+                  closable="true">
+
+            <h:form id="addForm">
+                <div class="p-fluid">
+                    <div class="mb-3">
+                        <p:outputLabel for="nombreProveedor" value="Nombre Proveedor *" />
+                        <p:inputText id="nombreProveedor" 
+                                     value="#{proveedorBean.nuevoProveedor.nombreProveedor}"
+                                     required="true"
+                                     requiredMessage="Nombre Proveedor es requerido"
+                                     placeholder="Ingrese el nombre del proveedor"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <p:outputLabel for="correo" value="Correo Electrónico *" />
+                        <p:inputText id="correo" 
+                                     value="#{proveedorBean.nuevoProveedor.correo}"
+                                     required="true"
+                                     requiredMessage="Correo es requerido"
+                                     placeholder="correo@ejemplo.com"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <p:outputLabel for="celular" value="Celular *" />
+                        <p:inputText id="celular" 
+                                     value="#{proveedorBean.nuevoProveedor.celular}"
+                                     required="true"
+                                     requiredMessage="Celular es requerido"
+                                     placeholder="3001234567"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <p:outputLabel for="direccion" value="Dirección *" />
+                        <p:inputText id="direccion" 
+                                     value="#{proveedorBean.nuevoProveedor.direccion}"
+                                     required="true"
+                                     requiredMessage="Dirección es requerida"
+                                     placeholder="Ingrese la dirección completa"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <p:outputLabel for="producto" value="Producto *" />
+                        <p:inputText id="producto" 
+                                     value="#{proveedorBean.nuevoProveedor.producto}"
+                                     required="true"
+                                     requiredMessage="Producto es requerido"
+                                     placeholder="Nombre del producto"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <p:outputLabel for="precio" value="Precio *" />
+                        <p:inputNumber id="precio" 
+                                        value="#{proveedorBean.nuevoProveedor.precio}"
+                                        required="true"
+                                        requiredMessage="Precio es requerido"
+                                        decimalPlaces="2"
+                                        placeholder="0.00"/>
+                    </div>
+
+                    <div class="mt-4 text-end">
+                        <p:commandButton value="Cancelar" 
+                                         styleClass="p-button-secondary me-2"
+                                         onclick="PF('dialogoAgregar').hide()"
+                                         immediate="true" icon="fas fa-times"/>
+                        <p:commandButton value="Guardar" 
+                                         styleClass="p-button-success"
+                                         action="#{proveedorBean.agregarProveedor}"
+                                         update=":form:messages, :form:dt-proveedores"
+                                         oncomplete="if(!args.validationFailed) PF('dialogoAgregar').hide()" icon="fas fa-save"/>
+                    </div>
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="✏️ Editar Proveedor" 
+                  widgetVar="dialogoEditar" 
+                  modal="true" 
+                  showEffect="fade" 
+                  hideEffect="fade"
+                  resizable="false"
+                  style="width: 600px"
+                  closable="true">
+
+            <h:form id="editForm">
+                <div class="p-fluid">
+                    <div class="mb-3">
+                        <p:outputLabel for="editIdProveedor" value="ID Proveedor" />
+                        <p:inputText id="editIdProveedor" 
+                                     value="#{proveedorBean.proveedorSeleccionado.idProveedor}"
+                                     disabled="true"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <p:outputLabel for="editNombreProveedor" value="Nombre Proveedor *" />
+                        <p:inputText id="editNombreProveedor" 
+                                     value="#{proveedorBean.proveedorSeleccionado.nombreProveedor}"
+                                     required="true"
+                                     requiredMessage="Nombre Proveedor es requerido"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <p:outputLabel for="editCorreo" value="Correo Electrónico *" />
+                        <p:inputText id="editCorreo" 
+                                     value="#{proveedorBean.proveedorSeleccionado.correo}"
+                                     required="true"
+                                     requiredMessage="Correo es requerido"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <p:outputLabel for="editCelular" value="Celular *" />
+                        <p:inputText id="editCelular" 
+                                     value="#{proveedorBean.proveedorSeleccionado.celular}"
+                                     required="true"
+                                     requiredMessage="Celular es requerido"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <p:outputLabel for="editDireccion" value="Dirección *" />
+                        <p:inputText id="editDireccion" 
+                                     value="#{proveedorBean.proveedorSeleccionado.direccion}"
+                                     required="true"
+                                     requiredMessage="Dirección es requerida"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <p:outputLabel for="editProducto" value="Producto *" />
+                        <p:inputText id="editProducto" 
+                                     value="#{proveedorBean.proveedorSeleccionado.producto}"
+                                     required="true"
+                                     requiredMessage="Producto es requerido"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <p:outputLabel for="editPrecio" value="Precio *" />
+                        <p:inputNumber id="editPrecio" 
+                                        value="#{proveedorBean.proveedorSeleccionado.precio}"
+                                        required="true"
+                                        requiredMessage="Precio es requerido"
+                                        decimalPlaces="2"/>
+                    </div>
+
+                    <div class="mt-4 text-end">
+                        <p:commandButton value="Cancelar" 
+                                         styleClass="p-button-secondary me-2"
+                                         onclick="PF('dialogoEditar').hide()"
+                                         immediate="true" icon="fas fa-times"/>
+                        <p:commandButton value="Actualizar" 
+                                         styleClass="p-button-warning"
+                                         action="#{proveedorBean.actualizarProveedor}"
+                                         update=":form:messages, :form:dt-proveedores"
+                                         oncomplete="if(!args.validationFailed) PF('dialogoEditar').hide()" icon="fas fa-sync"/>
+                    </div>
+                </div>
+            </h:form>
+        </p:dialog>
+    </h:body>
+</html>
