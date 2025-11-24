@@ -111,4 +111,40 @@ public class PedidoProveedorDAO implements Serializable{
             throw e; // Relanza para que el Bean lo maneje
         }
     }
+
+    /**
+     * Obtiene el detalle de un pedido por su identificador.
+     */
+    public PedidoProveedor obtenerPorId(int idPedido) throws SQLException {
+        String sql = "SELECT idPedido, idProveedor, nombreProveedor, idProducto, nombreProducto, cantidad, descripcionPedido, estado, fechaPedido, fechaActualizacion "
+                + "FROM pedido_proveedor WHERE idPedido = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, idPedido);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    PedidoProveedor pedido = new PedidoProveedor();
+                    pedido.setIdPedido(rs.getInt("idPedido"));
+                    pedido.setIdProveedor(rs.getInt("idProveedor"));
+                    pedido.setNombreProveedor(rs.getString("nombreProveedor"));
+                    pedido.setIdProducto(rs.getInt("idProducto"));
+                    pedido.setNombreProducto(rs.getString("nombreProducto"));
+                    pedido.setCantidad(rs.getInt("cantidad"));
+                    pedido.setDescripcionPedido(rs.getString("descripcionPedido"));
+                    pedido.setEstado(rs.getString("estado"));
+                    pedido.setFechaPedido(rs.getTimestamp("fechaPedido"));
+                    pedido.setFechaActualizacion(rs.getTimestamp("fechaActualizacion"));
+                    return pedido;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener el pedido por ID: " + e.getMessage());
+            throw e;
+        }
+
+        return null;
+    }
 }

@@ -1,4 +1,4 @@
-    package Controlador;
+package Controlador;
 
 import DAO.UsuarioDAO;
 import Modelo.CifradoAES;
@@ -17,19 +17,20 @@ import Modelo.EnumRoles;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import javax.faces.bean.ApplicationScoped;
-import javax.faces.bean.ViewScoped;
 
     
 @ManagedBean
-//@ApplicationScoped
-@ViewScoped
+@SessionScoped
 public class UsuarioBean implements Serializable {
     private static final long serialVersionUID = 1L;
     
 
     private Usuario usuario = new Usuario();
     private UsuarioDAO usuarioDAO = new UsuarioDAO();
+
+    public boolean isAutenticado() {
+        return usuario != null && usuario.getId() > 0;
+    }
 
     // Getter & Setter
     public Usuario getUsuario() {
@@ -88,10 +89,16 @@ public class UsuarioBean implements Serializable {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("user", rs.getString("nombre"));
+                this.usuario = new Usuario();
+                usuario.setId(rs.getInt("id"));
+                usuario.setNombre(rs.getString("nombre"));
+                usuario.setCorreo(rs.getString("correo"));
 
                 String rolDb = rs.getString("rol");
                 EnumRoles rol = EnumRoles.valueOf(rolDb.trim().toUpperCase(Locale.ROOT));
+                usuario.setRol(rol);
+
+                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("user", usuario.getNombre());
 
                 if (rol == EnumRoles.ADMINISTRADOR || rol== EnumRoles.EMPLEADO) {
                     FacesContext.getCurrentInstance().getExternalContext().redirect("HomeAdmin1.xhtml");
@@ -117,6 +124,8 @@ public class UsuarioBean implements Serializable {
 
             // PASO CRUCIAL: Invalidar la sesión HTTP
             context.getExternalContext().invalidateSession();
+
+            this.usuario = new Usuario();
 
             // Redirigir al login (usando faces-redirect=true para limpieza)
             return "login?faces-redirect=true";

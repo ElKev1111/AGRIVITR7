@@ -2,6 +2,11 @@ package Controlador;
 
 import Modelo.Producto;
 import Modelo.CarritoItem;
+import DAO.ProductoDAO;
+import DAO.VentasDAO;
+import DAO.MovInventarioDAO;
+import Modelo.MovInventario;
+import Modelo.Ventas;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +14,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.application.FacesMessage;
+import java.time.LocalDateTime;
 
 @ManagedBean
 @SessionScoped
@@ -18,6 +24,10 @@ public class CarritoBean implements Serializable {
     private int cantidadTemporal = 1;
     private Producto productoTemporal;
     private CarritoItem itemEdicion;
+
+    private transient ProductoDAO productoDAO = new ProductoDAO();
+    private transient VentasDAO ventasDAO = new VentasDAO();
+    private transient MovInventarioDAO movInventarioDAO = new MovInventarioDAO();
 
     // Método para preparar el producto temporal
     public void prepararAgregarProducto(Producto producto) {
@@ -33,7 +43,7 @@ public class CarritoBean implements Serializable {
             System.out.println("✅ Producto agregado: " + productoTemporal.getNombreProducto() + ", Cantidad: " + cantidadTemporal);
             productoTemporal = null;
         } else {
-            FacesContext.getCurrentInstance().addMessage(null, 
+            FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
                 "No se pudo agregar el producto al carrito."));
         }
@@ -97,16 +107,19 @@ public class CarritoBean implements Serializable {
 
     // Método de pago
     public void procederAlPago() {
+        if (!usuarioAutenticado()) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Inicia sesión", "Debes iniciar sesión para completar el pago."));
+            return;
+        }
         if (isVacio()) {
-            FacesContext.getCurrentInstance().addMessage(null, 
-                new FacesMessage(FacesMessage.SEVERITY_WARN, "Carrito Vacío", 
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_WARN, "Carrito Vacío",
                 "No puedes proceder al pago con el carrito vacío."));
             return;
         }
-        
-        FacesContext.getCurrentInstance().addMessage(null, 
-            new FacesMessage(FacesMessage.SEVERITY_INFO, "Procesando Pago", 
-            "Redirigiendo a la página de pagos... Total: $" + getTotalCompra()));
+
+        procesarPago();
     }
     
     // Cálculos
@@ -153,5 +166,84 @@ public class CarritoBean implements Serializable {
     
     public void setItemEdicion(CarritoItem itemEdicion) {
         this.itemEdicion = itemEdicion;
+    }
+
+    private UsuarioBean obtenerUsuarioBean() {
+        return FacesContext.getCurrentInstance().getApplication()
+                .evaluateExpressionGet(FacesContext.getCurrentInstance(), "#{usuarioBean}", UsuarioBean.class);
+    }
+
+    private boolean usuarioAutenticado() {
+        UsuarioBean usuarioBean = obtenerUsuarioBean();
+        return usuarioBean != null && usuarioBean.isAutenticado();
+    }
+
+    private void redirigirALogin() {
+        try {
+            FacesContext.getCurrentInstance().getExternalContext().redirect("login.xhtml");
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Sesión requerida",
+                        "Inicia sesión para continuar."));
+        }
+    }
+
+    private void procesarPago() {
+        UsuarioBean usuarioBean = obtenerUsuarioBean();
+
+        try {
+            for (CarritoItem item : items) {
+                Producto productoDB = productoDAO.buscar(item.getProducto().getIdProducto());
+                item.setProducto(productoDB);
+
+                if (productoDB == null) {
+                    FacesContext.getCurrentInstance().addMessage(null,
+                            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Producto no encontrado",
+                                    "No se pudo encontrar el producto en inventario."));
+                    return;
+                }
+
+                if (productoDB.getStock() < item.getCantidad()) {
+                    FacesContext.getCurrentInstance().addMessage(null,
+                            new FacesMessage(FacesMessage.SEVERITY_WARN, "Stock insuficiente",
+                                    "No hay stock suficiente de " + productoDB.getNombreProducto()));
+                    return;
+                }
+
+                int stockNuevo = productoDB.getStock() - item.getCantidad();
+                productoDAO.actualizarStock(productoDB.getIdProducto(), stockNuevo);
+
+                MovInventario mov = new MovInventario();
+                mov.setTipoString("Salida");
+                mov.setCantidadSalida(item.getCantidad());
+                mov.setFechaSalida(new java.util.Date());
+                mov.setTipoSalida("Venta");
+                mov.setDescripcion("Venta de " + item.getCantidad() + " x " + productoDB.getNombreProducto());
+                mov.setCliente(usuarioBean.getUsuario().getNombre());
+                mov.setPrecioVenta((double) item.getProducto().getPrecioVenta());
+                mov.setIdProducto(productoDB.getIdProducto());
+                mov.setStockAnterior(productoDB.getStock());
+                mov.setStockNuevo(stockNuevo);
+                movInventarioDAO.registrarMovimiento(mov);
+
+                Ventas venta = new Ventas();
+                venta.setFechaVenta(LocalDateTime.now());
+                venta.setProducto(productoDB);
+                venta.setUsuario(usuarioBean.getUsuario());
+                venta.setCantidad(item.getCantidad());
+                venta.setTotalPagar(item.getSubtotal());
+                ventasDAO.registrar(venta);
+            }
+
+            items.clear();
+
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Pago registrado",
+                            "Se simuló el pago y se actualizó el inventario."));
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error en pago",
+                            "No se pudo procesar el pago: " + e.getMessage()));
+        }
     }
 }
