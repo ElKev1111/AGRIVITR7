@@ -31,6 +31,10 @@ public class CarritoBean implements Serializable {
 
     // Método para preparar el producto temporal
     public void prepararAgregarProducto(Producto producto) {
+        if (!usuarioAutenticado()) {
+            redirigirALogin();
+            return;
+        }
         this.productoTemporal = producto;
         this.cantidadTemporal = 1;
         System.out.println("✅ Producto preparado: " + producto.getNombreProducto());
@@ -38,6 +42,11 @@ public class CarritoBean implements Serializable {
 
     // Método para agregar desde el modal
     public void agregarProductoModal() {
+        if (!usuarioAutenticado()) {
+            redirigirALogin();
+            return;
+        }
+
         if (productoTemporal != null && cantidadTemporal > 0) {
             agregarProductoConCantidad(productoTemporal, cantidadTemporal);
             System.out.println("✅ Producto agregado: " + productoTemporal.getNombreProducto() + ", Cantidad: " + cantidadTemporal);
@@ -51,6 +60,10 @@ public class CarritoBean implements Serializable {
 
     // Método mejorado con cantidad específica
     public void agregarProductoConCantidad(Producto producto, int cantidad) {
+        if (!usuarioAutenticado()) {
+            redirigirALogin();
+            return;
+        }
         boolean encontrado = false;
         
         for (CarritoItem item : items) {
