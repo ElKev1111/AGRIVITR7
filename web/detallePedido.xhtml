@@ -29,12 +29,23 @@
                         
                         <h:outputLabel value="Proveedor:"/>
                         <h:outputText value="#{pedidoDetalleBean.pedido.nombreProveedor}"/>
-                        
+
+                        <h:outputLabel value="Producto:"/>
+                        <h:outputText value="#{pedidoDetalleBean.pedido.nombreProducto}"/>
+
+                        <h:outputLabel value="Cantidad solicitada:"/>
+                        <h:outputText value="#{pedidoDetalleBean.pedido.cantidad}"/>
+
                         <h:outputLabel value="Fecha de Pedido:"/>
                         <h:outputText value="#{pedidoDetalleBean.pedido.fechaPedido}">
                              <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
                         </h:outputText>
-                        
+
+                        <h:outputLabel value="Última actualización:"/>
+                        <h:outputText value="#{pedidoDetalleBean.pedido.fechaActualizacion}">
+                             <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                        </h:outputText>
+
                         <h:outputLabel value="Estado:"/>
                         <h:outputText value="#{pedidoDetalleBean.pedido.estado}" style="font-weight: bold;"/>
                         
