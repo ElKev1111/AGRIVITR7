@@ -11,7 +11,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 import java.sql.SQLException;
-import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -68,7 +67,7 @@ public class PedidoProveedorBean implements Serializable {
 
     public void cargarProveedores() {
         try {
-            this.listaProveedores = proveedorDAO.listar();
+            this.listaProveedores = getProveedorDAO().listar();
         } catch (SQLException e) {
             System.err.println("Error al cargar proveedores: " + e.getMessage());
         }
@@ -76,7 +75,7 @@ public class PedidoProveedorBean implements Serializable {
 
     public void cargarPedidos() {
         try {
-            this.listaPedidos = pedidoDAO.listar();
+            this.listaPedidos = getPedidoDAO().listar();
             calcularEstadisticas();
         } catch (SQLException e) {
             System.err.println("Error al cargar pedidos: " + e.getMessage());
@@ -119,15 +118,15 @@ public class PedidoProveedorBean implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         int idProveedorSeleccionado = nuevoPedido.getIdProveedor();
         
-        this.listaProductosPorProveedor.clear();    
+        this.listaProductosPorProveedor.clear();
         this.nuevoPedido.setIdProducto(0);
-        
+
         if (idProveedorSeleccionado > 0) {
             try {
                 // MÉTODO TEMPORAL - DEBES IMPLEMENTAR ProductoDAO.listarPorProveedor()
-                this.listaProductosPorProveedor = productoDAO.listarPorProveedor(idProveedorSeleccionado);
+                this.listaProductosPorProveedor = getProductoDAO().listarPorProveedor(idProveedorSeleccionado);
             } catch (Exception e) {
-                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
                     "No se pudieron cargar los productos: " + e.getMessage()));
             }
         }
@@ -147,8 +146,8 @@ public class PedidoProveedorBean implements Serializable {
 
         try {
             // **IMPORTANTE**: Estos métodos deben devolver el Modelo completo (Proveedor/Producto)
-            Proveedor proveedorSeleccionado = proveedorDAO.obtenerPorId(nuevoPedido.getIdProveedor());
-            Producto productoSeleccionado = productoDAO.buscar(nuevoPedido.getIdProducto());
+            Proveedor proveedorSeleccionado = getProveedorDAO().obtenerPorId(nuevoPedido.getIdProveedor());
+            Producto productoSeleccionado = getProductoDAO().buscar(nuevoPedido.getIdProducto());
 
             if (proveedorSeleccionado == null || productoSeleccionado == null) {
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Proveedor o Producto no encontrado."));
@@ -167,7 +166,7 @@ public class PedidoProveedorBean implements Serializable {
             nuevoPedido.setEstado("ESPERA");
 
             // Llama al DAO para registrar el pedido
-            if (pedidoDAO.registrar(nuevoPedido)) {
+            if (getPedidoDAO().registrar(nuevoPedido)) {
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito",
                         "Pedido de " + nuevoPedido.getNombreProducto() + " creado."));
 
@@ -196,7 +195,7 @@ public class PedidoProveedorBean implements Serializable {
 
             pedido.setFechaActualizacion(new Date());
 
-            if (pedidoDAO.actualizarEstado(pedido)) {
+            if (getPedidoDAO().actualizarEstado(pedido)) {
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito",
                         "Pedido ID " + pedido.getIdPedido() + " ACEPTADO."));
             } else {
@@ -217,7 +216,7 @@ public class PedidoProveedorBean implements Serializable {
 
             pedido.setFechaActualizacion(new Date());
 
-            if (pedidoDAO.actualizarEstado(pedido)) {
+            if (getPedidoDAO().actualizarEstado(pedido)) {
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Rechazado",
                         "Pedido ID " + pedido.getIdPedido() + " RECHAZADO."));
             } else {
