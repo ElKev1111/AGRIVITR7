@@ -311,8 +311,9 @@
                                             <p:password id="loginPassword" value="#{usuarioBean.usuario.password}" styleClass="w-full" />
                                         </div>
                                         <div class="flex justify-between items-center">
-                                            <p:commandButton value="Iniciar Sesión" 
+                                            <p:commandButton value="Iniciar Sesión"
                                                              action="#{usuarioBean.autenticar}"
+                                                             ajax="false"
                                                              update=":navForm :globalMessages"
                                                              oncomplete="if(!args.validationFailed) PF('loginDialog').hide();"
                                                              styleClass="btn-primary py-2 px-4 rounded" />
@@ -433,7 +434,7 @@
                         </h:panelGroup>
                     </p:dialog>
 
-                    <!-- Diálogo para seleccionar cantidad Pruebb-->
+                    <!-- Diálogo para seleccionar cantidad -->
                     <p:dialog header="Seleccionar Cantidad" widgetVar="quantityDialog" modal="true" resizable="false">
                         <div class="p-4">
                             <p id="modalProductName">¿Cuántas unidades deseas agregar al carrito?</p>

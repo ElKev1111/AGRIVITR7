@@ -14,7 +14,6 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import Modelo.Usuario;
 import Modelo.EnumRoles;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -75,10 +74,10 @@ public class UsuarioBean implements Serializable {
     
 
     // Método de autenticación
-    public void autenticar() throws SQLException, IOException {
-        try {
-            Connection con = Conexion.conectar();
+    public String autenticar() {
+        String destino = null;
 
+        try (Connection con = Conexion.conectar()) {
             String sql = "SELECT * FROM usuario WHERE correo = ? AND password = ? ";
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, usuario.getCorreo());
@@ -100,10 +99,10 @@ public class UsuarioBean implements Serializable {
 
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("user", usuario.getNombre());
 
-                if (rol == EnumRoles.ADMINISTRADOR || rol== EnumRoles.EMPLEADO) {
-                    FacesContext.getCurrentInstance().getExternalContext().redirect("HomeAdmin1.xhtml");
+                if (rol == EnumRoles.ADMINISTRADOR || rol == EnumRoles.EMPLEADO) {
+                    destino = "HomeAdmin1?faces-redirect=true";
                 } else {
-                    FacesContext.getCurrentInstance().getExternalContext().redirect("dashboardCliente.xhtml");
+                    destino = "dashboardCliente?faces-redirect=true";
                 }
 
             } else {
@@ -111,11 +110,12 @@ public class UsuarioBean implements Serializable {
                         new FacesMessage(FacesMessage.SEVERITY_WARN, "Aviso", "Id de Usuario y/o Contraseña no válidos"));
             }
 
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "Error en Conexión a Base de Datos"));
-
         }
+
+        return destino;
     }
 
     public String logout() {
