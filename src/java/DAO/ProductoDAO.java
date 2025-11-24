@@ -187,6 +187,16 @@ public class ProductoDAO implements Serializable {
         }
     }
 
+    public boolean actualizarStock(int idProducto, int nuevoStock) throws SQLException {
+        String sql = "UPDATE producto SET stock = ? WHERE idProducto = ?";
+
+        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, nuevoStock);
+            ps.setInt(2, idProducto);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
 //    public Producto buscar(int id) throws SQLException {
 //        Producto p = null;
 //        String sql = "SELECT idProducto, nombreProducto, idProveedor, nombreProveedor, precioProducto, descripcion, tipo, fechaIngreso, fechaVencimiento, stock FROM producto WHERE idProducto = ?";

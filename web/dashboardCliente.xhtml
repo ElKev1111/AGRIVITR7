@@ -187,7 +187,7 @@
                         </p>
                         <p class="text-2xl font-bold text-emerald-600 mb-4">
                             $
-                            <h:outputText value="#{p.precioProducto}">
+                            <h:outputText value="#{p.precioVenta}">
                                 <f:convertNumber pattern="#,##0.00" />
                             </h:outputText>
                         </p>
@@ -205,6 +205,38 @@
                 </h:panelGroup>
             </div>
         </h:form>
+
+        <h:panelGroup rendered="#{historialComprasBean.compras.size() > 0}" styleClass="mt-12 block">
+            <div class="bg-white rounded-xl shadow p-6">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Historial de compras</h3>
+                <table class="w-full">
+                    <thead>
+                        <tr class="text-left text-green-700 border-b">
+                            <th class="py-2">Fecha</th>
+                            <th class="py-2">Producto</th>
+                            <th class="py-2 text-center">Cantidad</th>
+                            <th class="py-2 text-right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ui:repeat value="#{historialComprasBean.compras}" var="venta">
+                            <tr class="border-b">
+                                <td class="py-2">
+                                    <h:outputText value="#{venta.fechaVentaFormateada}" />
+                                </td>
+                                <td class="py-2">#{venta.producto.nombreProducto}</td>
+                                <td class="py-2 text-center">#{venta.cantidad}</td>
+                                <td class="py-2 text-right font-semibold">
+                                    $<h:outputText value="#{venta.totalPagar}">
+                                        <f:convertNumber pattern="#,##0.00" />
+                                    </h:outputText>
+                                </td>
+                            </tr>
+                        </ui:repeat>
+                    </tbody>
+                </table>
+            </div>
+        </h:panelGroup>
     </main>
 
     <footer class="bg-gray-800 text-white p-8 mt-12">

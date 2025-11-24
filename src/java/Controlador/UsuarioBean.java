@@ -1,4 +1,4 @@
-    package Controlador;
+package Controlador;
 
 import DAO.UsuarioDAO;
 import Modelo.CifradoAES;
@@ -14,22 +14,22 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import Modelo.Usuario;
 import Modelo.EnumRoles;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import javax.faces.bean.ApplicationScoped;
-import javax.faces.bean.ViewScoped;
 
     
 @ManagedBean
-//@ApplicationScoped
-@ViewScoped
+@SessionScoped
 public class UsuarioBean implements Serializable {
     private static final long serialVersionUID = 1L;
     
 
     private Usuario usuario = new Usuario();
     private UsuarioDAO usuarioDAO = new UsuarioDAO();
+
+    public boolean isAutenticado() {
+        return usuario != null && usuario.getId() > 0;
+    }
 
     // Getter & Setter
     public Usuario getUsuario() {
@@ -74,10 +74,10 @@ public class UsuarioBean implements Serializable {
     
 
     // Método de autenticación
-    public void autenticar() throws SQLException, IOException {
-        try {
-            Connection con = Conexion.conectar();
+    public String autenticar() {
+        String destino = null;
 
+        try (Connection con = Conexion.conectar()) {
             String sql = "SELECT * FROM usuario WHERE correo = ? AND password = ? ";
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, usuario.getCorreo());
@@ -88,15 +88,21 @@ public class UsuarioBean implements Serializable {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("user", rs.getString("nombre"));
+                this.usuario = new Usuario();
+                usuario.setId(rs.getInt("id"));
+                usuario.setNombre(rs.getString("nombre"));
+                usuario.setCorreo(rs.getString("correo"));
 
                 String rolDb = rs.getString("rol");
                 EnumRoles rol = EnumRoles.valueOf(rolDb.trim().toUpperCase(Locale.ROOT));
+                usuario.setRol(rol);
 
-                if (rol == EnumRoles.ADMINISTRADOR || rol== EnumRoles.EMPLEADO) {
-                    FacesContext.getCurrentInstance().getExternalContext().redirect("HomeAdmin1.xhtml");
+                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("user", usuario.getNombre());
+
+                if (rol == EnumRoles.ADMINISTRADOR || rol == EnumRoles.EMPLEADO) {
+                    destino = "HomeAdmin1?faces-redirect=true";
                 } else {
-                    FacesContext.getCurrentInstance().getExternalContext().redirect("dashboardCliente.xhtml");
+                    destino = "dashboardCliente?faces-redirect=true";
                 }
 
             } else {
@@ -104,11 +110,12 @@ public class UsuarioBean implements Serializable {
                         new FacesMessage(FacesMessage.SEVERITY_WARN, "Aviso", "Id de Usuario y/o Contraseña no válidos"));
             }
 
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "Error en Conexión a Base de Datos"));
-
         }
+
+        return destino;
     }
 
     public String logout() {
@@ -117,6 +124,8 @@ public class UsuarioBean implements Serializable {
 
             // PASO CRUCIAL: Invalidar la sesión HTTP
             context.getExternalContext().invalidateSession();
+
+            this.usuario = new Usuario();
 
             // Redirigir al login (usando faces-redirect=true para limpieza)
             return "login?faces-redirect=true";

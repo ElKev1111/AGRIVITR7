@@ -19,6 +19,8 @@ public class Producto implements Serializable {
     private int stock;
     private Date fechaVencimiento;
 
+    private static final float MARGEN_VENTA = 0.15f;
+
     public Producto(){}
     
     public int getIdProducto() {
@@ -99,5 +101,13 @@ public class Producto implements Serializable {
 
     public void setFechaVencimiento(Date fechaVencimiento) {
         this.fechaVencimiento = fechaVencimiento;
+    }
+
+    /**
+     * Precio de venta calculado con un margen del 15 % sobre el precio de
+     * inventario.
+     */
+    public float getPrecioVenta() {
+        return precioProducto + (precioProducto * MARGEN_VENTA);
     }
 }
