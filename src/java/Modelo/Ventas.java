@@ -72,5 +72,13 @@ public class Ventas {
         this.totalPagar = totalPagar;
     }
 
-   
+    public String getFechaVentaFormateada() {
+        if (fechaVenta == null) {
+            return "";
+        }
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return fechaVenta.format(formatter);
+    }
+
+
 }
