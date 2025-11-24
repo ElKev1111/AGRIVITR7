@@ -121,7 +121,8 @@ public class CarritoBean implements Serializable {
     // Método de pago
     public void procederAlPago() {
         if (!usuarioAutenticado()) {
-            redirigirALogin();
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Inicia sesión", "Debes iniciar sesión para completar el pago."));
             return;
         }
         if (isVacio()) {
