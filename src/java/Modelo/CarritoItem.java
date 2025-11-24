@@ -13,7 +13,7 @@ public class CarritoItem implements Serializable {
     }
     
     public float getSubtotal() {
-        return this.cantidad * this.producto.getPrecioProducto();
+        return this.cantidad * this.producto.getPrecioVenta();
     }
 
     // Getters y Setters

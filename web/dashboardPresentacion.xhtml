@@ -141,6 +141,9 @@
     </h:head>
 
     <h:body>
+        <f:metadata>
+            <f:viewAction action="#{carritoBean.prepararSimulacionPublica}" />
+        </f:metadata>
         <!-- HEADER -->
         <header class="header text-white p-4 shadow-md">
             <div class="container mx-auto flex justify-between items-center">
@@ -153,13 +156,16 @@
                                 <h:link outcome="login.xhtml" value="Iniciar Sesion" styleClass="nav-link" />
                             </li>
                             <li>
-                                <p:link styleClass="nav-link flex items-center" onclick="PF('login').show(); return false;">
+                                <p:commandButton type="button"
+                                                 value="Mi Carrito"
+                                                 styleClass="nav-link flex items-center"
+                                                 onclick="PF('cartDialog').show(); return false;">
                                     <i class="pi pi-shopping-cart mr-2"></i>
-                                    <span>Mi Carrito</span>
+                                    <span class="ml-1">Mi Carrito</span>
                                     <span class="cart-count">
                                         <h:outputText value="#{empty carritoBean ? 0 : carritoBean.totalItems}" />
                                     </span>
-                                </p:link>
+                                </p:commandButton>
                             </li>
                             <li>
                                 <h:panelGroup rendered="#{empty usuarioBean.usuario}">
@@ -298,15 +304,15 @@
                                     <div class="space-y-4 mt-4">
                                         <div class="field">
                                             <label for="loginEmail" class="block text-gray-700 mb-2">Correo Electrónico</label>
-                                            <p:inputText id="loginEmail" value="#{UsuarioBean.correo}" styleClass="w-full" />
+                                            <p:inputText id="loginEmail" value="#{usuarioBean.usuario.correo}" styleClass="w-full" />
                                         </div>
                                         <div class="field">
                                             <label for="loginPassword" class="block text-gray-700 mb-2">Contraseña</label>
-                                            <p:password id="loginPassword" value="#{UsuarioBean.password}" styleClass="w-full" />
+                                            <p:password id="loginPassword" value="#{usuarioBean.usuario.password}" styleClass="w-full" />
                                         </div>
                                         <div class="flex justify-between items-center">
                                             <p:commandButton value="Iniciar Sesión" 
-                                                             action="#{UsuarioBean.autenticar}"
+                                                             action="#{usuarioBean.autenticar}"
                                                              update=":navForm :globalMessages"
                                                              oncomplete="if(!args.validationFailed) PF('loginDialog').hide();"
                                                              styleClass="btn-primary py-2 px-4 rounded" />
@@ -323,23 +329,165 @@
                         </div>
                     </p:dialog>
 
-                    <!-- Diálogo para seleccionar cantidad (solo para usuarios autenticados) -->
+                    <!-- Diálogo del carrito (simulación pública) -->
+                    <p:dialog header="Mi Carrito" widgetVar="cartDialog" modal="true" resizable="false" width="1000" closeOnEscape="true">
+                        <h:panelGroup id="cartPanel">
+                            <h:messages id="cartMessages"
+                                        globalOnly="true"
+                                        infoStyle="color: #097a3a; font-weight: bold;"
+                                        warnStyle="color: orange;"
+                                        errorStyle="color: red; font-weight: bold;"/>
+
+                            <h:panelGroup rendered="#{carritoBean.vacio}">
+                                <div class="text-center py-6">
+                                    <p class="text-lg text-gray-600">Tu carrito está vacío. Explora el catálogo para agregar productos.</p>
+                                </div>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{!carritoBean.vacio}">
+                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                    <div class="lg:col-span-2">
+                                        <div class="overflow-x-auto rounded-lg shadow bg-white">
+                                            <table class="min-w-full">
+                                                <thead class="bg-green-700 text-white">
+                                                    <tr>
+                                                        <th class="px-4 py-3 text-left">Producto</th>
+                                                        <th class="px-4 py-3 text-right">Precio Unitario</th>
+                                                        <th class="px-4 py-3 text-center">Cantidad</th>
+                                                        <th class="px-4 py-3 text-right">Subtotal</th>
+                                                        <th class="px-4 py-3 text-center">Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <ui:repeat value="#{carritoBean.items}" var="item">
+                                                        <tr class="border-b border-gray-100">
+                                                            <td class="px-4 py-3 font-semibold text-green-700">#{item.producto.nombreProducto}</td>
+                                                            <td class="px-4 py-3 text-right">
+                                                                $<h:outputText value="#{item.producto.precioVenta}">
+                                                                    <f:convertNumber pattern="#,##0.00" />
+                                                                </h:outputText>
+                                                            </td>
+                                                            <td class="px-4 py-3 text-center">#{item.cantidad}</td>
+                                                            <td class="px-4 py-3 text-right font-semibold">
+                                                                $<h:outputText value="#{item.subtotal}">
+                                                                    <f:convertNumber pattern="#,##0.00" />
+                                                                </h:outputText>
+                                                            </td>
+                                                            <td class="px-4 py-3 text-center">
+                                                                <div class="flex justify-center space-x-2">
+                                                                    <p:commandButton value="Editar"
+                                                                                     action="#{carritoBean.prepararEditarCantidad(item)}"
+                                                                                     oncomplete="document.getElementById('editProductName').textContent = '¿Cuántas unidades de #{item.producto.nombreProducto} deseas?'; PF('editQuantityDialog').show();"
+                                                                                     styleClass="bg-blue-500 text-white px-3 py-1 rounded text-sm"
+                                                                                     update=":catalogoForm:cartPanel" />
+                                                                    <p:commandButton value="Eliminar"
+                                                                                     action="#{carritoBean.eliminarItem(item)}"
+                                                                                     update=":catalogoForm:cartPanel :navForm"
+                                                                                     styleClass="bg-red-500 text-white px-3 py-1 rounded text-sm"/>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </ui:repeat>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="lg:col-span-1">
+                                        <div class="rounded-lg shadow bg-white p-5">
+                                            <h3 class="text-xl font-bold mb-3">Resumen</h3>
+                                            <div class="flex justify-between mb-2">
+                                                <span>Productos:</span>
+                                                <span class="font-semibold">#{carritoBean.totalItems}</span>
+                                            </div>
+                                            <div class="flex justify-between text-lg font-semibold border-t pt-3 text-green-700">
+                                                <span>Total:</span>
+                                                <span>
+                                                    $<h:outputText value="#{carritoBean.totalCompra}">
+                                                        <f:convertNumber pattern="#,##0.00" />
+                                                    </h:outputText>
+                                                </span>
+                                            </div>
+
+                                            <h:panelGroup rendered="#{usuarioBean.autenticado}">
+                                                <p:commandButton value="Pagar"
+                                                                 action="#{carritoBean.procederAlPago}"
+                                                                 update=":catalogoForm:cartPanel :globalMessages :navForm"
+                                                                 styleClass="w-full mt-4 bg-yellow-500 text-white py-2 rounded font-semibold"/>
+                                            </h:panelGroup>
+                                            <h:panelGroup rendered="#{not usuarioBean.autenticado}">
+                                                <p:commandButton type="button"
+                                                                 value="Pagar"
+                                                                 onclick="PF('loginRequiredDialog').show(); return false;"
+                                                                 styleClass="w-full mt-4 bg-yellow-500 text-white py-2 rounded font-semibold"/>
+                                            </h:panelGroup>
+
+                                            <p:commandButton type="button"
+                                                             value="Seguir navegando"
+                                                             onclick="PF('cartDialog').hide()"
+                                                             styleClass="w-full mt-2 bg-gray-200 text-gray-800 py-2 rounded"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+                        </h:panelGroup>
+                    </p:dialog>
+
+                    <!-- Diálogo para seleccionar cantidad -->
                     <p:dialog header="Seleccionar Cantidad" widgetVar="quantityDialog" modal="true" resizable="false">
                         <div class="p-4">
                             <p id="modalProductName">¿Cuántas unidades deseas agregar al carrito?</p>
                             <p:inputNumber id="cantidadInput"
-                                           value="#{carritoBean.cantidadTemporal}" 
-                                           minValue="1" 
+                                           value="#{carritoBean.cantidadTemporal}"
+                                           minValue="1"
                                            styleClass="w-full mt-2" />
                             <div class="flex justify-end mt-4 space-x-2">
-                                <p:commandButton value="Cancelar" 
-                                                 onclick="PF('quantityDialog').hide()" 
+                                <p:commandButton value="Cancelar"
+                                                 onclick="PF('quantityDialog').hide()"
                                                  styleClass="bg-gray-500 text-white px-4 py-2 rounded" />
-                                <p:commandButton value="Agregar" 
+                                <p:commandButton value="Agregar"
                                                  action="#{carritoBean.agregarProductoModal}"
-                                                 update=":navForm :globalMessages"
+                                                 update=":navForm :globalMessages :catalogoForm:cartPanel"
                                                  oncomplete="PF('quantityDialog').hide()"
                                                  styleClass="bg-green-600 text-white px-4 py-2 rounded" />
+                            </div>
+                        </div>
+                    </p:dialog>
+
+                    <!-- Diálogo para editar cantidad -->
+                    <p:dialog header="Editar Cantidad" widgetVar="editQuantityDialog" modal="true" resizable="false">
+                        <div class="p-4">
+                            <p id="editProductName">¿Cuántas unidades deseas?</p>
+                            <p:inputNumber id="editQuantityInput"
+                                           value="#{carritoBean.cantidadTemporal}"
+                                           minValue="1"
+                                           styleClass="w-full mt-2" />
+                            <div class="flex justify-end mt-4 space-x-2">
+                                <p:commandButton value="Cancelar"
+                                                 onclick="PF('editQuantityDialog').hide()"
+                                                 styleClass="bg-gray-500 text-white px-4 py-2 rounded" />
+                                <p:commandButton value="Actualizar"
+                                                 action="#{carritoBean.actualizarCantidad}"
+                                                 update=":catalogoForm:cartPanel :navForm"
+                                                 oncomplete="PF('editQuantityDialog').hide()"
+                                                 styleClass="bg-green-600 text-white px-4 py-2 rounded" />
+                            </div>
+                        </div>
+                    </p:dialog>
+
+                    <!-- Aviso de inicio de sesión para pago -->
+                    <p:dialog header="Inicia sesión para pagar" widgetVar="loginRequiredDialog" modal="true" resizable="false" width="480">
+                        <div class="p-4 space-y-4 text-center">
+                            <p class="text-lg text-gray-700">Para completar tu compra necesitas iniciar sesión.</p>
+                            <div class="flex justify-center space-x-3">
+                                <p:commandButton type="button"
+                                                 value="Iniciar sesión"
+                                                 onclick="window.location='login.xhtml';"
+                                                 styleClass="bg-green-600 text-white px-4 py-2 rounded font-semibold" />
+                                <p:commandButton type="button"
+                                                 value="Seguir navegando"
+                                                 onclick="PF('loginRequiredDialog').hide(); PF('cartDialog').hide();"
+                                                 styleClass="bg-gray-200 text-gray-800 px-4 py-2 rounded font-semibold" />
                             </div>
                         </div>
                     </p:dialog>
@@ -358,21 +506,14 @@
                                 </p>
                                 <p class="text-2xl font-bold text-emerald-600 mb-4">
                                     $
-                                    <h:outputText value="#{p.precioProducto}">
+                                    <h:outputText value="#{p.precioVenta}">
                                         <f:convertNumber pattern="#,##0.00" />
                                     </h:outputText>
                                 </p>
-                                <h:panelGroup rendered="#{not empty usuarioBean.usuario}">
-                                    <p:commandButton value="Agregar al Carrito"
-                                                     action="#{carritoBean.prepararAgregarProducto(p)}"
-                                                     oncomplete="document.getElementById('modalProductName').textContent = '¿Cuántas unidades de #{p.nombreProducto} deseas agregar?'; PF('quantityDialog').show();"
-                                                     styleClass="w-full py-2 px-4 rounded-md text-white font-medium btn-primary" />
-                                </h:panelGroup>
-                                <h:panelGroup rendered="#{empty usuarioBean.usuario}">
-                                    <p:commandButton value="Agregar al Carrito"
-                                                     onclick="PF('loginDialog').show(); return false;"
-                                                     styleClass="w-full py-2 px-4 rounded-md text-white font-medium btn-primary" />
-                                </h:panelGroup>
+                                <p:commandButton value="Agregar al Carrito"
+                                                 action="#{carritoBean.prepararAgregarProducto(p)}"
+                                                 oncomplete="document.getElementById('modalProductName').textContent = '¿Cuántas unidades de #{p.nombreProducto} deseas agregar?'; PF('quantityDialog').show();"
+                                                 styleClass="w-full py-2 px-4 rounded-md text-white font-medium btn-primary" />
                             </div>
                         </ui:repeat>
 
