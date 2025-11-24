@@ -28,6 +28,16 @@ public class CarritoBean implements Serializable {
     private transient ProductoDAO productoDAO = new ProductoDAO();
     private transient VentasDAO ventasDAO = new VentasDAO();
     private transient MovInventarioDAO movInventarioDAO = new MovInventarioDAO();
+    private boolean simulacionPublicaInicializada;
+
+    public void prepararSimulacionPublica() {
+        // Restablece el carrito cuando se entra por primera vez al dashboard público
+        // para que la simulación termine al recargar o cerrar la vista.
+        if (!usuarioAutenticado() && !FacesContext.getCurrentInstance().isPostback() && !simulacionPublicaInicializada) {
+            items.clear();
+            simulacionPublicaInicializada = true;
+        }
+    }
 
     // Método para preparar el producto temporal
     public void prepararAgregarProducto(Producto producto) {
