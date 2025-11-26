@@ -95,11 +95,19 @@ public class UsuarioBean implements Serializable {
                 usuario.setId(rs.getInt("id"));
                 usuario.setNombre(rs.getString("nombre"));
                 usuario.setCorreo(rs.getString("correo"));
+                usuario.setEstado(rs.getString("estado"));
 
                 String rolDb = rs.getString("rol");
                 EnumRoles rol = EnumRoles.valueOf(rolDb.trim().toUpperCase(Locale.ROOT));
                 usuario.setRol(rol);
-                
+
+                if (usuario.getEstado() != null && !"ACTIVO".equalsIgnoreCase(usuario.getEstado())) {
+                    this.autenticado = false;
+                    FacesContext.getCurrentInstance().addMessage(null,
+                            new FacesMessage(FacesMessage.SEVERITY_WARN, "Aviso", "Tu usuario está inactivo. Contacta con el administrador."));
+                    return null;
+                }
+
                 this.autenticado = true;
 
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("user", usuario.getNombre());
@@ -149,6 +157,7 @@ public class UsuarioBean implements Serializable {
         try {
             usuario.setFecha_creacion(LocalDateTime.now());
             usuario.setFecha_actualizacion(LocalDateTime.now());
+            usuario.setEstado("ACTIVO");
 
             String passEncriptada = CifradoAES.encriptar(usuario.getPassword());
             usuario.setPassword(passEncriptada);
@@ -183,6 +192,20 @@ public class UsuarioBean implements Serializable {
         e.printStackTrace();
     }
 }
+
+    public void cambiarEstado(Usuario u) {
+        try {
+            String nuevoEstado = "ACTIVO".equalsIgnoreCase(u.getEstado()) ? "INACTIVO" : "ACTIVO";
+            if (usuarioDAO.actualizarEstado(u.getId(), nuevoEstado)) {
+                u.setEstado(nuevoEstado);
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_INFO, "Estado actualizado", "El usuario ahora está " + nuevoEstado));
+            }
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo cambiar el estado del usuario"));
+        }
+    }
     
     
 }

@@ -18,44 +18,47 @@ import java.util.logging.Logger;
 public class UsuarioDAO implements Serializable {
      private static final long serialVersionUID = 1L;
 
-    PreparedStatement ps;
-    ResultSet rs;
-
     public List<Usuario> listar() throws SQLException {
         List<Usuario> listaUsuarios = new ArrayList<>();
-        try {
-            String sql = "SELECT * FROM usuario";
+        String sql = "SELECT * FROM usuario";
 
-            ps = Conexion.conectar().prepareStatement(sql);
+        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Usuario u = new Usuario();
+                    u.setId(rs.getInt("id"));
+                    u.setRol(EnumRoles.valueOf(rs.getString("rol").trim().toUpperCase()));
+                    u.setNombre(rs.getString("nombre"));
+                    u.setCorreo(rs.getString("correo"));
+                    u.setCelular(rs.getString("celular"));
 
-            rs = ps.executeQuery();
+                    Timestamp tsActualizacion = rs.getTimestamp("fecha_actualizacion");
+                    if (tsActualizacion != null) {
+                        u.setFecha_actualizacion(tsActualizacion.toLocalDateTime());
+                    }
 
-            while (rs.next()) {
-                if("Cliente".equalsIgnoreCase(rs.getString("rol"))){
-                Usuario u = new Usuario();
-                u.setId(rs.getInt("id"));
-                u.setRol(EnumRoles.CLIENTE);
-                u.setNombre(rs.getString("nombre"));
-                u.setCorreo(rs.getString("correo"));
-                u.setCelular(rs.getString("celular"));
-                u.setFecha_actualizacion(rs.getTimestamp("fecha_actualizacion").toLocalDateTime());
-                u.setFecha_creacion(rs.getTimestamp("fecha_creacion").toLocalDateTime());
-                u.setDireccion(rs.getString("direccion"));
-                u.setPassword(rs.getString("password"));
+                    Timestamp tsCreacion = rs.getTimestamp("fecha_creacion");
+                    if (tsCreacion != null) {
+                        u.setFecha_creacion(tsCreacion.toLocalDateTime());
+                    }
 
-                listaUsuarios.add(u);
+                    u.setDireccion(rs.getString("direccion"));
+                    u.setPassword(rs.getString("password"));
+                    u.setEstado(rs.getString("estado"));
+
+                    listaUsuarios.add(u);
                 }
             }
-
         } catch (SQLException e) {
-
+            // Registramos el error para facilitar el diagnóstico sin romper la carga de la tabla
+            System.out.println("Error al listar usuarios: " + e.getMessage());
         }
         return listaUsuarios;
     }
 
     public void agregar(Usuario u) throws SQLException {
-        String sql = "INSERT INTO usuario (rol, nombre, correo, celular, fecha_actualizacion, fecha_creacion, direccion, password) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO usuario (rol, nombre, correo, celular, fecha_actualizacion, fecha_creacion, direccion, password, estado) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
 
@@ -64,9 +67,10 @@ public class UsuarioDAO implements Serializable {
             ps.setString(3, u.getCorreo());
             ps.setString(4, u.getCelular());
             ps.setTimestamp(5, Timestamp.valueOf(u.getFecha_actualizacion()));
-            ps.setTimestamp(6, Timestamp.valueOf(u.getFecha_creacion()));     
+            ps.setTimestamp(6, Timestamp.valueOf(u.getFecha_creacion()));
             ps.setString(7, u.getDireccion());
             ps.setString(8, u.getPassword());
+            ps.setString(9, u.getEstado() != null ? u.getEstado() : "ACTIVO");
 
             ps.executeUpdate();
 
@@ -79,7 +83,7 @@ public class UsuarioDAO implements Serializable {
     }
     public void actualizar(Usuario u) {
         try {
-            String sql = "UPDATE usuario SET rol=?, nombre=?, correo=?,celular=?, direccion =? WHERE id=?";
+            String sql = "UPDATE usuario SET rol=?, nombre=?, correo=?,celular=?, direccion =?, estado=? WHERE id=?";
             ps = Conexion.conectar().prepareStatement(sql);
 
             ps.setString(1, u.getRol().name().toLowerCase());
@@ -87,11 +91,25 @@ public class UsuarioDAO implements Serializable {
             ps.setString(3, u.getCorreo());
             ps.setString(4, u.getCelular());
             ps.setString(5, u.getDireccion());
-            ps.setInt(6, u.getId());
+            ps.setString(6, u.getEstado());
+            ps.setInt(7, u.getId());
              
             ps.executeUpdate();
         } catch (SQLException e) {
             System.out.println(" Error al actualizar usuario: " + e.getMessage());
+        }
+    }
+
+    public boolean actualizarEstado(int idUsuario, String estado) {
+        try {
+            String sql = "UPDATE usuario SET estado=? WHERE id=?";
+            ps = Conexion.conectar().prepareStatement(sql);
+            ps.setString(1, estado);
+            ps.setInt(2, idUsuario);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println(" Error al actualizar estado de usuario: " + e.getMessage());
+            return false;
         }
     }
 
