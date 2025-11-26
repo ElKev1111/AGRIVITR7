@@ -14,6 +14,7 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import Modelo.Usuario;
 import Modelo.EnumRoles;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,6 +27,8 @@ public class UsuarioBean implements Serializable {
 
     private Usuario usuario = new Usuario();
     private UsuarioDAO usuarioDAO = new UsuarioDAO();
+    
+    private boolean autenticado = false;
 
     public boolean isAutenticado() {
         return usuario != null && usuario.getId() > 0;
@@ -96,6 +99,8 @@ public class UsuarioBean implements Serializable {
                 String rolDb = rs.getString("rol");
                 EnumRoles rol = EnumRoles.valueOf(rolDb.trim().toUpperCase(Locale.ROOT));
                 usuario.setRol(rol);
+                
+                this.autenticado = true;
 
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("user", usuario.getNombre());
 
@@ -106,6 +111,8 @@ public class UsuarioBean implements Serializable {
                 }
 
             } else {
+                this.autenticado = false;
+                
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_WARN, "Aviso", "Id de Usuario y/o Contraseña no válidos"));
             }
@@ -126,9 +133,10 @@ public class UsuarioBean implements Serializable {
             context.getExternalContext().invalidateSession();
 
             this.usuario = new Usuario();
+            this.autenticado = false;
 
             // Redirigir al login (usando faces-redirect=true para limpieza)
-            return "login?faces-redirect=true";
+            return "dashboardPresentacion?faces-redirect=true";
 
         } catch (Exception e) {
             // Manejo de errores
@@ -151,6 +159,7 @@ public class UsuarioBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_INFO,
                             "Éxito", "Usuario registrado correctamente."));
+            this.autenticado = false;
 
             // Limpiar formulario
             usuario = new Usuario();
@@ -163,6 +172,17 @@ public class UsuarioBean implements Serializable {
                             "Error", "Usuario no registrado ."));
         }
     }
+    public void verificarSesionCliente() {
+    try {
+        // Si no está autenticado, redirigir al login
+        if (!isAutenticado() || usuario.getRol() != EnumRoles.CLIENTE) {
+            FacesContext.getCurrentInstance().getExternalContext()
+                        .redirect("login.xhtml");
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
     
     
 }

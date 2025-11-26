@@ -89,9 +89,9 @@
                                             requiredMessage="Debe seleccionar un proveedor."
                                             style="width: 100%;"
                                             filter="true" filterMatchMode="contains">
-                                        <p:ajax event="change" 
-                                                listener="#{pedidoProveedorBean.cargarProductosPorProveedor}" 
-                                                update="producto growl" 
+                                        <p:ajax event="valueChange"
+                                                listener="#{pedidoProveedorBean.cargarProductosPorProveedor}"
+                                                update="producto growl"
                                                 process="@this" />
                                         
                                         <f:selectItem itemLabel="Seleccione un Proveedor" itemValue="0" />

@@ -151,7 +151,7 @@
                 <h:form id="navForm">
                     <nav>
                         <ul class="flex space-x-4 items-center">
-                            
+
                             <li>
                                 <h:link outcome="login.xhtml" value="Iniciar Sesion" styleClass="nav-link" />
                             </li>
@@ -159,25 +159,28 @@
                                 <p:commandButton type="button"
                                                  value="Mi Carrito"
                                                  styleClass="nav-link flex items-center"
-                                                 onclick="PF('cartDialog').show(); return false;">
-                                    <i class="pi pi-shopping-cart mr-2"></i>
-                                    <span class="ml-1">Mi Carrito</span>
+                                                 onclick="PF('cartDialog').show(); return false;"
+                                                 class="pi pi-shopping-cart mr-2"
+                                                 >
+
                                     <span class="cart-count">
                                         <h:outputText value="#{empty carritoBean ? 0 : carritoBean.totalItems}" />
                                     </span>
                                 </p:commandButton>
                             </li>
                             <li>
-                                <h:panelGroup rendered="#{empty usuarioBean.usuario}">
-                                    <p:commandLink value="Iniciar Sesión"
+                                <h:panelGroup rendered="#{!usuarioBean.autenticado}">
+                                    <p:commandLink value=""
                                                    onclick="PF('loginDialog').show(); return false;"
                                                    styleClass="nav-link" />
                                 </h:panelGroup>
-                                <h:panelGroup rendered="#{not empty usuarioBean.usuario}">
+
+                                <h:panelGroup>
                                     <span class="nav-link font-semibold">
                                         Bienvenid@
                                     </span>
                                 </h:panelGroup>
+
                             </li>
                         </ul>
                     </nav>
@@ -412,10 +415,11 @@
 
                                             <h:panelGroup rendered="#{usuarioBean.autenticado}">
                                                 <p:commandButton value="Pagar"
-                                                                 action="#{carritoBean.procederAlPago}"
-                                                                 update=":catalogoForm:cartPanel :globalMessages :navForm"
+                                                                 action="carrito?faces-redirect=true"
                                                                  styleClass="w-full mt-4 bg-yellow-500 text-white py-2 rounded font-semibold"/>
                                             </h:panelGroup>
+
+                                            <!-- Si NO está autenticado: mostrar diálogo para iniciar sesión -->
                                             <h:panelGroup rendered="#{not usuarioBean.autenticado}">
                                                 <p:commandButton type="button"
                                                                  value="Pagar"
@@ -441,6 +445,7 @@
                             <p:inputNumber id="cantidadInput"
                                            value="#{carritoBean.cantidadTemporal}"
                                            minValue="1"
+                                           decimalPlaces="0"
                                            styleClass="w-full mt-2" />
                             <div class="flex justify-end mt-4 space-x-2">
                                 <p:commandButton value="Cancelar"
@@ -462,6 +467,7 @@
                             <p:inputNumber id="editQuantityInput"
                                            value="#{carritoBean.cantidadTemporal}"
                                            minValue="1"
+                                           decimalPlaces="0"
                                            styleClass="w-full mt-2" />
                             <div class="flex justify-end mt-4 space-x-2">
                                 <p:commandButton value="Cancelar"
@@ -483,7 +489,7 @@
                             <div class="flex justify-center space-x-3">
                                 <p:commandButton type="button"
                                                  value="Iniciar sesión"
-                                                 onclick="window.location='login.xhtml';"
+                                                 onclick="window.location = 'login.xhtml';"
                                                  styleClass="bg-green-600 text-white px-4 py-2 rounded font-semibold" />
                                 <p:commandButton type="button"
                                                  value="Seguir navegando"

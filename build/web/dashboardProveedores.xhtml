@@ -252,11 +252,16 @@
                     <p:growl id="messages" showDetail="true" life="3000" />
 
                     <div class="action-buttons">
-                        <p:commandButton value=" Agregar Proveedor" 
+                        <p:commandButton value=" Agregar Proveedor"
                                          icon="fas fa-plus-circle"
                                          styleClass="p-button-success ui-button-sm"
                                          oncomplete="PF('dialogoAgregar').show()"
                                          update=":form:messages"/>
+
+                        <p:button value="Crear Pedido"
+                                  icon="fas fa-truck-loading"
+                                  outcome="/crearPedido.xhtml?faces-redirect=true"
+                                  styleClass="ui-button-primary ui-button-sm ms-2" />
                     </div>
 
                     <div class="data-panel">
