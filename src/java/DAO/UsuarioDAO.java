@@ -18,36 +18,40 @@ import java.util.logging.Logger;
 public class UsuarioDAO implements Serializable {
      private static final long serialVersionUID = 1L;
 
-    PreparedStatement ps;
-    ResultSet rs;
-
     public List<Usuario> listar() throws SQLException {
         List<Usuario> listaUsuarios = new ArrayList<>();
-        try {
-            String sql = "SELECT * FROM usuario";
+        String sql = "SELECT * FROM usuario";
 
-            ps = Conexion.conectar().prepareStatement(sql);
+        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Usuario u = new Usuario();
+                    u.setId(rs.getInt("id"));
+                    u.setRol(EnumRoles.valueOf(rs.getString("rol").trim().toUpperCase()));
+                    u.setNombre(rs.getString("nombre"));
+                    u.setCorreo(rs.getString("correo"));
+                    u.setCelular(rs.getString("celular"));
 
-            rs = ps.executeQuery();
+                    Timestamp tsActualizacion = rs.getTimestamp("fecha_actualizacion");
+                    if (tsActualizacion != null) {
+                        u.setFecha_actualizacion(tsActualizacion.toLocalDateTime());
+                    }
 
-            while (rs.next()) {
-                Usuario u = new Usuario();
-                u.setId(rs.getInt("id"));
-                u.setRol(EnumRoles.valueOf(rs.getString("rol").trim().toUpperCase()));
-                u.setNombre(rs.getString("nombre"));
-                u.setCorreo(rs.getString("correo"));
-                u.setCelular(rs.getString("celular"));
-                u.setFecha_actualizacion(rs.getTimestamp("fecha_actualizacion").toLocalDateTime());
-                u.setFecha_creacion(rs.getTimestamp("fecha_creacion").toLocalDateTime());
-                u.setDireccion(rs.getString("direccion"));
-                u.setPassword(rs.getString("password"));
-                u.setEstado(rs.getString("estado"));
+                    Timestamp tsCreacion = rs.getTimestamp("fecha_creacion");
+                    if (tsCreacion != null) {
+                        u.setFecha_creacion(tsCreacion.toLocalDateTime());
+                    }
 
-                listaUsuarios.add(u);
+                    u.setDireccion(rs.getString("direccion"));
+                    u.setPassword(rs.getString("password"));
+                    u.setEstado(rs.getString("estado"));
+
+                    listaUsuarios.add(u);
+                }
             }
-
         } catch (SQLException e) {
-
+            // Registramos el error para facilitar el diagnóstico sin romper la carga de la tabla
+            System.out.println("Error al listar usuarios: " + e.getMessage());
         }
         return listaUsuarios;
     }

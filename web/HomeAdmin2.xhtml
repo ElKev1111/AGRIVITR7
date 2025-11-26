@@ -329,7 +329,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit t
                                 <p:commandButton value="#{u.estado eq 'ACTIVO' ? 'Inactivar' : 'Activar'}"
                                                  styleClass="btn btn-warning btn-xs"
                                                  actionListener="#{usuarioBean.cambiarEstado(u)}"
-                                                 update=":form">
+                                                 update=":formUsuarios:tblUsuarios">
                                     <i class="fas fa-user-slash me-1"></i>
                                 </p:commandButton>
 
