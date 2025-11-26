@@ -320,13 +320,18 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit t
                                 <h:outputText value="#{u.direccion}"/>
                             </p:column>
 
+                            <p:column headerText="ESTADO" style="width: 35px; text-align: center;">
+                                <h:outputText value="#{u.estado}" styleClass="badge #{u.estado eq 'ACTIVO' ? 'bg-success' : 'bg-secondary'}"/>
+                            </p:column>
+
                             <!-- Botón Editar -->
                             <p:column headerText="Acciones" style="width: 50px; text-align: center;" exportable="false">
-                                <span class="btn btn-warning btn-xs d-flex align-items-center justify-content-center"
-                                      style="min-width:85px; font-size:12px; padding:4px 6px;">
+                                <p:commandButton value="#{u.estado eq 'ACTIVO' ? 'Inactivar' : 'Activar'}"
+                                                 styleClass="btn btn-warning btn-xs"
+                                                 actionListener="#{usuarioBean.cambiarEstado(u)}"
+                                                 update=":form">
                                     <i class="fas fa-user-slash me-1"></i>
-                                    Inactivar
-                                </span>
+                                </p:commandButton>
 
                             </p:column>
                         </p:dataTable>

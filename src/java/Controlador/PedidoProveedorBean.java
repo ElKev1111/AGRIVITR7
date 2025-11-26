@@ -34,8 +34,9 @@ public class PedidoProveedorBean implements Serializable {
 
     private int totalPedidos;
     private int totalPendientes;
-    private int totalAceptados;
-    private int totalRechazados;
+    private int totalEnProceso;
+    private int totalCompletados;
+    private int totalCancelados;
 
     // Getters lazy para DAOs
     private PedidoProveedorDAO getPedidoDAO() {
@@ -67,7 +68,7 @@ public class PedidoProveedorBean implements Serializable {
 
     public void cargarProveedores() {
         try {
-            this.listaProveedores = getProveedorDAO().listar();
+            this.listaProveedores = getProveedorDAO().listarActivos();
         } catch (SQLException e) {
             System.err.println("Error al cargar proveedores: " + e.getMessage());
         }
@@ -83,16 +84,21 @@ public class PedidoProveedorBean implements Serializable {
     }
 
     private void calcularEstadisticas() {
-        // Recalcula las estadísticas basadas en la listaPedidos actual
         this.totalPedidos = listaPedidos.size();
         this.totalPendientes = (int) listaPedidos.stream()
-                .filter(p -> "ESPERA".equalsIgnoreCase(p.getEstado())) // Usa 'ESPERA' como el estado inicial
+                .filter(p -> {
+                    String estado = p.getEstado();
+                    return "PENDIENTE".equalsIgnoreCase(estado) || "ESPERA".equalsIgnoreCase(estado);
+                })
                 .count();
-        this.totalAceptados = (int) listaPedidos.stream()
-                .filter(p -> "ACEPTADO".equalsIgnoreCase(p.getEstado()))
+        this.totalEnProceso = (int) listaPedidos.stream()
+                .filter(p -> "EN_PROCESO".equalsIgnoreCase(p.getEstado()) || "ACEPTADO".equalsIgnoreCase(p.getEstado()))
                 .count();
-        this.totalRechazados = (int) listaPedidos.stream()
-                .filter(p -> "RECHAZADO".equalsIgnoreCase(p.getEstado()))
+        this.totalCompletados = (int) listaPedidos.stream()
+                .filter(p -> "COMPLETADO".equalsIgnoreCase(p.getEstado()))
+                .count();
+        this.totalCancelados = (int) listaPedidos.stream()
+                .filter(p -> "CANCELADO".equalsIgnoreCase(p.getEstado()) || "RECHAZADO".equalsIgnoreCase(p.getEstado()))
                 .count();
     }
 
@@ -163,7 +169,7 @@ public class PedidoProveedorBean implements Serializable {
                 nuevoPedido.setDescripcionPedido(descripcionGenerada);
             }
 
-            nuevoPedido.setEstado("ESPERA");
+            nuevoPedido.setEstado("PENDIENTE");
 
             // Llama al DAO para registrar el pedido
             if (getPedidoDAO().registrar(nuevoPedido)) {
@@ -188,45 +194,52 @@ public class PedidoProveedorBean implements Serializable {
         }
     }
 
-    public void aceptarPedido(PedidoProveedor pedido) {
-        FacesContext context = FacesContext.getCurrentInstance();
-        try {
-            pedido.setEstado("ACEPTADO");
-
-            pedido.setFechaActualizacion(new Date());
-
-            if (getPedidoDAO().actualizarEstado(pedido)) {
-                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito",
-                        "Pedido ID " + pedido.getIdPedido() + " ACEPTADO."));
-            } else {
-                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error BD",
-                        "No se pudo actualizar el estado del pedido."));
-            }
-            cargarPedidos(); // Recarga la lista y las estadísticas
-        } catch (Exception e) {
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error Grave",
-                    "Fallo al aceptar el pedido: " + e.getMessage()));
-        }
+    public void marcarPendiente(PedidoProveedor pedido) {
+        cambiarEstado(pedido, "PENDIENTE", false);
     }
 
-    public void rechazarPedido(PedidoProveedor pedido) {
+    public void marcarEnProceso(PedidoProveedor pedido) {
+        cambiarEstado(pedido, "EN_PROCESO", false);
+    }
+
+    public void marcarCompletado(PedidoProveedor pedido) {
+        cambiarEstado(pedido, "COMPLETADO", true);
+    }
+
+    public void marcarCancelado(PedidoProveedor pedido) {
+        cambiarEstado(pedido, "CANCELADO", false);
+    }
+
+    private void cambiarEstado(PedidoProveedor pedido, String nuevoEstado, boolean actualizarInventario) {
         FacesContext context = FacesContext.getCurrentInstance();
         try {
-            pedido.setEstado("RECHAZADO");
-
+            pedido.setEstado(nuevoEstado);
             pedido.setFechaActualizacion(new Date());
 
             if (getPedidoDAO().actualizarEstado(pedido)) {
-                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Rechazado",
-                        "Pedido ID " + pedido.getIdPedido() + " RECHAZADO."));
+                if (actualizarInventario) {
+                    try {
+                        Producto producto = getProductoDAO().buscar(pedido.getIdProducto());
+                        if (producto != null) {
+                            int nuevoStock = producto.getStock() + pedido.getCantidad();
+                            getProductoDAO().actualizarStock(producto.getIdProducto(), nuevoStock);
+                        }
+                    } catch (SQLException ex) {
+                        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Inventario",
+                                "Estado cambiado, pero no se pudo actualizar el inventario: " + ex.getMessage()));
+                    }
+                }
+
+                context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito",
+                        "Pedido ID " + pedido.getIdPedido() + " ahora está " + nuevoEstado + "."));
             } else {
                 context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error BD",
                         "No se pudo actualizar el estado del pedido."));
             }
-            cargarPedidos(); 
+            cargarPedidos();
         } catch (Exception e) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error Grave",
-                    "Fallo al rechazar el pedido: " + e.getMessage()));
+                    "Fallo al actualizar el pedido: " + e.getMessage()));
         }
     }
 
@@ -247,20 +260,28 @@ public class PedidoProveedorBean implements Serializable {
         this.totalPendientes = totalPendientes;
     }
 
-    public int getTotalAceptados() {
-        return totalAceptados;
+    public int getTotalEnProceso() {
+        return totalEnProceso;
     }
 
-    public void setTotalAceptados(int totalAceptados) {
-        this.totalAceptados = totalAceptados;
+    public void setTotalEnProceso(int totalEnProceso) {
+        this.totalEnProceso = totalEnProceso;
     }
 
-    public int getTotalRechazados() {
-        return totalRechazados;
+    public int getTotalCompletados() {
+        return totalCompletados;
     }
 
-    public void setTotalRechazados(int totalRechazados) {
-        this.totalRechazados = totalRechazados;
+    public void setTotalCompletados(int totalCompletados) {
+        this.totalCompletados = totalCompletados;
+    }
+
+    public int getTotalCancelados() {
+        return totalCancelados;
+    }
+
+    public void setTotalCancelados(int totalCancelados) {
+        this.totalCancelados = totalCancelados;
     }
 
     public List<PedidoProveedor> getListaPedidos() {

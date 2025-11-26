@@ -1,4 +1,4 @@
-    package Controlador;
+package Controlador;
 
 import DAO.ProveedorDAO;
 import Modelo.Proveedor;
@@ -39,6 +39,9 @@ public class ProveedorBean implements Serializable {
 
     public void agregarProveedor() {
         try {
+            if (nuevoProveedor.getEstado() == null || nuevoProveedor.getEstado().isEmpty()) {
+                nuevoProveedor.setEstado("Activo");
+            }
             if (proveedorDAO.agregar(nuevoProveedor)) {
                 FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Proveedor agregado correctamente"));
@@ -70,13 +73,29 @@ public class ProveedorBean implements Serializable {
         try {
             if (proveedorDAO.eliminar(proveedorSeleccionado.getIdProveedor())) {
                 FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Proveedor eliminado correctamente"));
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Proveedor inactivado correctamente"));
                 proveedorSeleccionado = null;
                 cargarProveedores();
             }
         } catch (SQLException e) {
             FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo eliminar el proveedor: " + e.getMessage()));
+        }
+    }
+
+    public void alternarEstadoProveedor(Proveedor proveedor) {
+        try {
+            String nuevoEstado = "Activo".equalsIgnoreCase(proveedor.getEstado()) ? "Inactivo" : "Activo";
+            if (proveedorDAO.cambiarEstado(proveedor.getIdProveedor(), nuevoEstado)) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito",
+                                "Estado del proveedor actualizado a " + nuevoEstado));
+                cargarProveedores();
+            }
+        } catch (SQLException e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                            "No se pudo cambiar el estado: " + e.getMessage()));
         }
     }
 
