@@ -201,36 +201,43 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit t
 
             <nav class="sidebar-nav">
                 <nav class="sidebar-nav">
-                    <h:link outcome="/HomeAdmin1.xhtml" styleClass="nav-link">
-                        <i class="fas fa-user"></i> Dashboard 
-                    </h:link>
+                   <h:link outcome="/HomeAdmin1.xhtml" styleClass="nav-link">
+                    <i class="fas fa-chart-line" style="margin-right: 10px;"></i> Dashboard 
+                </h:link>
                     <h:link outcome="/HomeAdmin2.xhtml" styleClass="nav-link">
-                        <i class="fas fa-jar"></i> Usuarios
+                        <i class="fas fa-jar" style="margin-right: 10px;"></i> Usuarios
                     </h:link>
                     <h:link outcome="/HomeAdmin3.xhtml" styleClass="nav-link">
-                        <i class="fas fa-user"></i> Productos 
+                        <i class="fas fa-user" style="margin-right: 10px;"></i> Productos 
                     </h:link>
                     <h:link outcome="/Correos.xhtml" styleClass="nav-link">
-                        <i class="fas fa-envelope"></i> Correos
+                        <i class="fas fa-envelope" style="margin-right: 10px;" ></i> Correos
                     </h:link>
                     <h:link outcome="/HomeAdmin4.xhtml" styleClass="nav-link">
-                        <i class="fas fa-envelope"></i> Ventas
+                        <i class="fas fa-envelope" style="margin-right: 10px;"></i> Ventas
                     </h:link>
                     <h:link outcome="/HomeAdmin5.xhtml" styleClass="nav-link">
-                        <i class="fas fa-users"></i> Empleados
+                        <i class="fas fa-users" style="margin-right: 10px;"></i> Empleados
                     </h:link>
                     <h:link outcome="/MovInventario.xhtml" styleClass="nav-link">
-                        <i class="fas fa-boxes"></i> Inventario
+                        <i class="fas fa-boxes" style="margin-right: 10px;"></i> Inventario
                     </h:link>
-                    <h:link outcome="/dashboardCliente.xhtml" styleClass="nav-link">
-                        <i class="fas fa-eye"></i> Vista Cliente
+                    
+                    <h:link outcome="/PedidosProveedores.xhtml" styleClass="nav-link">
+                        <i class="fas fa-truck-loading" style="margin-right: 10px;"></i> Pedidos
                     </h:link>
-                    <h:link outcome="/dashboardProveedores.xhtml" styleClass="nav-link">
-                        <i class=""></i> Vista Proveedores
+                    <h:link outcome="/dashboardProveedores.xhtml" styleClass="nav-link ">
+                        <i class="fas fa-warehouse" style="margin-right: 10px;"></i> Vista Proveedores
                     </h:link>
+                    <h:link outcome="/dashboardPresentacion.xhtml" styleClass="nav-link ">
+                        <i class="fas fa-warehouse" style="margin-right: 10px;"></i> presentacion
+                    </h:link>
+                    
+                    
                 </nav>
 
             </nav>
+
 
             <h:form>
                 <div class="sidebar-footer">
@@ -320,13 +327,18 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/XHtml.xhtml to edit t
                                 <h:outputText value="#{u.direccion}"/>
                             </p:column>
 
+                            <p:column headerText="ESTADO" style="width: 35px; text-align: center;">
+                                <h:outputText value="#{u.estado}" styleClass="badge #{u.estado eq 'ACTIVO' ? 'bg-success' : 'bg-secondary'}"/>
+                            </p:column>
+
                             <!-- Botón Editar -->
                             <p:column headerText="Acciones" style="width: 50px; text-align: center;" exportable="false">
-                                <span class="btn btn-warning btn-xs d-flex align-items-center justify-content-center"
-                                      style="min-width:85px; font-size:12px; padding:4px 6px;">
+                                <p:commandButton value="#{u.estado eq 'ACTIVO' ? 'Inactivar' : 'Activar/Inactivar'}"
+                                                 styleClass="btn btn-warning btn-xs"
+                                                 actionListener="#{usuarioBean.cambiarEstado(u)}"
+                                                 update=":formUsuarios:tblUsuarios">
                                     <i class="fas fa-user-slash me-1"></i>
-                                    Inactivar
-                                </span>
+                                </p:commandButton>
 
                             </p:column>
                         </p:dataTable>

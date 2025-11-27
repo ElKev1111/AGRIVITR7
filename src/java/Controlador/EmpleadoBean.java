@@ -88,10 +88,13 @@ public void eliminar(Usuario u) {
     try {
         empleadoDAO.eliminar(u);
         FacesContext.getCurrentInstance().addMessage(null,
-            new FacesMessage(FacesMessage.SEVERITY_INFO, "Producto eliminado correctamente", null));
+            new FacesMessage(FacesMessage.SEVERITY_INFO, 
+                    "Éxito", "Empleado eliminado correctamente"));
     } catch (SQLException e) {
         FacesContext.getCurrentInstance().addMessage(null,
-            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error al eliminar producto: " + e.getMessage(), null));
+            new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                    "Error", "Error al eliminar empleado: " + e.getMessage()));
     }
 }
+
 }

@@ -240,4 +240,42 @@ private static final long serialVersionUID = 1L;
             }
         }
     }
+    public Proveedor buscar(int idProveedor) throws SQLException {
+    String sql = "SELECT * FROM proveedor WHERE idProveedor = ?";
+    Connection con = null;
+    try {
+        con = Conexion.conectar();
+        ps = con.prepareStatement(sql);
+        ps.setInt(1, idProveedor);
+        rs = ps.executeQuery();
+
+        if (rs.next()) {
+            Proveedor p = new Proveedor();
+            p.setIdProveedor(rs.getInt("idProveedor"));
+            p.setNombreProveedor(rs.getString("nombreProveedor"));
+            p.setCorreo(rs.getString("correo"));
+            p.setCelular(rs.getString("celular"));
+            p.setDireccion(rs.getString("direccion"));
+            p.setProducto(rs.getString("producto"));
+            p.setPrecio(rs.getDouble("precio"));
+
+            p.setFechaRegistro(rs.getTimestamp("fechaRegistro"));
+            Timestamp fechaActualizacion = rs.getTimestamp("fechaActualizacion");
+            p.setFechaActualizacion(fechaActualizacion);
+
+            p.setEstado(rs.getString("estado"));
+            return p;
+        }
+
+        return null;
+    } catch (SQLException e) {
+        System.out.println("Error al buscar proveedor por id: " + e.getMessage());
+        throw e;
+    } finally {
+        if (rs != null) try { rs.close(); } catch (SQLException ignored) {}
+        if (ps != null) try { ps.close(); } catch (SQLException ignored) {}
+        if (con != null) con.close();
+    }
+}
+
 }

@@ -5,11 +5,11 @@ import Modelo.PedidoProveedor;
 import java.io.Serializable;
 import java.sql.SQLException;
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
-import javax.inject.Named;
 
-@Named
+@ManagedBean(name = "pedidoDetalleBean")
 @ViewScoped
 public class PedidoDetalleBean implements Serializable {
 

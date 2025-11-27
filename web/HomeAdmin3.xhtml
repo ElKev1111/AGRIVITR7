@@ -111,6 +111,11 @@
                 padding: 0.25rem 0.5rem;
                 font-size: 0.75rem;
             }
+            .ui-selectonemenu-panel,
+            .ui-datepicker,
+            .ui-datepicker.ui-widget {
+                z-index: 1065 !important;   /* Mayor que 1050 (el modal) */
+            }
         </style>
     </h:head>
 
@@ -124,31 +129,45 @@
             </div>
 
             <nav class="sidebar-nav">
-                <h:link outcome="/HomeAdmin1.xhtml" styleClass="nav-link">
-                    <i class="fas fa-user"></i> Dashboard 
+                <nav class="sidebar-nav">
+                   <h:link outcome="/HomeAdmin1.xhtml" styleClass="nav-link">
+                    <i class="fas fa-chart-line" style="margin-right: 10px;"></i> Dashboard 
                 </h:link>
-                <h:link outcome="/HomeAdmin2.xhtml" styleClass="nav-link">
-                    <i class="fas fa-jar"></i> Usuarios
-                </h:link>
-                <h:link outcome="/HomeAdmin3.xhtml" styleClass="nav-link">
-                    <i class="fas fa-user"></i> Productos 
-                </h:link>
-                <h:link outcome="/Correos.xhtml" styleClass="nav-link">
-                    <i class="fas fa-envelope"></i> Correos
-                </h:link>
-                <h:link outcome="/HomeAdmin4.xhtml" styleClass="nav-link">
-                    <i class="fas fa-envelope"></i> Ventas
-                </h:link>
-                <h:link outcome="/HomeAdmin5.xhtml" styleClass="nav-link">
-                    <i class="fas fa-users"></i> Empleados
-                </h:link>
-                <h:link outcome="/MovInventario.xhtml" styleClass="nav-link active">
-                    <i class="fas fa-boxes"></i> Inventario
-                </h:link>
-                <h:link outcome="/dashboardCliente.xhtml" styleClass="nav-link active">
-                    <i class="fas fa-eye"></i> Vista Cliente
-                </h:link>
+                    <h:link outcome="/HomeAdmin2.xhtml" styleClass="nav-link">
+                        <i class="fas fa-jar" style="margin-right: 10px;"></i> Usuarios
+                    </h:link>
+                    <h:link outcome="/HomeAdmin3.xhtml" styleClass="nav-link">
+                        <i class="fas fa-user" style="margin-right: 10px;"></i> Productos 
+                    </h:link>
+                    <h:link outcome="/Correos.xhtml" styleClass="nav-link">
+                        <i class="fas fa-envelope" style="margin-right: 10px;" ></i> Correos
+                    </h:link>
+                    <h:link outcome="/HomeAdmin4.xhtml" styleClass="nav-link">
+                        <i class="fas fa-envelope" style="margin-right: 10px;"></i> Ventas
+                    </h:link>
+                    <h:link outcome="/HomeAdmin5.xhtml" styleClass="nav-link">
+                        <i class="fas fa-users" style="margin-right: 10px;"></i> Empleados
+                    </h:link>
+                    <h:link outcome="/MovInventario.xhtml" styleClass="nav-link">
+                        <i class="fas fa-boxes" style="margin-right: 10px;"></i> Inventario
+                    </h:link>
+                    
+                    <h:link outcome="/PedidosProveedores.xhtml" styleClass="nav-link">
+                        <i class="fas fa-truck-loading" style="margin-right: 10px;"></i> Pedidos
+                    </h:link>
+                    <h:link outcome="/dashboardProveedores.xhtml" styleClass="nav-link ">
+                        <i class="fas fa-warehouse" style="margin-right: 10px;"></i> Vista Proveedores
+                    </h:link>
+                    <h:link outcome="/dashboardPresentacion.xhtml" styleClass="nav-link ">
+                        <i class="fas fa-warehouse" style="margin-right: 10px;"></i> presentacion
+                    </h:link>
+                   
+                    
+                </nav>
+
             </nav>
+
+
 
             <!-- Cerrar Sesión siempre al final -->
             <div class="sidebar-footer">
@@ -299,47 +318,105 @@
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
+
                     <h:form id="formCrearProducto">
                         <div class="modal-body">
-                            <!-- Campos del formulario -->
-                            <div class="mb-3"><label class="form-label">Nombre Producto</label>
-                                <h:inputText value="#{productoBean.producto.nombreProducto}" styleClass="form-control" required="true"/>
+                            <!-- Nombre Producto -->
+                            <div class="mb-3">
+                                <label class="form-label">Nombre Producto</label>
+                                <h:inputText value="#{productoBean.producto.nombreProducto}"
+                                             styleClass="form-control"
+                                             required="true"
+                                             requiredMessage="El nombre del producto es obligatorio"/>
                             </div>
-                            <div class="mb-3"><label class="form-label">ID Proveedor</label>
-                                <h:inputText value="#{productoBean.producto.idProveedor}" styleClass="form-control" required="true"/>
+
+                            <!-- Proveedor (lista) -->
+                            <div class="mb-3">
+                                <label class="form-label">Proveedor</label>
+                                <p:selectOneMenu value="#{productoBean.idProveedorSeleccionado}"
+                                                 styleClass="form-control"
+                                                 filter="true" filterMatchMode="contains"
+                                                 required="true"
+                                                 requiredMessage="Debe seleccionar un proveedor"
+                                                 appendTo="@(body)">
+                                    <f:selectItem itemLabel="-- Seleccione un proveedor --" itemValue="#{null}" noSelectionOption="true"/>
+                                    <f:selectItems value="#{productoBean.listaProveedores}"
+                                                   var="prov"
+                                                   itemValue="#{prov.idProveedor}"
+                                                   itemLabel="#{prov.idProveedor} - #{prov.nombreProveedor}"/>
+                                </p:selectOneMenu>
                             </div>
-                            <div class="mb-3"><label class="form-label">Nombre Proveedor</label>
-                                <h:inputText value="#{productoBean.producto.nombreProveedor}" styleClass="form-control" required="true"/>
+
+                            <!-- Precio -->
+                            <div class="mb-3">
+                                <label class="form-label">Precio</label>
+                                <p:inputNumber value="#{productoBean.producto.precioProducto}"
+                                               styleClass="form-control"
+                                               minValue="0"
+                                               decimalPlaces="0"
+                                               required="true"
+                                               requiredMessage="El precio es obligatorio"/>
                             </div>
-                            <div class="mb-3"><label class="form-label">Precio</label>
-                                <h:inputText value="#{productoBean.producto.precioProducto}" styleClass="form-control" required="true"/>
+
+                            <!-- Descripción -->
+                            <div class="mb-3">
+                                <label class="form-label">Descripción</label>
+                                <h:inputTextarea value="#{productoBean.producto.descripcion}"
+                                                 styleClass="form-control"
+                                                 rows="3"/>
                             </div>
-                            <div class="mb-3"><label class="form-label">Descripción</label>
-                                <h:inputTextarea value="#{productoBean.producto.descripcion}" styleClass="form-control" rows="3"/>
+
+                            <!-- Tipo -->
+                            <div class="mb-3">
+                                <label class="form-label">Tipo de producto</label>
+                                <h:inputText value="#{productoBean.producto.tipo}"
+                                             styleClass="form-control"
+                                             required="true"
+                                             requiredMessage="El tipo de producto es obligatorio"/>
                             </div>
-                            <div class="mb-3"><label class="form-label">Tipo</label>
-                                <h:inputText value="#{productoBean.producto.tipo}" styleClass="form-control" required="true"/>
+
+                            <!-- Stock inicial -->
+                            <div class="mb-3">
+                                <label class="form-label">Stock inicial</label>
+                                <p:inputNumber value="#{productoBean.producto.stock}"
+                                               styleClass="form-control"
+                                               decimalPlaces="0"
+                                               minValue="0"
+                                               required="true"
+                                               requiredMessage="El stock inicial es obligatorio"/>
                             </div>
-                            <div class="mb-3"><label class="form-label">Stock Inicial</label>
-                                <h:inputText value="#{productoBean.producto.stock}" styleClass="form-control" type="number" min="0"/>
-                            </div>
-                            <div class="mb-3"><label class="form-label">Fecha de Vencimiento</label>
-                                <p:calendar value="#{productoBean.producto.fechaVencimiento}" styleClass="form-control" pattern="dd/MM/yyyy" locale="es" showOn="button"/>
+
+                            <!-- Fecha de vencimiento -->
+                            <div class="mb-3">
+                                <label class="form-label">Fecha de vencimiento</label>
+                                <p:calendar value="#{productoBean.producto.fechaVencimiento}"
+                                            styleClass="form-control"
+                                            pattern="dd/MM/yyyy"
+                                            locale="es"
+                                            showOn="button"
+                                            required="true"
+                                            requiredMessage="La fecha de vencimiento es obligatoria"
+                                            appendTo="@(body)"/>
                             </div>
                         </div>
+
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                 <i class="fas fa-times"></i> Cancelar
                             </button>
-                            <h:commandButton value="Guardar" action="#{productoBean.agregar}" 
+
+                            <p:commandButton value="Guardar"
+                                             actionListener="#{productoBean.agregar}"
+                                             update=":formProductos:tblProductos,:growl"
+                                             process="@form"
                                              styleClass="btn btn-success"
-                                             update="tblProductos,growl"
-                                             complete="if(!args.validationFailed) { $('#modalCrear').modal('hide'); }" />
+                                             oncomplete="if (!args.validationFailed) $('#modalCrear').modal('hide');"/>
                         </div>
                     </h:form>
                 </div>
             </div>
         </div>
+
 
         <!-- Modal Editar Producto - VERSIÓN CORREGIDA -->
         <p:dialog id="dlgEditarProducto" 
@@ -400,7 +477,7 @@
                                        styleClass="form-control"
                                        decimalPlaces="0"
                                        minValue="0"
-                                       required="true"/>
+                                       required="false"/>
                     </div>
 
                     <div class="p-field mb-3">

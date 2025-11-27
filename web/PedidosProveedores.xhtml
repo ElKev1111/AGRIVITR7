@@ -154,28 +154,44 @@
             </div>
 
             <nav class="sidebar-nav">
-                <h:link outcome="/HomeAdmin1.xhtml" styleClass="nav-link">
+                <nav class="sidebar-nav">
+                   <h:link outcome="/HomeAdmin1.xhtml" styleClass="nav-link">
                     <i class="fas fa-chart-line" style="margin-right: 10px;"></i> Dashboard 
                 </h:link>
-                <h:link outcome="/HomeAdmin2.xhtml" styleClass="nav-link">
-                    <i class="fas fa-users" style="margin-right: 10px;"></i> Usuarios
-                </h:link>
-                <h:link outcome="/HomeAdmin3.xhtml" styleClass="nav-link">
-                    <i class="fas fa-box-open" style="margin-right: 10px;"></i> Productos 
-                </h:link>
-                <h:link outcome="/Correos.xhtml" styleClass="nav-link">
-                    <i class="fas fa-envelope" style="margin-right: 10px;"></i> Correos
-                </h:link>
-                <h:link outcome="/HomeAdmin4.xhtml" styleClass="nav-link">
-                    <i class="fas fa-shopping-cart" style="margin-right: 10px;"></i> Ventas
-                </h:link>
-                <h:link outcome="/HomeAdmin5.xhtml" styleClass="nav-link">
-                    <i class="fas fa-briefcase" style="margin-right: 10px;"></i> Empleados
-                </h:link>
-                <h:link outcome="/PedidosProveedores.xhtml" styleClass="nav-link">
-                    <i class="fas fa-jar"></i> Pedidos
-                </h:link>
+                    <h:link outcome="/HomeAdmin2.xhtml" styleClass="nav-link">
+                        <i class="fas fa-jar" style="margin-right: 10px;"></i> Usuarios
+                    </h:link>
+                    <h:link outcome="/HomeAdmin3.xhtml" styleClass="nav-link">
+                        <i class="fas fa-user" style="margin-right: 10px;"></i> Productos 
+                    </h:link>
+                    <h:link outcome="/Correos.xhtml" styleClass="nav-link">
+                        <i class="fas fa-envelope" style="margin-right: 10px;" ></i> Correos
+                    </h:link>
+                    <h:link outcome="/HomeAdmin4.xhtml" styleClass="nav-link">
+                        <i class="fas fa-envelope" style="margin-right: 10px;"></i> Ventas
+                    </h:link>
+                    <h:link outcome="/HomeAdmin5.xhtml" styleClass="nav-link">
+                        <i class="fas fa-users" style="margin-right: 10px;"></i> Empleados
+                    </h:link>
+                    <h:link outcome="/MovInventario.xhtml" styleClass="nav-link">
+                        <i class="fas fa-boxes" style="margin-right: 10px;"></i> Inventario
+                    </h:link>
+                    
+                    <h:link outcome="/PedidosProveedores.xhtml" styleClass="nav-link">
+                        <i class="fas fa-truck-loading" style="margin-right: 10px;"></i> Pedidos
+                    </h:link>
+                    <h:link outcome="/dashboardProveedores.xhtml" styleClass="nav-link ">
+                        <i class="fas fa-warehouse" style="margin-right: 10px;"></i> Vista Proveedores
+                    </h:link>
+                    <h:link outcome="/dashboardPresentacion.xhtml" styleClass="nav-link ">
+                        <i class="fas fa-warehouse" style="margin-right: 10px;"></i> presentacion
+                    </h:link>
+                    
+                    
+                </nav>
+
             </nav>
+
 
             <h:form>
                 <div class="sidebar-footer">
@@ -191,20 +207,22 @@
                 <h2><i class="fas fa-truck"></i> Gestión de Pedidos a Proveedores</h2>
                 <div class="user-info">
                     <span class="me-3">Bienvenido, #{usuarioBean.usuario.nombre} <strong>...</strong></span>
-                    <div class="dropdown">
-                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user-circle"></i>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <p:commandLink onclick="PF('perfilDialog').show();" style="text-decoration:none; color:blue;">
-                                    <i class="fas fa-user"></i> Perfil
-                                </p:commandLink>
-                            </li>
-                            <li><h:outputLink value="#"><i class="fas fa-cog"></i> Configuración</h:outputLink></li>
-                            <li><hr class="dropdown-divider" /></li>
-                        </ul>
-                    </div>
+                    <h:form>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <p:commandLink onclick="PF('perfilDialog').show();" style="text-decoration:none; color:blue;">
+                                        <i class="fas fa-user"></i> Perfil
+                                    </p:commandLink>
+                                </li>
+                                <li><h:outputLink value="#"><i class="fas fa-cog"></i> Configuración</h:outputLink></li>
+                                <li><hr class="dropdown-divider" /></li>
+                            </ul>
+                        </div>
+                    </h:form>
                 </div>
             </div>
 
@@ -269,8 +287,10 @@
 
                         <p:button value="Crear Pedido"
                                   icon="fas fa-plus-circle"
-                                  outcome="/crearPedido.xhtml?faces-redirect=true"
+                                  outcome="crearPedido"
                                   styleClass="ui-button-primary"/>
+
+
                     </h:form>
 
                     <h:form id="pedidosForm">

@@ -6,67 +6,349 @@
       xmlns:p="http://primefaces.org/ui"
       lang="es">
 
-    <h:head>
-        <title>Detalle del Pedido</title>
-        </h:head>
+<h:head>
+    <title>Detalle del Pedido</title>
 
-    <h:body>
-        
-        <f:metadata>
-            <f:viewParam name="pedidoId" value="#{pedidoDetalleBean.pedidoId}" required="true"/>
-            <f:event type="preRenderView" listener="#{pedidoDetalleBean.cargarDetallePedido}"/>
-        </f:metadata>
+    <!-- Bootstrap & Iconos (igual que otros módulos) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
 
-        <div class="main-content">
-            <h2>Detalle del Pedido #<h:outputText value="#{pedidoDetalleBean.pedidoId}"/></h2>
-            
-            <h:panelGroup rendered="#{not empty pedidoDetalleBean.pedido}">
-                <p:panel header="Información General del Pedido" style="margin-bottom: 20px;">
-                    <h:panelGrid columns="2" cellpadding="5">
-                        
-                        <h:outputLabel value="ID:"/>
-                        <h:outputText value="#{pedidoDetalleBean.pedido.idPedido}"/>
-                        
-                        <h:outputLabel value="Proveedor:"/>
-                        <h:outputText value="#{pedidoDetalleBean.pedido.nombreProveedor}"/>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 
-                        <h:outputLabel value="Producto:"/>
-                        <h:outputText value="#{pedidoDetalleBean.pedido.nombreProducto}"/>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+        }
 
-                        <h:outputLabel value="Cantidad solicitada:"/>
-                        <h:outputText value="#{pedidoDetalleBean.pedido.cantidad}"/>
+        /* Sidebar (igual que pedidosProveedores) */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 230px;
+            background: #008631;
+            color: white;
+            z-index: 1000;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
 
-                        <h:outputLabel value="Fecha de Pedido:"/>
-                        <h:outputText value="#{pedidoDetalleBean.pedido.fechaPedido}">
-                             <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
-                        </h:outputText>
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
 
-                        <h:outputLabel value="Última actualización:"/>
-                        <h:outputText value="#{pedidoDetalleBean.pedido.fechaActualizacion}">
-                             <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
-                        </h:outputText>
+        .sidebar-header h4 {
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
 
-                        <h:outputLabel value="Estado:"/>
-                        <h:outputText value="#{pedidoDetalleBean.pedido.estado}" style="font-weight: bold;"/>
-                        
-                        <h:outputLabel value="Descripción:"/>
-                        <h:outputText value="#{pedidoDetalleBean.pedido.descripcionPedido}"/>
-                        
-                    </h:panelGrid>
-                </p:panel>
-                
-            </h:panelGroup>
-            
-            <h:panelGroup rendered="#{empty pedidoDetalleBean.pedido}">
-                <div class="alert alert-warning" role="alert" style="margin-top: 20px;">
-                    <i class="fas fa-exclamation-triangle"></i> 
-                    <strong>Pedido no encontrado.</strong> El ID del pedido no es válido o no existe.
-                </div>
-            </h:panelGroup>
-            
-            <p:button value="Volver a Pedidos" outcome="/pedidosProveedores.xhtml?faces-redirect=true" styleClass="mt-3"/>
+        .sidebar-nav .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 18px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+        }
 
+        .sidebar-nav .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .sidebar-nav .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-right: 4px solid #ffd700;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Contenido principal */
+        .main-content {
+            margin-left: 260px;
+            padding: 2rem;
+        }
+
+        .top-bar {
+            background-color: gainsboro;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e9ecef;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .top-bar h2 {
+            margin: 0;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Tarjeta del detalle */
+        .detalle-card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            padding: 25px 30px;
+        }
+
+        .detalle-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .detalle-header h3 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .badge-estado {
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .estado-pendiente   { background: #fff3cd; color: #856404; }
+        .estado-en-proceso  { background: #cfe2ff; color: #084298; }
+        .estado-completado  { background: #d4edda; color: #155724; }
+        .estado-cancelado   { background: #f8d7da; color: #721c24; }
+
+        .detalle-grid label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .detalle-grid .valor {
+            color: #212529;
+        }
+
+        .detalle-grid .row + .row {
+            margin-top: 10px;
+        }
+    </style>
+</h:head>
+
+<h:body>
+
+    <!-- Param y carga del detalle -->
+    <f:metadata>
+        <f:viewParam name="pedidoId" value="#{pedidoDetalleBean.pedidoId}" required="true"/>
+        <f:event type="preRenderView" listener="#{pedidoDetalleBean.cargarDetallePedido}"/>
+    </f:metadata>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h4><i class="fa fa-leaf"></i> Agrivi</h4>
+            <p>Panel Admin</p>
         </div>
-        
-    </h:body>
+
+        <nav class="sidebar-nav">
+                <nav class="sidebar-nav">
+                   <h:link outcome="/HomeAdmin1.xhtml" styleClass="nav-link">
+                    <i class="fas fa-chart-line" style="margin-right: 10px;"></i> Dashboard 
+                </h:link>
+                    <h:link outcome="/HomeAdmin2.xhtml" styleClass="nav-link">
+                        <i class="fas fa-jar" style="margin-right: 10px;"></i> Usuarios
+                    </h:link>
+                    <h:link outcome="/HomeAdmin3.xhtml" styleClass="nav-link">
+                        <i class="fas fa-user" style="margin-right: 10px;"></i> Productos 
+                    </h:link>
+                    <h:link outcome="/Correos.xhtml" styleClass="nav-link">
+                        <i class="fas fa-envelope" style="margin-right: 10px;" ></i> Correos
+                    </h:link>
+                    <h:link outcome="/HomeAdmin4.xhtml" styleClass="nav-link">
+                        <i class="fas fa-envelope" style="margin-right: 10px;"></i> Ventas
+                    </h:link>
+                    <h:link outcome="/HomeAdmin5.xhtml" styleClass="nav-link">
+                        <i class="fas fa-users" style="margin-right: 10px;"></i> Empleados
+                    </h:link>
+                    <h:link outcome="/MovInventario.xhtml" styleClass="nav-link">
+                        <i class="fas fa-boxes" style="margin-right: 10px;"></i> Inventario
+                    </h:link>
+                    
+                    <h:link outcome="/PedidosProveedores.xhtml" styleClass="nav-link">
+                        <i class="fas fa-truck-loading" style="margin-right: 10px;"></i> Pedidos
+                    </h:link>
+                    <h:link outcome="/dashboardProveedores.xhtml" styleClass="nav-link ">
+                        <i class="fas fa-warehouse" style="margin-right: 10px;"></i> Vista Proveedores
+                    </h:link>
+                    <h:link outcome="/dashboardPresentacion.xhtml" styleClass="nav-link ">
+                        <i class="fas fa-warehouse" style="margin-right: 10px;"></i> presentacion
+                    </h:link>
+                    
+                    
+                </nav>
+
+            </nav>
+
+
+        <h:form>
+            <div class="sidebar-footer">
+                <h:commandLink action="#{usuarioBean.logout()}" styleClass="btn btn-outline-light btn-sm w-100">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </h:commandLink>
+            </div>
+        </h:form>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="main-content">
+
+        <div class="top-bar d-flex justify-content-between align-items-center">
+            <h2>
+                <i class="fas fa-truck" style="margin-right: 10px;"></i>
+                Detalle del Pedido
+            </h2>
+            <div class="user-info">
+                <span class="me-3">
+                    Bienvenido, <strong>#{usuarioBean.usuario.nombre}</strong>
+                </span>
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <h:outputLink value="#"><i class="fas fa-user"></i> Perfil</h:outputLink>
+                        </li>
+                        <li>
+                            <h:outputLink value="#"><i class="fas fa-cog"></i> Configuración</h:outputLink>
+                        </li>
+                        <li><hr class="dropdown-divider" /></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <p:growl id="growl" showDetail="true" life="4000" />
+
+        <!-- Si existe el pedido -->
+        <h:panelGroup rendered="#{not empty pedidoDetalleBean.pedido}">
+            <div class="detalle-card">
+
+                <!-- Encabezado del detalle -->
+                <div class="detalle-header">
+                    <h3>
+                        Pedido #<h:outputText value="#{pedidoDetalleBean.pedido.idPedido}"/>
+                    </h3>
+
+                    <!-- Badge de estado con color -->
+                    <h:panelGroup>
+                        <span class="badge-estado
+                            #{pedidoDetalleBean.pedido.estado eq 'PENDIENTE' or pedidoDetalleBean.pedido.estado eq 'ESPERA' ? 'estado-pendiente' : ''}
+                            #{pedidoDetalleBean.pedido.estado eq 'EN_PROCESO' or pedidoDetalleBean.pedido.estado eq 'ACEPTADO' ? 'estado-en-proceso' : ''}
+                            #{pedidoDetalleBean.pedido.estado eq 'COMPLETADO' ? 'estado-completado' : ''}
+                            #{pedidoDetalleBean.pedido.estado eq 'CANCELADO' or pedidoDetalleBean.pedido.estado eq 'RECHAZADO' ? 'estado-cancelado' : ''}">
+                            <i class="fas fa-circle" style="font-size: 0.6rem; margin-right: 5px;"></i>
+                            <h:outputText value="#{pedidoDetalleBean.pedido.estado}"/>
+                        </span>
+                    </h:panelGroup>
+                </div>
+
+                <hr/>
+
+                <!-- Información en formato grid -->
+                <div class="detalle-grid">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Proveedor:</label><br/>
+                            <span class="valor">
+                                <h:outputText value="#{pedidoDetalleBean.pedido.nombreProveedor}"/>
+                            </span>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Producto:</label><br/>
+                            <span class="valor">
+                                <h:outputText value="#{pedidoDetalleBean.pedido.nombreProducto}"/>
+                            </span>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Cantidad solicitada:</label><br/>
+                            <span class="valor">
+                                <h:outputText value="#{pedidoDetalleBean.pedido.cantidad}"/>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <label>Fecha de Pedido:</label><br/>
+                            <span class="valor">
+                                <h:outputText value="#{pedidoDetalleBean.pedido.fechaPedido}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                                </h:outputText>
+                            </span>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Última actualización:</label><br/>
+                            <span class="valor">
+                                <h:outputText value="#{pedidoDetalleBean.pedido.fechaActualizacion}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                                </h:outputText>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <label>Descripción / Detalle:</label><br/>
+                            <span class="valor">
+                                <h:outputText value="#{pedidoDetalleBean.pedido.descripcionPedido}" />
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <hr/>
+
+                <div class="d-flex justify-content-between mt-3">
+                    <p:button value="Volver a Pedidos"
+                              outcome="/PedidosProveedores.xhtml?faces-redirect=true"
+                              styleClass="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left" style="margin-right: 5px;"></i>
+                    </p:button>
+                </div>
+            </div>
+        </h:panelGroup>
+
+        <!-- Si NO existe el pedido -->
+        <h:panelGroup rendered="#{empty pedidoDetalleBean.pedido}">
+            <div class="alert alert-warning mt-4" role="alert">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong> Pedido no encontrado.</strong>
+                El ID del pedido no es válido o no existe.
+            </div>
+
+            <p:button value="Volver a Pedidos"
+                      outcome="/PedidosProveedores.xhtml?faces-redirect=true"
+                      styleClass="btn btn-outline-secondary mt-3">
+                <i class="fas fa-arrow-left" style="margin-right: 5px;"></i>
+            </p:button>
+        </h:panelGroup>
+    </div>
+
+</h:body>
 </html>

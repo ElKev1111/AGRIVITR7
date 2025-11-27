@@ -154,28 +154,44 @@
             </div>
 
             <nav class="sidebar-nav">
-                <h:link outcome="/HomeAdmin1.xhtml" styleClass="nav-link">
+                <nav class="sidebar-nav">
+                   <h:link outcome="/HomeAdmin1.xhtml" styleClass="nav-link">
                     <i class="fas fa-chart-line" style="margin-right: 10px;"></i> Dashboard 
                 </h:link>
-                <h:link outcome="/HomeAdmin2.xhtml" styleClass="nav-link">
-                    <i class="fas fa-users" style="margin-right: 10px;"></i> Usuarios
-                </h:link>
-                <h:link outcome="/HomeAdmin3.xhtml" styleClass="nav-link">
-                    <i class="fas fa-box-open" style="margin-right: 10px;"></i> Productos 
-                </h:link>
-                <h:link outcome="/Correos.xhtml" styleClass="nav-link">
-                    <i class="fas fa-envelope" style="margin-right: 10px;"></i> Correos
-                </h:link>
-                <h:link outcome="/HomeAdmin4.xhtml" styleClass="nav-link">
-                    <i class="fas fa-shopping-cart" style="margin-right: 10px;"></i> Ventas
-                </h:link>
-                <h:link outcome="/HomeAdmin5.xhtml" styleClass="nav-link">
-                    <i class="fas fa-briefcase" style="margin-right: 10px;"></i> Empleados
-                </h:link>
-                <h:link outcome="/PedidosProveedores.xhtml" styleClass="nav-link">
-                    <i class="fas fa-jar"></i> Pedidos
-                </h:link>
+                    <h:link outcome="/HomeAdmin2.xhtml" styleClass="nav-link">
+                        <i class="fas fa-jar" style="margin-right: 10px;"></i> Usuarios
+                    </h:link>
+                    <h:link outcome="/HomeAdmin3.xhtml" styleClass="nav-link">
+                        <i class="fas fa-user" style="margin-right: 10px;"></i> Productos 
+                    </h:link>
+                    <h:link outcome="/Correos.xhtml" styleClass="nav-link">
+                        <i class="fas fa-envelope" style="margin-right: 10px;" ></i> Correos
+                    </h:link>
+                    <h:link outcome="/HomeAdmin4.xhtml" styleClass="nav-link">
+                        <i class="fas fa-envelope" style="margin-right: 10px;"></i> Ventas
+                    </h:link>
+                    <h:link outcome="/HomeAdmin5.xhtml" styleClass="nav-link">
+                        <i class="fas fa-users" style="margin-right: 10px;"></i> Empleados
+                    </h:link>
+                    <h:link outcome="/MovInventario.xhtml" styleClass="nav-link">
+                        <i class="fas fa-boxes" style="margin-right: 10px;"></i> Inventario
+                    </h:link>
+                    
+                    <h:link outcome="/PedidosProveedores.xhtml" styleClass="nav-link">
+                        <i class="fas fa-truck-loading" style="margin-right: 10px;"></i> Pedidos
+                    </h:link>
+                    <h:link outcome="/dashboardProveedores.xhtml" styleClass="nav-link ">
+                        <i class="fas fa-warehouse" style="margin-right: 10px;"></i> Vista Proveedores
+                    </h:link>
+                    <h:link outcome="/dashboardPresentacion.xhtml" styleClass="nav-link ">
+                        <i class="fas fa-warehouse" style="margin-right: 10px;"></i> presentacion
+                    </h:link>
+                    
+                    
+                </nav>
+
             </nav>
+
 
             <h:form>
                 <div class="sidebar-footer">
@@ -191,20 +207,22 @@
                 <h2><i class="fas fa-truck"></i> Gestión de Pedidos a Proveedores</h2>
                 <div class="user-info">
                     <span class="me-3">Bienvenido, #{usuarioBean.usuario.nombre} <strong>...</strong></span>
-                    <div class="dropdown">
-                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user-circle"></i>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <p:commandLink onclick="PF('perfilDialog').show();" style="text-decoration:none; color:blue;">
-                                    <i class="fas fa-user"></i> Perfil
-                                </p:commandLink>
-                            </li>
-                            <li><h:outputLink value="#"><i class="fas fa-cog"></i> Configuración</h:outputLink></li>
-                            <li><hr class="dropdown-divider" /></li>
-                        </ul>
-                    </div>
+                    <h:form>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <p:commandLink onclick="PF('perfilDialog').show();" style="text-decoration:none; color:blue;">
+                                        <i class="fas fa-user"></i> Perfil
+                                    </p:commandLink>
+                                </li>
+                                <li><h:outputLink value="#"><i class="fas fa-cog"></i> Configuración</h:outputLink></li>
+                                <li><hr class="dropdown-divider" /></li>
+                            </ul>
+                        </div>
+                    </h:form>
                 </div>
             </div>
 
@@ -228,18 +246,26 @@
                             </div>
                         </div>
 
+                        <div class="stat-card" style="border-left: 5px solid #17a2b8;">
+                            <i class="fas fa-tasks stat-icon" style="color: #17a2b8;"></i>
+                            <div class="stat-info">
+                                <h3>#{pedidoProveedorBean.totalEnProceso}</h3>
+                                <p>En proceso</p>
+                            </div>
+                        </div>
+
                         <div class="stat-card" style="border-left: 5px solid #28a745;">
                             <i class="fas fa-check-circle stat-icon" style="color: #28a745;"></i>
                             <div class="stat-info">
-                                <h3>#{pedidoProveedorBean.totalAceptados}</h3>
-                                <p>Aceptados</p>
+                                <h3>#{pedidoProveedorBean.totalCompletados}</h3>
+                                <p>Completados</p>
                             </div>
                         </div>
                         <div class="stat-card" style="border-left: 5px solid #dc3545;">
                             <i class="fas fa-times-circle stat-icon" style="color: #dc3545;"></i>
                             <div class="stat-info">
-                                <h3>#{pedidoProveedorBean.totalRechazados}</h3>
-                                <p>Rechazados</p>
+                                <h3>#{pedidoProveedorBean.totalCancelados}</h3>
+                                <p>Cancelados</p>
                             </div>
                         </div>
                     </div>
@@ -261,8 +287,10 @@
 
                         <p:button value="Crear Pedido"
                                   icon="fas fa-plus-circle"
-                                  outcome="/crearPedido.xhtml?faces-redirect=true"
+                                  outcome="crearPedido"
                                   styleClass="ui-button-primary"/>
+
+
                     </h:form>
 
                     <h:form id="pedidosForm">
@@ -273,13 +301,18 @@
                                      var="pedido"
                                      styleClass="table table-hover table-bordered"
                                      emptyMessage="No hay pedidos de proveedor para mostrar."
-                                     reflow="true"> 
+                                     reflow="true"
+                                     paginator="false"
+                                     widgetVar="tablaPedidos">
 
                             <p:column headerText="ID" width="50" sortBy="#{pedido.idPedido}">
                                 <h:outputText value="#{pedido.idPedido}"/>
                             </p:column>
 
-                            <p:column headerText="Proveedor" width="140" sortBy="#{pedido.nombreProveedor}">
+                            <p:column headerText="Proveedor" width="160" sortBy="#{pedido.nombreProveedor}" filterBy="#{pedido.nombreProveedor}" filterMatchMode="contains">
+                                <f:facet name="filter">
+                                    <p:inputText onkeyup="PF('tablaPedidos').filter()" placeholder="Filtrar" style="width:100%"/>
+                                </f:facet>
                                 <h:outputText value="#{pedido.nombreProveedor}"/>
                             </p:column>
 
@@ -293,34 +326,55 @@
                                 </h:outputText>
                             </p:column>
 
-                            <p:column headerText="Estado" width="100" sortBy="#{pedido.estado}" style="text-align: center;">
-                                <span style="#{pedido.estado eq 'ACEPTADO' ? 'color: green; font-weight: bold;' : pedido.estado eq 'RECHAZADO' ? 'color: red; font-weight: bold;' : 'color: orange; font-weight: bold;'}">
+                            <p:column headerText="Estado" width="140" sortBy="#{pedido.estado}" filterBy="#{pedido.estado}" filterMatchMode="equals" style="text-align: center;">
+                                <f:facet name="filter">
+                                    <p:selectOneMenu onchange="PF('tablaPedidos').filter()" style="width:100%">
+                                        <f:selectItem itemLabel="Todos" itemValue="" />
+                                        <f:selectItem itemLabel="Pendiente" itemValue="PENDIENTE" />
+                                        <f:selectItem itemLabel="En Proceso" itemValue="EN_PROCESO" />
+                                        <f:selectItem itemLabel="Completado" itemValue="COMPLETADO" />
+                                        <f:selectItem itemLabel="Cancelado" itemValue="CANCELADO" />
+                                    </p:selectOneMenu>
+                                </f:facet>
+                                <span style="padding:6px 10px; border-radius:10px; font-weight:bold;" class="#{pedido.estado eq 'COMPLETADO' ? 'status-active' : ''}">
                                     <h:outputText value="#{pedido.estado}"/>
                                 </span>
                             </p:column>
-                            <p:column headerText="Acciones" width="180" exportable="false" style="text-align:center;">
-                                <div class="d-flex gap-1 justify-content-center">
+                            <p:column headerText="Acciones" width="240" exportable="false" style="text-align:center;">
+                                <div class="d-flex gap-1 justify-content-center flex-wrap">
 
                                     <p:button value="Ver" icon="fas fa-eye" title="Ver Detalle"
                                               outcome="/detallePedido.xhtml"
                                               styleClass="btn btn-info btn-sm">
 
-                                        <f:param name="pedidoId" value="#{pedido.idPedido}" /> 
+                                        <f:param name="pedidoId" value="#{pedido.idPedido}" />
 
                                     </p:button>
 
-                                    <p:commandButton value="Aceptar" icon="fas fa-check" title="Aceptar Pedido"
-                                                     styleClass="btn btn-success btn-sm"
-                                                     action="#{pedidoProveedorBean.aceptarPedido(pedido)}"
+                                    <p:commandButton value="En proceso" icon="fas fa-play" title="Marcar en proceso"
+                                                     styleClass="btn btn-warning btn-sm"
+                                                     actionListener="#{pedidoProveedorBean.marcarEnProceso(pedido)}"
                                                      update="pedidosTable :stats :pedidosForm:growl"
                                                      rendered="#{pedido.estado eq 'PENDIENTE' or pedido.estado eq 'ESPERA'}"/>
 
-                                    <p:commandButton value="Rechazar" icon="fas fa-times" title="Rechazar Pedido"
-                                                     styleClass="btn btn-danger btn-sm"
-                                                     action="#{pedidoProveedorBean.rechazarPedido(pedido)}"
+                                    <p:commandButton value="Completar" icon="fas fa-check" title="Completar Pedido"
+                                                     styleClass="btn btn-success btn-sm"
+                                                     actionListener="#{pedidoProveedorBean.marcarCompletado(pedido)}"
                                                      update="pedidosTable :stats :pedidosForm:growl"
-                                                     rendered="#{pedido.estado eq 'PENDIENTE' or pedido.estado eq 'ESPERA'}"
-                                                     onclick="return confirm('¿Confirma que desea rechazar este pedido?');"/>
+                                                     rendered="#{pedido.estado eq 'EN_PROCESO' or pedido.estado eq 'ACEPTADO'}"/>
+
+                                    <p:commandButton value="Cancelar" icon="fas fa-times" title="Cancelar Pedido"
+                                                     styleClass="btn btn-danger btn-sm"
+                                                     actionListener="#{pedidoProveedorBean.marcarCancelado(pedido)}"
+                                                     update="pedidosTable :stats :pedidosForm:growl"
+                                                     rendered="#{pedido.estado eq 'PENDIENTE' or pedido.estado eq 'ESPERA' or pedido.estado eq 'EN_PROCESO' or pedido.estado eq 'ACEPTADO'}"
+                                                     onclick="return confirm('¿Confirma que desea cancelar este pedido?');"/>
+
+                                    <p:commandButton value="Reabrir" icon="fas fa-undo" title="Volver a pendiente"
+                                                     styleClass="btn btn-secondary btn-sm"
+                                                     actionListener="#{pedidoProveedorBean.marcarPendiente(pedido)}"
+                                                     update="pedidosTable :stats :pedidosForm:growl"
+                                                     rendered="#{pedido.estado eq 'CANCELADO'}"/>
                                 </div>
                             </p:column>
                         </p:dataTable>

@@ -185,31 +185,44 @@
             </div>
 
             <nav class="sidebar-nav">
-                <h:link outcome="/HomeAdmin1.xhtml" styleClass="nav-link">
-                    <i class="fas fa-chart-line"></i> Dashboard
+                <nav class="sidebar-nav">
+                   <h:link outcome="/HomeAdmin1.xhtml" styleClass="nav-link">
+                    <i class="fas fa-chart-line" style="margin-right: 10px;"></i> Dashboard 
                 </h:link>
-                <h:link outcome="/HomeAdmin2.xhtml" styleClass="nav-link">
-                    <i class="fas fa-users"></i> Usuarios
-                </h:link>
-                <h:link outcome="/HomeAdmin3.xhtml" styleClass="nav-link">
-                    <i class="fas fa-box-open"></i> Productos
-                </h:link>
-                <h:link outcome="/Correos.xhtml" styleClass="nav-link">
-                    <i class="fas fa-envelope"></i> Correos
-                </h:link>
-                <h:link outcome="/HomeAdmin4.xhtml" styleClass="nav-link">
-                    <i class="fas fa-shopping-cart"></i> Ventas
-                </h:link>
-                <h:link outcome="/HomeAdmin5.xhtml" styleClass="nav-link">
-                    <i class="fas fa-briefcase"></i> Empleados
-                </h:link>
-                <h:link outcome="/PedidosProveedores.xhtml" styleClass="nav-link">
-                    <i class="fas fa-truck-loading"></i> Pedidos Proveedores
-                </h:link>
-                <h:link outcome="/dashboardProveedores.xhtml" styleClass="nav-link">
-                    <i class="fas fa-warehouse"></i> Proveedores
-                </h:link>
+                    <h:link outcome="/HomeAdmin2.xhtml" styleClass="nav-link">
+                        <i class="fas fa-jar" style="margin-right: 10px;"></i> Usuarios
+                    </h:link>
+                    <h:link outcome="/HomeAdmin3.xhtml" styleClass="nav-link">
+                        <i class="fas fa-user" style="margin-right: 10px;"></i> Productos 
+                    </h:link>
+                    <h:link outcome="/Correos.xhtml" styleClass="nav-link">
+                        <i class="fas fa-envelope" style="margin-right: 10px;" ></i> Correos
+                    </h:link>
+                    <h:link outcome="/HomeAdmin4.xhtml" styleClass="nav-link">
+                        <i class="fas fa-envelope" style="margin-right: 10px;"></i> Ventas
+                    </h:link>
+                    <h:link outcome="/HomeAdmin5.xhtml" styleClass="nav-link">
+                        <i class="fas fa-users" style="margin-right: 10px;"></i> Empleados
+                    </h:link>
+                    <h:link outcome="/MovInventario.xhtml" styleClass="nav-link">
+                        <i class="fas fa-boxes" style="margin-right: 10px;"></i> Inventario
+                    </h:link>
+                    
+                    <h:link outcome="/PedidosProveedores.xhtml" styleClass="nav-link">
+                        <i class="fas fa-truck-loading" style="margin-right: 10px;"></i> Pedidos
+                    </h:link>
+                    <h:link outcome="/dashboardProveedores.xhtml" styleClass="nav-link ">
+                        <i class="fas fa-warehouse" style="margin-right: 10px;"></i> Vista Proveedores
+                    </h:link>
+                    <h:link outcome="/dashboardPresentacion.xhtml" styleClass="nav-link ">
+                        <i class="fas fa-warehouse" style="margin-right: 10px;"></i> presentacion
+                    </h:link>
+                    
+                    
+                </nav>
+
             </nav>
+
 
             <h:form>
                 <div class="sidebar-footer">
@@ -310,33 +323,38 @@
                                 </h:outputText>
                             </p:column>
 
-                            <p:column headerText="Estado" style="width: 100px; text-align: center;" sortBy="#{proveedor.estado}">
+                            <p:column headerText="Estado" style="width: 130px; text-align: center;" sortBy="#{proveedor.estado}" filterBy="#{proveedor.estado}" filterMatchMode="equals">
+                                <f:facet name="filter">
+                                    <p:selectOneMenu onchange="PF('tablaProveedores').filter()" style="width:100%">
+                                        <f:selectItem itemLabel="Todos" itemValue="" />
+                                        <f:selectItem itemLabel="Activo" itemValue="Activo" />
+                                        <f:selectItem itemLabel="Inactivo" itemValue="Inactivo" />
+                                    </p:selectOneMenu>
+                                </f:facet>
                                 <span class="status-badge #{proveedor.estado == 'Activo' ? 'status-active' : 'status-inactive'}">
                                        <h:outputText value="#{proveedor.estado}"/>
                                 </span>
                             </p:column>
 
-                            <p:column headerText="Acciones" style="width: 120px; text-align: center;" exportable="false">
+                            <p:column headerText="Acciones" style="width: 180px; text-align: center;" exportable="false">
                                 <div class="d-flex gap-2 justify-content-center">
-                                    <p:commandButton icon="fas fa-edit" 
+                                    <p:commandButton icon="fas fa-edit"
                                                      styleClass="p-button-warning p-button-rounded p-button-text"
                                                      title="Editar"
                                                      oncomplete="PF('dialogoEditar').show()"
                                                      update=":editForm">
-                                        <f:setPropertyActionListener value="#{proveedor}" 
+                                        <f:setPropertyActionListener value="#{proveedor}"
                                                                      target="#{proveedorBean.proveedorSeleccionado}" />
                                     </p:commandButton>
 
-                                    <p:commandButton icon="fas fa-trash-alt" 
-                                                     styleClass="p-button-danger p-button-rounded p-button-text"
-                                                     title="Eliminar"
-                                                     update=":form:messages, :form:dt-proveedores"
-                                                     action="#{proveedorBean.eliminarProveedor}">
-                                        <f:setPropertyActionListener value="#{proveedor}" 
-                                                                     target="#{proveedorBean.proveedorSeleccionado}" />
-                                        <p:confirm header="Confirmación" 
-                                                     message="¿Está seguro de eliminar el proveedor #{proveedor.nombreProveedor}?" 
-                                                     icon="pi pi-exclamation-triangle" />
+                                    <p:commandButton icon="fas fa-power-off"
+                                                     styleClass="p-button-secondary p-button-rounded p-button-text"
+                                                     title="#{proveedor.estado eq 'Activo' ? 'Inactivar' : 'Activar'}"
+                                                     actionListener="#{proveedorBean.alternarEstadoProveedor(proveedor)}"
+                                                     update=":form:messages, :form:dt-proveedores">
+                                        <p:confirm header="Confirmación"
+                                                   message="¿Desea #{proveedor.estado eq 'Activo' ? 'inactivar' : 'activar'} al proveedor #{proveedor.nombreProveedor}?"
+                                                   icon="pi pi-exclamation-triangle" />
                                     </p:commandButton>
                                 </div>
                             </p:column>

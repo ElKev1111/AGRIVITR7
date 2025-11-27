@@ -82,36 +82,42 @@ public class UsuarioDAO implements Serializable {
         }
     }
     public void actualizar(Usuario u) {
-        try {
-            String sql = "UPDATE usuario SET rol=?, nombre=?, correo=?,celular=?, direccion =?, estado=? WHERE id=?";
-            ps = Conexion.conectar().prepareStatement(sql);
+    String sql = "UPDATE usuario SET rol=?, nombre=?, correo=?, celular=?, direccion=?, estado=? WHERE id=?";
 
-            ps.setString(1, u.getRol().name().toLowerCase());
-            ps.setString(2, u.getNombre());
-            ps.setString(3, u.getCorreo());
-            ps.setString(4, u.getCelular());
-            ps.setString(5, u.getDireccion());
-            ps.setString(6, u.getEstado());
-            ps.setInt(7, u.getId());
-             
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println(" Error al actualizar usuario: " + e.getMessage());
-        }
+    try (Connection con = Conexion.conectar();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setString(1, u.getRol().name().toLowerCase());
+        ps.setString(2, u.getNombre());
+        ps.setString(3, u.getCorreo());
+        ps.setString(4, u.getCelular());
+        ps.setString(5, u.getDireccion());
+        ps.setString(6, u.getEstado());
+        ps.setInt(7, u.getId());
+
+        ps.executeUpdate();
+
+    } catch (SQLException e) {
+        System.out.println("Error al actualizar usuario: " + e.getMessage());
     }
+}
 
     public boolean actualizarEstado(int idUsuario, String estado) {
-        try {
-            String sql = "UPDATE usuario SET estado=? WHERE id=?";
-            ps = Conexion.conectar().prepareStatement(sql);
-            ps.setString(1, estado);
-            ps.setInt(2, idUsuario);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.out.println(" Error al actualizar estado de usuario: " + e.getMessage());
-            return false;
-        }
+    String sql = "UPDATE usuario SET estado=? WHERE id=?";
+
+    try (Connection con = Conexion.conectar();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setString(1, estado);
+        ps.setInt(2, idUsuario);
+
+        return ps.executeUpdate() > 0;
+
+    } catch (SQLException e) {
+        System.out.println("Error al actualizar estado de usuario: " + e.getMessage());
+        return false;
     }
+}
 
 
 }

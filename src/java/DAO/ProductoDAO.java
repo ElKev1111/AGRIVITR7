@@ -38,29 +38,6 @@ public class ProductoDAO implements Serializable {
         return listaProductos;
     }
 
-//    public List<Producto> listarPorProveedor(int idProveedor) throws SQLException {
-//        List<Producto> productos = new ArrayList<>();
-//        String sql = "SELECT idProducto, nombreProducto, idProveedor, nombreProveedor, precioProducto, descripcion, tipo, fechaIngreso, fechaVencimiento, stock FROM producto WHERE idProveedor = ?";
-//
-//        try (Connection con = Conexion.conectar();
-//             PreparedStatement ps = con.prepareStatement(sql)) {
-//
-//            ps.setInt(1, idProveedor);
-//
-//            try (ResultSet rs = ps.executeQuery()) {
-//                while (rs.next()) {
-//                    Producto p = mapearProductoDesdeResultSet(rs);
-//                    productos.add(p);
-//                }
-//            }
-//        } catch (SQLException e) {
-//            System.out.println("❌ Error al listar productos por proveedor: " + e.getMessage());
-//            e.printStackTrace();
-//            throw e;
-//        }
-//
-//        return productos;
-//    }
     public List<Producto> listarPorProveedor(int idProveedor) throws SQLException {
         List<Producto> lista = new ArrayList<>();
         String sql = "SELECT * FROM producto WHERE idProveedor = ?";
@@ -197,28 +174,6 @@ public class ProductoDAO implements Serializable {
         }
     }
 
-//    public Producto buscar(int id) throws SQLException {
-//        Producto p = null;
-//        String sql = "SELECT idProducto, nombreProducto, idProveedor, nombreProveedor, precioProducto, descripcion, tipo, fechaIngreso, fechaVencimiento, stock FROM producto WHERE idProducto = ?";
-//
-//        try (Connection con = Conexion.conectar();
-//             PreparedStatement ps = con.prepareStatement(sql)) {
-//
-//            ps.setInt(1, id);
-//
-//            try (ResultSet rs = ps.executeQuery()) {
-//                if (rs.next()) {
-//                    p = mapearProductoDesdeResultSet(rs);
-//                }
-//            }
-//        } catch (SQLException e) {
-//            System.out.println("Error al buscar el producto: " + e.getMessage());
-//            e.printStackTrace();
-//            throw e;
-//        }
-//
-//        return p;
-//    }
     public Producto buscar(int idProducto) throws SQLException {
         String sql = "SELECT * FROM producto WHERE idProducto = ?";
 
@@ -285,5 +240,16 @@ public class ProductoDAO implements Serializable {
         }
 
         return p;
+    }
+
+    public boolean tieneMovimientosInventario(int idProducto) throws SQLException {
+        String sql = "SELECT 1 FROM movimientos_inventario WHERE idProducto = ? LIMIT 1";
+        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idProducto);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
     }
 }

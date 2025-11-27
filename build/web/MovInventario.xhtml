@@ -247,31 +247,44 @@
             </div>
 
             <nav class="sidebar-nav">
-               <h:link outcome="/HomeAdmin1.xhtml" styleClass="nav-link">
-                        <i class="fas fa-user"></i> Dashboard 
-                    </h:link>
+                <nav class="sidebar-nav">
+                   <h:link outcome="/HomeAdmin1.xhtml" styleClass="nav-link">
+                    <i class="fas fa-chart-line" style="margin-right: 10px;"></i> Dashboard 
+                </h:link>
                     <h:link outcome="/HomeAdmin2.xhtml" styleClass="nav-link">
-                        <i class="fas fa-jar"></i> Usuarios
+                        <i class="fas fa-jar" style="margin-right: 10px;"></i> Usuarios
                     </h:link>
                     <h:link outcome="/HomeAdmin3.xhtml" styleClass="nav-link">
-                        <i class="fas fa-user"></i> Productos 
+                        <i class="fas fa-user" style="margin-right: 10px;"></i> Productos 
                     </h:link>
                     <h:link outcome="/Correos.xhtml" styleClass="nav-link">
-                        <i class="fas fa-envelope"></i> Correos
+                        <i class="fas fa-envelope" style="margin-right: 10px;" ></i> Correos
                     </h:link>
                     <h:link outcome="/HomeAdmin4.xhtml" styleClass="nav-link">
-                        <i class="fas fa-envelope"></i> Ventas
+                        <i class="fas fa-envelope" style="margin-right: 10px;"></i> Ventas
                     </h:link>
                     <h:link outcome="/HomeAdmin5.xhtml" styleClass="nav-link">
-                        <i class="fas fa-users"></i> Empleados
+                        <i class="fas fa-users" style="margin-right: 10px;"></i> Empleados
                     </h:link>
-                    <h:link outcome="/MovInventario.xhtml" styleClass="nav-link active">
-                        <i class="fas fa-boxes"></i> Inventario
+                    <h:link outcome="/MovInventario.xhtml" styleClass="nav-link">
+                        <i class="fas fa-boxes" style="margin-right: 10px;"></i> Inventario
                     </h:link>
-                    <h:link outcome="/dashboardCliente.xhtml" styleClass="nav-link active">
-                        <i class="fas fa-eye"></i> Vista Cliente
+                    
+                    <h:link outcome="/PedidosProveedores.xhtml" styleClass="nav-link">
+                        <i class="fas fa-truck-loading" style="margin-right: 10px;"></i> Pedidos
                     </h:link>
+                    <h:link outcome="/dashboardProveedores.xhtml" styleClass="nav-link ">
+                        <i class="fas fa-warehouse" style="margin-right: 10px;"></i> Vista Proveedores
+                    </h:link>
+                    <h:link outcome="/dashboardPresentacion.xhtml" styleClass="nav-link ">
+                        <i class="fas fa-warehouse" style="margin-right: 10px;"></i> presentacion
+                    </h:link>
+                    
+                    
+                </nav>
+
             </nav>
+
 
             <h:form id="sidebarForm">
                 <div class="sidebar-footer">
