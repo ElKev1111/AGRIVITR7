@@ -45,8 +45,6 @@ public class UsuarioDAO implements Serializable {
                     u.setDireccion(rs.getString("direccion"));
                     u.setPassword(rs.getString("password"));
                     u.setEstado(rs.getString("estado"));
-                    u.setFotoPerfil(rs.getString("fotoPerfil"));
-                    u.setBiografia(rs.getString("biografia"));
 
                     listaUsuarios.add(u);
                 }
@@ -59,8 +57,8 @@ public class UsuarioDAO implements Serializable {
     }
 
     public void agregar(Usuario u) throws SQLException {
-        String sql = "INSERT INTO usuario (rol, nombre, correo, celular, fecha_actualizacion, fecha_creacion, direccion, password, estado, fotoPerfil, biografia) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO usuario (rol, nombre, correo, celular, fecha_actualizacion, fecha_creacion, direccion, password, estado) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
 
@@ -73,8 +71,6 @@ public class UsuarioDAO implements Serializable {
             ps.setString(7, u.getDireccion());
             ps.setString(8, u.getPassword());
             ps.setString(9, u.getEstado() != null ? u.getEstado() : "ACTIVO");
-            ps.setString(10, u.getFotoPerfil());
-            ps.setString(11, u.getBiografia());
 
             ps.executeUpdate();
 
@@ -123,59 +119,5 @@ public class UsuarioDAO implements Serializable {
     }
 }
 
-    public Usuario obtenerPorId(int idUsuario) {
-        String sql = "SELECT * FROM usuario WHERE id = ?";
 
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, idUsuario);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    Usuario u = new Usuario();
-                    u.setId(rs.getInt("id"));
-                    u.setRol(EnumRoles.valueOf(rs.getString("rol").trim().toUpperCase()));
-                    u.setNombre(rs.getString("nombre"));
-                    u.setCorreo(rs.getString("correo"));
-                    u.setCelular(rs.getString("celular"));
-                    u.setDireccion(rs.getString("direccion"));
-                    u.setPassword(rs.getString("password"));
-                    u.setEstado(rs.getString("estado"));
-                    u.setFotoPerfil(rs.getString("fotoPerfil"));
-                    u.setBiografia(rs.getString("biografia"));
-
-                    Timestamp tsActualizacion = rs.getTimestamp("fecha_actualizacion");
-                    if (tsActualizacion != null) {
-                        u.setFecha_actualizacion(tsActualizacion.toLocalDateTime());
-                    }
-
-                    Timestamp tsCreacion = rs.getTimestamp("fecha_creacion");
-                    if (tsCreacion != null) {
-                        u.setFecha_creacion(tsCreacion.toLocalDateTime());
-                    }
-                    return u;
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println("Error al obtener usuario: " + e.getMessage());
-        }
-        return null;
-    }
-
-    public boolean actualizarPerfil(Usuario u) {
-        String sql = "UPDATE usuario SET nombre=?, correo=?, celular=?, direccion=?, biografia=?, fotoPerfil=? WHERE id=?";
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, u.getNombre());
-            ps.setString(2, u.getCorreo());
-            ps.setString(3, u.getCelular());
-            ps.setString(4, u.getDireccion());
-            ps.setString(5, u.getBiografia());
-            ps.setString(6, u.getFotoPerfil());
-            ps.setInt(7, u.getId());
-
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.out.println("Error al actualizar perfil: " + e.getMessage());
-            return false;
-        }
-    }
 }

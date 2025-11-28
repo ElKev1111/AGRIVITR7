@@ -11,8 +11,6 @@ public class Usuario implements Serializable {
   
     private String nombre, correo, celular, direccion, password;
     private String estado;
-    private String fotoPerfil;
-    private String biografia;
     private EnumRoles rol;
   
     private LocalDateTime fecha_creacion;
@@ -86,22 +84,6 @@ public class Usuario implements Serializable {
 
     public void setEstado(String estado) {
         this.estado = estado;
-    }
-
-    public String getFotoPerfil() {
-        return fotoPerfil;
-    }
-
-    public void setFotoPerfil(String fotoPerfil) {
-        this.fotoPerfil = fotoPerfil;
-    }
-
-    public String getBiografia() {
-        return biografia;
-    }
-
-    public void setBiografia(String biografia) {
-        this.biografia = biografia;
     }
 
     public LocalDateTime getFecha_creacion() {
