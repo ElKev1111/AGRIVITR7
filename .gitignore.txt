@@ -1,0 +1,30 @@
+# --- Carpetas generadas por NetBeans / build ---
+/build/
+/dist/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/nbdist/
+/nbactions.xml
+/nb-configuration.xml
+
+# Gradle / Maven / otros (por si acaso)
+.target/
+/out/
+
+# IDEs
+*.iml
+*.log
+.classpath
+.project
+.settings/
+/.vscode/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Despliegues
+*.war
+*.ear
