@@ -14,6 +14,7 @@ public class Producto implements Serializable {
     private String nombreProveedor;
     private float precioProducto;
     private String descripcion;
+    private String imagen;
     private String tipo;
     private Date fechaIngreso;
     private int stock;
@@ -70,7 +71,13 @@ public class Producto implements Serializable {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
+    public String getImagen() {
+        return imagen;
+    }
 
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
+    }
     public String getTipo() {
         return tipo;
     }
@@ -104,7 +111,7 @@ public class Producto implements Serializable {
     }
 
     /**
-     * Precio de venta calculado con un margen del 15 % sobre el precio de
+     * Precio de venta calculado con un margen del "?¿"% sobre el precio de
      * inventario.
      */
     public float getPrecioVenta() {

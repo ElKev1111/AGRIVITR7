@@ -12,13 +12,21 @@
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
 
         <style>
+            :root {
+                --agrivi-navy: #4F5E8C;
+                --agrivi-green: #17A649;
+                --agrivi-dark-green: #16592E;
+                --agrivi-cream: #F2EFDF;
+                --agrivi-sand: #D9A273;
+            }
+
             html, body {
                 height: 100%;
                 margin: 0;
             }
             body {
                 font-family: 'Inter', sans-serif;
-                background: linear-gradient(135deg, #e6f5ed, #d7f0ff);
+                background: linear-gradient(135deg, var(--agrivi-cream), #d7f0ff);
                 display: flex;
                 flex-direction: column;
             }
@@ -35,7 +43,7 @@
             }
 
             .header {
-                background: linear-gradient(90deg, #0b9446, #038f92);
+                background: linear-gradient(90deg, var(--agrivi-dark-green), var(--agrivi-navy));
             }
             .nav-link {
                 color: #ffffff;
@@ -45,7 +53,7 @@
                 font-size: 0.85rem;
             }
             .nav-link:hover {
-                background-color: rgba(255, 255, 255, 0.12);
+                background-color: rgba(255, 255, 255, 0.16);
                 box-shadow: 0 0 0 1px rgba(255,255,255,0.35);
             }
             .cart-pill {
@@ -58,7 +66,7 @@
             }
             .cart-count {
                 background-color: #ffffff;
-                color: #0b9446;
+                color: var(--agrivi-dark-green);
                 border-radius: 9999px;
                 min-width: 22px;
                 height: 22px;
@@ -69,22 +77,22 @@
                 font-weight: 700;
             }
             .btn-primary {
-                background-color: #0b9446;
+                background-color: var(--agrivi-green);
                 color: white;
                 transition: background-color 0.2s ease-in-out, transform 0.1s;
             }
             .btn-primary:hover {
-                background-color: #097a3a;
+                background-color: var(--agrivi-dark-green);
                 transform: translateY(-1px);
             }
             .btn-secondary {
-                background-color: #f0f9f4;
-                color: #0b9446;
-                border: 1px solid #0b9446;
+                background-color: #ffffff;
+                color: var(--agrivi-dark-green);
+                border: 1px solid var(--agrivi-sand);
                 transition: all 0.2s ease-in-out;
             }
             .btn-secondary:hover {
-                background-color: #e6f5ed;
+                background-color: var(--agrivi-cream);
             }
             .card {
                 background-color: #ffffff;
@@ -92,7 +100,43 @@
                 box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
             }
             .table-header {
-                background: linear-gradient(90deg, #0b9446, #0c8f7b);
+                background: linear-gradient(90deg, var(--agrivi-dark-green), var(--agrivi-green));
+            }
+
+            .qty-control {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.4rem;
+                background-color: var(--agrivi-cream);
+                border-radius: 9999px;
+                padding: 0.15rem 0.6rem;
+                border: 1px solid rgba(0,0,0,0.06);
+            }
+            .qty-number {
+                min-width: 2rem;
+                text-align: center;
+                font-weight: 600;
+                color: var(--agrivi-dark-green);
+            }
+            .qty-btn {
+                width: 1.6rem;
+                height: 1.6rem;
+                border-radius: 9999px;
+                font-size: 0.9rem;
+                border: none;
+                background-color: #ffffff;
+                color: var(--agrivi-dark-green);
+                box-shadow: 0 0 0 1px rgba(0,0,0,0.04);
+            }
+            .qty-btn:hover {
+                background-color: var(--agrivi-sand);
+                color: #ffffff;
+            }
+            .qty-btn:disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+                background-color: #f3f4f6;
+                color: #9ca3af;
             }
         </style>
     </h:head>
@@ -148,7 +192,7 @@
             <main class="container mx-auto p-6 md:p-10">
                 <h:messages id="messages"
                             globalOnly="true"
-                            infoStyle="color: #097a3a; font-weight: bold; margin-bottom:1rem;"
+                            infoStyle="color: #15803d; font-weight: bold; margin-bottom:1rem;"
                             warnStyle="color: #b45309; font-weight: bold; margin-bottom:1rem;"
                             errorStyle="color: #b91c1c; font-weight: bold; margin-bottom:1rem;" />
 
@@ -164,9 +208,11 @@
                             <p class="text-lg text-gray-600 mb-4">
                                 Tu carrito está vacío.
                             </p>
-                            <h:commandLink value="Volver al catálogo"
-                                           action="dashboardCliente?faces-redirect=true"
-                                           styleClass="btn-primary inline-block py-2 px-6 rounded-full font-medium text-white" />
+
+                            <!-- Usamos h:link para ir directo al dashboardCliente -->
+                            <h:link outcome="dashboardCliente"
+                                    value="Volver al catálogo"
+                                    styleClass="btn-primary inline-block py-2 px-6 rounded-full font-medium text-white" />
                         </div>
                     </h:panelGroup>
 
@@ -198,30 +244,47 @@
                                                                 <f:convertNumber pattern="#,##0.00" />
                                                             </h:outputText>
                                                         </td>
+                                                        <!-- CANTIDAD CON + / - -->
                                                         <td class="px-4 py-3 text-center text-gray-700">
-                                                            #{item.cantidad}
+                                                            <div class="flex justify-center">
+                                                                <div class="qty-control">
+                                                                    <p:commandButton value="-"
+                                                                                     title="Disminuir cantidad"
+                                                                                     process="@this"
+                                                                                     actionListener="#{carritoBean.decrementarItem(item)}"
+                                                                                     update=":carritoForm :navForm"
+                                                                                     disabled="#{item.cantidad le 1}"
+                                                                                     styleClass="qty-btn" />
+                                                                    <span class="qty-number">
+                                                                        #{item.cantidad}
+                                                                    </span>
+                                                                    <p:commandButton value="+"
+                                                                                     title="Aumentar cantidad"
+                                                                                     process="@this"
+                                                                                     actionListener="#{carritoBean.incrementarItem(item)}"
+                                                                                     update=":carritoForm :navForm"
+                                                                                     styleClass="qty-btn" />
+                                                                </div>
+                                                            </div>
                                                         </td>
+
                                                         <td class="px-4 py-3 text-right font-semibold text-gray-800">
                                                             $<h:outputText value="#{item.subtotal}">
                                                                 <f:convertNumber pattern="#,##0.00" />
                                                             </h:outputText>
                                                         </td>
+
                                                         <td class="px-4 py-3 text-center">
-                                                            <div class="flex justify-center space-x-2">
-                                                                <!-- EDITAR -->
-                                                                <p:commandButton value="Editar"
-                                                                                 actionListener="#{carritoBean.prepararEditarCantidad(item)}"
-                                                                                 process="@this"
-                                                                                 update=":carritoForm:editQtyWrapper"
-                                                                                 oncomplete="PF('editQuantityDialog').show();"
-                                                                                 styleClass="bg-blue-500 text-white px-3 py-1 rounded text-xs" />
+                                                            <div class="flex justify-center">
                                                                 <!-- ELIMINAR -->
                                                                 <p:commandButton value="Eliminar"
+                                                                                 process="@this"
                                                                                  actionListener="#{carritoBean.eliminarItem(item)}"
                                                                                  update=":carritoForm :navForm"
                                                                                  styleClass="bg-red-500 text-white px-3 py-1 rounded text-xs"/>
                                                             </div>
                                                         </td>
+
                                                     </tr>
                                                 </ui:repeat>
                                             </tbody>
@@ -232,7 +295,7 @@
 
                             <!-- Resumen y acciones -->
                             <div class="lg:col-span-1">
-                                <div class="card p-5">
+                                <div class="card p-5" id="resumenPanel">
                                     <h3 class="text-xl font-bold mb-3 text-gray-800">Resumen</h3>
                                     <div class="flex justify-between mb-1 text-sm text-gray-600">
                                         <span>Productos:</span>
@@ -252,38 +315,15 @@
                                                      onclick="PF('pagoDialog').show();"
                                                      styleClass="w-full mt-4 btn-primary py-2 rounded-full font-semibold"/>
 
-                                    <h:commandLink value="Seguir comprando"
-                                                   action="dashboardCliente?faces-redirect=true"
-                                                   styleClass="w-full mt-3 inline-block text-center btn-secondary py-2 rounded-full font-semibold" />
+                                    <!-- Botón / link para volver al catálogo sin validaciones -->
+                                    <p:button outcome="dashboardCliente"
+                                              value="Seguir comprando"
+                                              styleClass="block text-center btn-secondary py-2 rounded-full font-semibold w-full" />
+
+
                                 </div>
                             </div>
                         </div>
-                    </h:panelGroup>
-
-                    <!-- Dialogo para editar cantidad -->
-                    <h:panelGroup id="editQtyWrapper">
-                        <p:dialog header="Editar Cantidad" widgetVar="editQuantityDialog" modal="true" resizable="false">
-                            <div class="p-4">
-                                <p>¿Cuántas unidades deseas?</p>
-                                <p:inputNumber id="editQuantityInput"
-                                               value="#{carritoBean.cantidadTemporal}"
-                                               minValue="1"
-                                               decimalPlaces="0"
-                                               styleClass="w-full mt-2" />
-                                <div class="flex justify-end mt-4 space-x-2">
-                                    <p:commandButton value="Cancelar"
-                                                     type="button"
-                                                     onclick="PF('editQuantityDialog').hide()"
-                                                     styleClass="bg-gray-500 text-white px-4 py-2 rounded" />
-                                    <p:commandButton value="Actualizar"
-                                                     actionListener="#{carritoBean.actualizarCantidad}"
-                                                     process="@form"
-                                                     update=":carritoForm :navForm"
-                                                     oncomplete="PF('editQuantityDialog').hide()"
-                                                     styleClass="bg-green-600 text-white px-4 py-2 rounded" />
-                                </div>
-                            </div>
-                        </p:dialog>
                     </h:panelGroup>
 
                     <!-- Diálogo de Pago (simulación realista) -->
@@ -319,7 +359,6 @@
 
                             <!-- FORMULARIO DE TARJETA -->
                             <div class="mt-4 space-y-3">
-                                <!-- Tipo de tarjeta -->
                                 <div>
                                     <label for="tipoTarjeta" class="block text-gray-700 mb-1">
                                         Tipo de tarjeta
@@ -336,7 +375,6 @@
                                     </p:selectOneMenu>
                                 </div>
 
-                                <!-- Nombre del titular -->
                                 <div>
                                     <label for="nombreTitular" class="block text-gray-700 mb-1">
                                         Nombre del titular
@@ -348,7 +386,6 @@
                                                  styleClass="w-full px-3 py-2 border rounded-md" />
                                 </div>
 
-                                <!-- Número de tarjeta -->
                                 <div>
                                     <label for="numeroTarjeta" class="block text-gray-700 mb-1">
                                         Número de tarjeta
@@ -361,7 +398,6 @@
                                                  styleClass="w-full px-3 py-2 border rounded-md" />
                                 </div>
 
-                                <!-- Fecha exp y CVV -->
                                 <div class="grid grid-cols-2 gap-3">
                                     <div>
                                         <label for="fechaExp" class="block text-gray-700 mb-1">
@@ -407,7 +443,7 @@
                     <h:panelGroup rendered="#{not empty carritoBean.ventasUltimoPago}">
                         <div class="mt-8 card p-6">
                             <h3 class="text-2xl font-bold text-gray-800 mb-2">
-                                Comprobante de pago disponible
+                                Comprobante de pago listo
                             </h3>
                             <p class="text-gray-600 mb-4 text-sm">
                                 Tu pago se ha registrado correctamente. Puedes descargar el comprobante en PDF.
@@ -419,7 +455,40 @@
                         </div>
                     </h:panelGroup>
 
+
                 </h:form>
+                <!-- Historial de compras -->
+                <h:panelGroup rendered="#{historialComprasBean.compras.size() > 0}" styleClass="mt-12 block">
+                    <div class="bg-white rounded-xl shadow p-6">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Historial de compras</h3>
+                        <table class="w-full">
+                            <thead>
+                                <tr class="text-left text-green-700 border-b">
+                                    <th class="py-2">Fecha</th>
+                                    <th class="py-2">Producto</th>
+                                    <th class="py-2 text-center">Cantidad</th>
+                                    <th class="py-2 text-right">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ui:repeat value="#{historialComprasBean.compras}" var="venta">
+                                    <tr class="border-b">
+                                        <td class="py-2">
+                                            <h:outputText value="#{venta.fechaVentaFormateada}" />
+                                        </td>
+                                        <td class="py-2">#{venta.producto.nombreProducto}</td>
+                                        <td class="py-2 text-center">#{venta.cantidad}</td>
+                                        <td class="py-2 text-right font-semibold">
+                                            $<h:outputText value="#{venta.totalPagar}">
+                                                <f:convertNumber pattern="#,##0.00" />
+                                            </h:outputText>
+                                        </td>
+                                    </tr>
+                                </ui:repeat>
+                            </tbody>
+                        </table>
+                    </div>
+                </h:panelGroup>
             </main>
 
             <footer class="bg-gray-900 text-white py-4 mt-8">

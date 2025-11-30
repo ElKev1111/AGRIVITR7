@@ -21,9 +21,14 @@ public class ProductoDAO implements Serializable {
 
     public List<Producto> listar() throws SQLException {
         List<Producto> listaProductos = new ArrayList<>();
-        String sql = "SELECT idProducto, nombreProducto, idProveedor, nombreProveedor, precioProducto, descripcion, tipo, fechaIngreso, fechaVencimiento, stock FROM producto";
+        
+        String sql = "SELECT idProducto, nombreProducto, idProveedor, nombreProveedor, precioProducto, " +
+                     "descripcion, imagen, tipo, fechaIngreso, fechaVencimiento, stock " +
+                     "FROM producto";
 
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        try (Connection con = Conexion.conectar();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Producto p = mapearProductoDesdeResultSet(rs);
@@ -42,7 +47,8 @@ public class ProductoDAO implements Serializable {
         List<Producto> lista = new ArrayList<>();
         String sql = "SELECT * FROM producto WHERE idProveedor = ?";
 
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = Conexion.conectar();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, idProveedor);
             try (ResultSet rs = ps.executeQuery()) {
@@ -54,6 +60,7 @@ public class ProductoDAO implements Serializable {
                     p.setNombreProveedor(rs.getString("nombreProveedor"));
                     p.setPrecioProducto(rs.getFloat("precioProducto"));
                     p.setDescripcion(rs.getString("descripcion"));
+                    p.setImagen(rs.getString("imagen")); 
                     p.setFechaVencimiento(rs.getTimestamp("fechaVencimiento"));
                     p.setTipo(rs.getString("tipo"));
                     p.setFechaIngreso(rs.getTimestamp("fechaIngreso"));
@@ -66,35 +73,40 @@ public class ProductoDAO implements Serializable {
     }
 
     public void agregar(Producto p) throws SQLException {
-        String sql = "INSERT INTO producto(nombreProducto, idProveedor, nombreProveedor, precioProducto, descripcion, tipo, fechaIngreso, fechaVencimiento, stock) "
-                + "VALUES(?,?,?,?,?,?,?,?,?)";
+       
+        String sql = "INSERT INTO producto(" +
+                "nombreProducto, idProveedor, nombreProveedor, precioProducto, " +
+                "descripcion, imagen, tipo, fechaIngreso, fechaVencimiento, stock) " +
+                "VALUES(?,?,?,?,?,?,?,?,?,?)";
 
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = Conexion.conectar();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, p.getNombreProducto());
             ps.setInt(2, p.getIdProveedor());
             ps.setString(3, p.getNombreProveedor());
             ps.setFloat(4, p.getPrecioProducto());
             ps.setString(5, p.getDescripcion());
-            ps.setString(6, p.getTipo());
+            ps.setString(6, p.getImagen()); 
+            ps.setString(7, p.getTipo());
 
             // fechaIngreso (nullable)
             Date fechaIngreso = p.getFechaIngreso();
             if (fechaIngreso != null) {
-                ps.setTimestamp(7, new Timestamp(fechaIngreso.getTime()));
+                ps.setTimestamp(8, new Timestamp(fechaIngreso.getTime()));
             } else {
-                ps.setNull(7, java.sql.Types.TIMESTAMP);
+                ps.setNull(8, java.sql.Types.TIMESTAMP);
             }
 
             // fechaVencimiento (nullable)
             Date fechaVencimiento = p.getFechaVencimiento();
             if (fechaVencimiento != null) {
-                ps.setTimestamp(8, new Timestamp(fechaVencimiento.getTime()));
+                ps.setTimestamp(9, new Timestamp(fechaVencimiento.getTime()));
             } else {
-                ps.setNull(8, java.sql.Types.TIMESTAMP);
+                ps.setNull(9, java.sql.Types.TIMESTAMP);
             }
 
-            ps.setInt(9, p.getStock());
+            ps.setInt(10, p.getStock());
 
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -105,39 +117,44 @@ public class ProductoDAO implements Serializable {
     }
 
     /**
-     * Actualiza un producto existente. Actualiza los campos principales y
-     * fechas/stock.
+     * Actualiza un producto existente. Actualiza los campos principales y fechas/stock.
      */
     public void actualizar(Producto p) throws SQLException {
-        String sql = "UPDATE producto SET nombreProducto = ?, nombreProveedor = ?, idProveedor = ?, precioProducto = ?, descripcion = ?, tipo = ?, fechaIngreso = ?, fechaVencimiento = ?, stock = ? WHERE idProducto = ?";
+        
+        String sql = "UPDATE producto SET " +
+                "nombreProducto = ?, nombreProveedor = ?, idProveedor = ?, precioProducto = ?, " +
+                "descripcion = ?, imagen = ?, tipo = ?, fechaIngreso = ?, fechaVencimiento = ?, stock = ? " +
+                "WHERE idProducto = ?";
 
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = Conexion.conectar();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, p.getNombreProducto());
             ps.setString(2, p.getNombreProveedor());
             ps.setInt(3, p.getIdProveedor());
             ps.setFloat(4, p.getPrecioProducto());
             ps.setString(5, p.getDescripcion());
-            ps.setString(6, p.getTipo());
+            ps.setString(6, p.getImagen()); 
+            ps.setString(7, p.getTipo());
 
             // fechaIngreso (nullable)
             Date fechaIngreso = p.getFechaIngreso();
             if (fechaIngreso != null) {
-                ps.setTimestamp(7, new Timestamp(fechaIngreso.getTime()));
+                ps.setTimestamp(8, new Timestamp(fechaIngreso.getTime()));
             } else {
-                ps.setNull(7, java.sql.Types.TIMESTAMP);
+                ps.setNull(8, java.sql.Types.TIMESTAMP);
             }
 
             // fechaVencimiento (nullable)
             Date fechaVencimiento = p.getFechaVencimiento();
             if (fechaVencimiento != null) {
-                ps.setTimestamp(8, new Timestamp(fechaVencimiento.getTime()));
+                ps.setTimestamp(9, new Timestamp(fechaVencimiento.getTime()));
             } else {
-                ps.setNull(8, java.sql.Types.TIMESTAMP);
+                ps.setNull(9, java.sql.Types.TIMESTAMP);
             }
 
-            ps.setInt(9, p.getStock());
-            ps.setInt(10, p.getIdProducto());
+            ps.setInt(10, p.getStock());
+            ps.setInt(11, p.getIdProducto());
 
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -153,7 +170,8 @@ public class ProductoDAO implements Serializable {
     public void eliminar(Producto p) throws SQLException {
         String sql = "DELETE FROM producto WHERE idProducto = ?";
 
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = Conexion.conectar();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, p.getIdProducto());
             ps.executeUpdate();
@@ -167,7 +185,8 @@ public class ProductoDAO implements Serializable {
     public boolean actualizarStock(int idProducto, int nuevoStock) throws SQLException {
         String sql = "UPDATE producto SET stock = ? WHERE idProducto = ?";
 
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = Conexion.conectar();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, nuevoStock);
             ps.setInt(2, idProducto);
             return ps.executeUpdate() > 0;
@@ -177,7 +196,8 @@ public class ProductoDAO implements Serializable {
     public Producto buscar(int idProducto) throws SQLException {
         String sql = "SELECT * FROM producto WHERE idProducto = ?";
 
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = Conexion.conectar();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, idProducto);
             try (ResultSet rs = ps.executeQuery()) {
@@ -189,6 +209,7 @@ public class ProductoDAO implements Serializable {
                     p.setNombreProveedor(rs.getString("nombreProveedor"));
                     p.setPrecioProducto(rs.getFloat("precioProducto"));
                     p.setDescripcion(rs.getString("descripcion"));
+                    p.setImagen(rs.getString("imagen")); 
                     p.setFechaVencimiento(rs.getTimestamp("fechaVencimiento"));
                     p.setTipo(rs.getString("tipo"));
                     p.setFechaIngreso(rs.getTimestamp("fechaIngreso"));
@@ -209,6 +230,13 @@ public class ProductoDAO implements Serializable {
         p.setNombreProveedor(rs.getString("nombreProveedor"));
         p.setPrecioProducto(rs.getFloat("precioProducto"));
         p.setDescripcion(rs.getString("descripcion"));
+
+        try {
+            p.setImagen(rs.getString("imagen"));  
+        } catch (SQLException ex) {
+            p.setImagen(null);
+        }
+
         p.setTipo(rs.getString("tipo"));
 
         Timestamp tsIngreso = rs.getTimestamp("fechaIngreso");
@@ -222,7 +250,6 @@ public class ProductoDAO implements Serializable {
         try {
             tsVenc = rs.getTimestamp("fechaVencimiento");
         } catch (SQLException ex) {
-            // Si la columna no existe por alguna razón, la ignoramos (pero idealmente la tabla debe tenerla).
             tsVenc = null;
         }
 
@@ -235,7 +262,6 @@ public class ProductoDAO implements Serializable {
         try {
             p.setStock(rs.getInt("stock"));
         } catch (SQLException ex) {
-            // Si la columna stock no existe, evitar excepción; puedes ajustar según tu esquema.
             p.setStock(0);
         }
 
@@ -244,7 +270,8 @@ public class ProductoDAO implements Serializable {
 
     public boolean tieneMovimientosInventario(int idProducto) throws SQLException {
         String sql = "SELECT 1 FROM movimientos_inventario WHERE idProducto = ? LIMIT 1";
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = Conexion.conectar();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, idProducto);
             try (ResultSet rs = ps.executeQuery()) {
