@@ -2,342 +2,710 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      lang="es"
-      xmlns:p="http://primefaces.org/ui">
-    <h:head>
-        <title>Dashboard Admin</title>
+      lang="es">
 
-        <!-- Bootstrap, Tailwind y FontAwesome -->
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+<h:head>
+    <title>Gestión de Ventas - AgriviApp</title>
 
-        <style>
-            body {
-                font-family: 'Poppins', sans-serif;
-                background-color: #f4f6f9;
-                margin: 0;
-            }
+    <!-- Tailwind + Bootstrap Icons (como en homeAdmin1) -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
 
-            /* Sidebar */
+    <!-- Bootstrap y FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+    <style>
+        :root {
+            --agrivi-navy: #4F5E8C;
+            --agrivi-green: #17A649;
+            --agrivi-dark-green: #16592E;
+            --agrivi-cream: #F2EFDF;
+            --agrivi-sand: #D9A273;
+            --agrivi-light-green: rgba(23, 166, 73, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--agrivi-cream), #d7f0ff);
+            margin: 0;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 250px;
+            background: linear-gradient(180deg, var(--agrivi-dark-green), var(--agrivi-navy));
+            color: white;
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: 4px 0 20px rgba(22, 89, 46, 0.2);
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            text-align: center;
+        }
+
+        .sidebar-header h4 {
+            margin: 0 0 0.5rem 0;
+            font-weight: 700;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar-header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 0.875rem;
+        }
+
+        .sidebar-nav .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            font-size: 0.95rem;
+        }
+
+        .sidebar-nav .nav-link:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+            border-left-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .sidebar-nav .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-left-color: #ffd700;
+            font-weight: 600;
+        }
+
+        .sidebar-nav .nav-link i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .sidebar-footer .btn-logout {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-footer .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            background: white;
+            padding: 1.5rem 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-bar h2 {
+            margin: 0;
+            color: #1f2937;
+            font-weight: 700;
+            font-size: 1.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .top-bar h2 i {
+            color: var(--agrivi-green);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info span {
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+
+        .user-info strong {
+            color: #1f2937;
+        }
+
+        .btn-outline-primary {
+            background: transparent;
+            border: 2px solid var(--agrivi-green);
+            color: var(--agrivi-green);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--agrivi-green);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(23, 166, 73, 0.3);
+        }
+
+        /* TABLE CONTAINER */
+        .table-container {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+            padding: 2rem;
+        }
+
+        .table-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        /* Estilos para la tabla PrimeFaces */
+        .ui-datatable {
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .ui-datatable thead th {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0) !important;
+            color: #1f2937 !important;
+            font-weight: 600 !important;
+            border-bottom: 2px solid var(--agrivi-green) !important;
+            padding: 1rem !important;
+            font-size: 0.875rem;
+        }
+
+        .ui-datatable tbody td {
+            padding: 0.875rem 1rem !important;
+            border-bottom: 1px solid #e5e7eb !important;
+            font-size: 0.875rem;
+        }
+
+        .ui-datatable tbody tr:hover {
+            background-color: #f8fafc !important;
+        }
+
+        /* BOTONES ESTÉTICOS - MENOS CHILLONES */
+        .btn-soft-primary {
+            background: rgba(23, 166, 73, 0.1) !important;
+            border: 1.5px solid rgba(23, 166, 73, 0.3) !important;
+            color: var(--agrivi-dark-green) !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: 0.5rem !important;
+            font-weight: 500 !important;
+            transition: all 0.2s ease !important;
+            font-size: 0.875rem !important;
+        }
+
+        .btn-soft-primary:hover {
+            background: rgba(23, 166, 73, 0.2) !important;
+            border-color: var(--agrivi-green) !important;
+            color: var(--agrivi-dark-green) !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(23, 166, 73, 0.15) !important;
+        }
+
+        .btn-soft-primary:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(23, 166, 73, 0.2) !important;
+        }
+
+        .btn-soft-primary i {
+            margin-right: 0.5rem;
+        }
+
+        /* DIALOG STYLES */
+        .ui-dialog {
+            border-radius: 1rem !important;
+            overflow: hidden !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .ui-dialog-titlebar {
+            background: linear-gradient(135deg, var(--agrivi-green), var(--agrivi-dark-green)) !important;
+            color: white !important;
+            border: none !important;
+            padding: 1.25rem 1.5rem !important;
+            font-weight: 600 !important;
+        }
+
+        .ui-dialog-titlebar-close {
+            color: white !important;
+            opacity: 0.8 !important;
+            transition: opacity 0.2s ease !important;
+        }
+
+        .ui-dialog-titlebar-close:hover {
+            opacity: 1 !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .ui-dialog-content {
+            padding: 1.5rem !important;
+        }
+
+        /* RECEIPT STYLES */
+        .receipt-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .receipt-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--agrivi-light-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--agrivi-green);
+        }
+
+        .receipt-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .receipt-subtitle {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin: 0;
+        }
+
+        .customer-info {
+            background: #f9fafb;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-left: 3px solid var(--agrivi-green);
+        }
+
+        .customer-info p {
+            margin: 0.25rem 0;
+            font-size: 0.875rem;
+        }
+
+        .product-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .product-table thead {
+            background: #f3f4f6;
+        }
+
+        .product-table th {
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .product-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.875rem;
+        }
+
+        .product-table .text-end {
+            text-align: right;
+        }
+
+        .product-table .text-center {
+            text-align: center;
+        }
+
+        .total-section {
+            background: #f8fafc;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            color: #4b5563;
+            font-size: 0.875rem;
+        }
+
+        .total-row.grand-total {
+            border-top: 2px solid #e5e7eb;
+            margin-top: 0.5rem;
+            padding-top: 1rem;
+            font-weight: 700;
+            color: #1f2937;
+            font-size: 1rem;
+        }
+
+        .total-row.grand-total .amount {
+            color: var(--agrivi-green);
+        }
+
+        .note-text {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
             .sidebar {
-                position: fixed;
-                top: 0;
-                left: 0;
-                height: 100vh;
-                width: 230px;
-                background: #008631;
-                color: white;
-                z-index: 1000;
-                overflow-y: auto;
-                transition: all 0.3s ease;
+                width: 220px;
             }
-
-            .sidebar-header {
-                padding: 2rem 1.5rem;
-                padding-bottom: 10px;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                text-align: center;
-            }
-
-            .sidebar-header h4 {
-                margin-bottom: 0.5rem;
-                font-weight: 700;
-            }
-
-            .sidebar-nav .nav-link {
-                display: flex;
-                align-items: center;
-                padding: 10px 18px;
-                color: rgba(255, 255, 255, 0.8);
-                text-decoration: none;
-            }
-
-            .sidebar-nav .nav-link:hover {
-                background: rgba(255, 255, 255, 0.1);
-                color: white;
-            }
-
-            .sidebar-nav .nav-link.active {
-                background: rgba(255, 255, 255, 0.2);
-                color: white;
-                border-right: 4px solid #ffd700;
-            }
-
-            .sidebar-footer {
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                padding: 1.5rem;
-                border-top: 1px solid rgba(255, 255, 255, 0.1);
-            }
-
-            /* Main content */
             .main-content {
-                margin-left: 260px;
-                padding: 2rem;
+                margin-left: 220px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
             }
 
             .top-bar {
-                background-color: gainsboro ;
-                padding: 1.5rem 2rem;
-                border-bottom: 1px solid #e9ecef;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
-
-            .top-bar h2 {
-                margin: 0;
-                color: #495057;
-                font-weight: 600;
-            }
-
-            .user-info {
-                display: flex;
-                align-items: center;
-            }
-
-            #p_commandButtonid{
-                width: 30px;
+                flex-direction: column;
+                gap: 1rem;
                 text-align: center;
             }
-        </style>
-    </h:head>
 
-    <h:body>
+            .table-container {
+                padding: 1.5rem;
+            }
 
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h4><i class="fa fa-leaf"></i> Agrivi</h4>
-                <p>Panel Admin</p>
-            </div>
+            .ui-dialog {
+                width: 95% !important;
+                max-width: 95% !important;
+            }
+        }
+    </style>
+</h:head>
 
-            <nav class="sidebar-nav">
-                <nav class="sidebar-nav">
-                    <h:link outcome="/HomeAdmin1.xhtml" styleClass="nav-link">
-                        <i class="fas fa-chart-line" style="margin-right: 10px;"></i> Dashboard 
-                    </h:link>
-                    <h:link outcome="/HomeAdmin2.xhtml" styleClass="nav-link">
-                        <i class="fas fa-jar" style="margin-right: 10px;"></i> Usuarios
-                    </h:link>
-                    <h:link outcome="/HomeAdmin3.xhtml" styleClass="nav-link">
-                        <i class="fas fa-user" style="margin-right: 10px;"></i> Productos
-                    </h:link>
-                    <h:link outcome="/Correos.xhtml" styleClass="nav-link">
-                        <i class="fas fa-envelope" style="margin-right: 10px;" ></i> Correos
-                    </h:link>
-                    <h:link outcome="/HomeAdmin4.xhtml" styleClass="nav-link">
-                        <i class="fas fa-envelope" style="margin-right: 10px;"></i> Ventas
-                    </h:link>
-                    <h:link outcome="/HomeAdmin5.xhtml" styleClass="nav-link">
-                        <i class="fas fa-users" style="margin-right: 10px;"></i> Empleados
-                    </h:link>
-                    <h:link outcome="/MovInventario.xhtml" styleClass="nav-link">
-                        <i class="fas fa-boxes" style="margin-right: 10px;"></i> Inventario
-                    </h:link>
-                    <h:link outcome="/PedidosProveedores.xhtml" styleClass="nav-link">
-                        <i class="fas fa-truck-loading" style="margin-right: 10px;"></i> Pedidos
-                    </h:link>
-                    <h:link outcome="/dashboardProveedores.xhtml" styleClass="nav-link ">
-                        <i class="fas fa-warehouse" style="margin-right: 10px;"></i> Vista Proveedores
-                    </h:link>
-                    <h:link outcome="/dashboardPresentacion.xhtml" styleClass="nav-link ">
-                        <i class="fas fa-warehouse" style="margin-right: 10px;"></i> presentacion
-                    </h:link>
-                </nav>
-            </nav>
-
-            <h:form>
-                <div class="sidebar-footer">
-                    <h:commandLink action="#{usuarioBean.logout()}" styleClass="btn btn-outline-light btn-sm w-100">
-                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-                    </h:commandLink>
-                </div>
-            </h:form>
+<h:body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h4><i class="bi bi-flower1"></i> Agrivi</h4>
+            <p>Panel Admin</p>
         </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="top-bar d-flex justify-content-between align-items-center">
-                <h2><i class="fas fa-tachometer-alt"></i> Gestion Ventas</h2>
-                <div class="user-info">
-                    <span class="me-3">
-                        Bienvenido, <strong>#{usuarioBean.usuario.nombre}</strong>
-                    </span>
+        <nav class="sidebar-nav">
+            <h:link outcome="/HomeAdmin1.xhtml" styleClass="nav-link">
+                <i class="bi bi-graph-up"></i> Dashboard
+            </h:link>
+            <h:link outcome="/HomeAdmin2.xhtml" styleClass="nav-link">
+                <i class="bi bi-people-fill"></i> Usuarios
+            </h:link>
+            <h:link outcome="/HomeAdmin3.xhtml" styleClass="nav-link">
+                <i class="bi bi-box-seam"></i> Productos
+            </h:link>
+            <h:link outcome="/Correos.xhtml" styleClass="nav-link">
+                <i class="bi bi-envelope-fill"></i> Correos
+            </h:link>
+            <h:link outcome="/HomeAdmin4.xhtml" styleClass="nav-link active">
+                <i class="bi bi-cart-check-fill"></i> Ventas
+            </h:link>
+            <h:link outcome="/HomeAdmin5.xhtml" styleClass="nav-link">
+                <i class="bi bi-person-badge-fill"></i> Empleados
+            </h:link>
+            <h:link outcome="/MovInventario.xhtml" styleClass="nav-link">
+                <i class="bi bi-boxes"></i> Inventario
+            </h:link>
+            <h:link outcome="/PedidosProveedores.xhtml" styleClass="nav-link">
+                <i class="bi bi-truck"></i> Pedidos
+            </h:link>
+            <h:link outcome="/dashboardProveedores.xhtml" styleClass="nav-link">
+                <i class="bi bi-building"></i> Vista Proveedores
+            </h:link>
+            <h:link outcome="/dashboardPresentacion.xhtml" styleClass="nav-link">
+                <i class="bi bi-easel"></i> Presentación
+            </h:link>
+        </nav>
 
-                    <!-- Botón directo al perfil -->
-                    <h:link outcome="/perfil.xhtml"
-                            styleClass="btn btn-outline-primary">
-                        <i class="fas fa-user-circle"></i>
-                        <span style="margin-left: 6px;">Mi Perfil</span>
-                    </h:link>
-                </div>
+        <h:form>
+            <div class="sidebar-footer">
+                <h:commandLink action="#{usuarioBean.logout()}" styleClass="btn-logout">
+                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                </h:commandLink>
+            </div>
+        </h:form>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-bar">
+            <h2>
+                <i class="bi bi-cart-check-fill"></i>
+                Gestión de Ventas
+            </h2>
+            <div class="user-info">
+                <span>
+                    Bienvenido, <strong>#{usuarioBean.usuario.nombre}</strong>
+                </span>
+                <h:link outcome="/perfil.xhtml" styleClass="btn-outline-primary">
+                    <i class="bi bi-person-circle"></i>
+                    <span>Mi Perfil</span>
+                </h:link>
+            </div>
+        </div>
+
+        <!-- FORM DE VENTAS CON DETALLE -->
+        <div class="table-container">
+            <div class="table-title">
+                <i class="bi bi-receipt"></i>
+                Historial de Ventas
             </div>
 
-            <!-- FORM DE VENTAS CON DETALLE -->
             <h:form id="ventasForm">
-                <div class="table-responsive bg-white shadow rounded p-3">
-                    <p:dataTable id="tblVentas" 
-                                 value="#{ventasBean.listaVentas}" 
-                                 var="v"
-                                 styleClass="table table-hover table-bordered"
-                                 style="table-layout: fixed; width:100%;">
+                <p:dataTable id="tblVentas" 
+                             value="#{ventasBean.listaVentas}" 
+                             var="v"
+                             styleClass="table table-hover"
+                             paginator="false"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,15,20">
 
-                        <!-- ID Venta -->
-                        <p:column headerText="ID Venta" style="width: 50px; text-align:center;">
-                            <h:outputText value="#{v.idVenta}"/>
-                        </p:column>
+                    <!-- ID Venta -->
+                    <p:column headerText="ID Venta" style="width: 80px; text-align:center;">
+                        <span class="font-mono text-xs text-gray-600">#{v.idVenta}</span>
+                    </p:column>
 
-                        <!-- ID Producto -->
-                        <p:column headerText="ID Producto" style="width: 100px; text-align:center;">
-                            <h:outputText value="#{v.producto.idProducto}"/>
-                        </p:column>
+                    <!-- ID Producto -->
+                    <p:column headerText="Producto" style="width: 100px; text-align:center;">
+                        <span class="font-medium">#{v.producto.idProducto}</span>
+                    </p:column>
 
-                        <!-- ID Usuario -->
-                        <p:column headerText="ID Usuario" style="width: 100px; text-align:center;">
-                            <h:outputText value="#{v.usuario.id}"/>
-                        </p:column>
+                    <!-- ID Usuario -->
+                    <p:column headerText="Usuario" style="width: 100px; text-align:center;">
+                        <span class="font-medium">#{v.usuario.id}</span>
+                    </p:column>
 
-                        <!-- Cantidad -->
-                        <p:column headerText="Cantidad" style="width: 80px; text-align:center;">
-                            <h:outputText value="#{v.cantidad}"/>
-                        </p:column>
+                    <!-- Cantidad -->
+                    <p:column headerText="Cantidad" style="width: 90px; text-align:center;">
+                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 text-blue-700 font-medium">
+                            #{v.cantidad}
+                        </span>
+                    </p:column>
 
-                        <!-- Total (sin IVA) -->
-                        <p:column headerText="Total (sin IVA)" style="width: 120px; text-align:center;">
+                    <!-- Total (sin IVA) -->
+                    <p:column headerText="Total" style="width: 120px; text-align:center;">
+                        <span class="font-medium text-green-600">
                             $<h:outputText value="#{v.totalPagar}">
                                 <f:convertNumber type="number" pattern="#,##0.00"/>
                             </h:outputText>
-                        </p:column>
+                        </span>
+                    </p:column>
 
-                        <!-- Fecha Venta -->
-                        <p:column headerText="Fecha de Venta" style="width: 160px; text-align: center;">
-                            <!-- si tienes fechaVentaFormateada úsala, si no, deja v.fechaVenta -->
+                    <!-- Fecha Venta -->
+                    <p:column headerText="Fecha" style="width: 150px; text-align: center;">
+                        <span class="text-sm text-gray-600">
                             <h:outputText value="#{v.fechaVentaFormateada}"/>
-                        </p:column>
+                        </span>
+                    </p:column>
 
-                        <!-- Acciones -->
-                        <p:column headerText="Acciones" style="width: 120px; text-align:center;">
-                            <p:commandButton icon="pi pi-search"
-                                             value="Detalle"
-                                             title="Ver resumen de la venta"
-                                             styleClass="btn btn-sm btn-outline-primary"
-                                             process="@this"
-                                             actionListener="#{ventasBean.seleccionarVenta(v)}"
-                                             update=":ventasForm:detalleVentaPanel"
-                                             oncomplete="PF('detalleVentaDialog').show();" />
-                        </p:column>
-
-                    </p:dataTable>
-                </div>
+                    <!-- Acciones -->
+                    <p:column headerText="Acciones" style="width: 100px; text-align:center;" exportable="false">
+                        <p:commandButton icon="bi bi-eye"
+                                         title="Ver detalles de la venta"
+                                         styleClass="btn-soft-primary"
+                                         process="@this"
+                                         actionListener="#{ventasBean.seleccionarVenta(v)}"
+                                         update=":ventasForm:detalleVentaPanel"
+                                         oncomplete="PF('detalleVentaDialog').show();">
+                            <f:setPropertyActionListener target="#{ventasBean.ventaSeleccionada}" value="#{v}" />
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
 
                 <!-- Panel para actualizar el contenido del diálogo -->
                 <h:panelGroup id="detalleVentaPanel">
-                    <p:dialog header="Resumen de venta"
+                    <p:dialog header="Detalles de la Venta"
                               widgetVar="detalleVentaDialog"
                               modal="true"
                               resizable="false"
-                              width="650">
-                        <div class="p-3">
-                            <h4 class="mb-2">
-                                <i class="fas fa-receipt text-success"></i>
-                                Detalle de la venta #<h:outputText value="#{ventasBean.ventaSeleccionada.idVenta}"/>
-                            </h4>
-                            <p class="text-muted mb-3">
-                                Fecha:
-                                <strong>
-                                    <h:outputText value="#{ventasBean.ventaSeleccionada.fechaVentaFormateada}"/>
-                                </strong>
-                            </p>
+                              width="650"
+                              draggable="false"
+                              closable="true">
 
-                            <div class="mb-3">
-                                <p>
-                                    <strong>Cliente:</strong>
-                                    <h:outputText value="#{ventasBean.ventaSeleccionada.usuario.nombre}"/>
-                                </p>
-                                <p>
-                                    <strong>Correo:</strong>
-                                    <h:outputText value="#{ventasBean.ventaSeleccionada.usuario.correo}"/>
-                                </p>
+                        <div class="p-1">
+                            <!-- Encabezado del recibo -->
+                            <div class="receipt-header">
+                                <div class="receipt-icon">
+                                    <i class="bi bi-receipt"></i>
+                                </div>
+                                <div>
+                                    <h4 class="receipt-title">Venta #<h:outputText value="#{ventasBean.ventaSeleccionada.idVenta}"/></h4>
+                                    <p class="receipt-subtitle">
+                                        <i class="bi bi-calendar"></i>
+                                        <h:outputText value="#{ventasBean.ventaSeleccionada.fechaVentaFormateada}"/>
+                                    </p>
+                                </div>
                             </div>
 
-                            <table class="table table-sm">
-                                <thead class="table-light">
+                            <!-- Información del cliente -->
+                            <div class="customer-info">
+                                <p><strong><i class="bi bi-person"></i> Cliente:</strong> 
+                                   <h:outputText value="#{ventasBean.ventaSeleccionada.usuario.nombre}"/></p>
+                                <p><strong><i class="bi bi-envelope"></i> Correo:</strong> 
+                                   <h:outputText value="#{ventasBean.ventaSeleccionada.usuario.correo}"/></p>
+                            </div>
+
+                            <!-- Tabla de productos -->
+                            <table class="product-table">
+                                <thead>
                                     <tr>
                                         <th>Producto</th>
                                         <th class="text-center">Cantidad</th>
-                                        <th class="text-end">Precio unitario</th>
+                                        <th class="text-end">Precio Unitario</th>
                                         <th class="text-end">Subtotal</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
                                         <td>
-                                            <h:outputText value="#{ventasBean.ventaSeleccionada.producto.nombreProducto}"/>
+                                            <strong><h:outputText value="#{ventasBean.ventaSeleccionada.producto.nombreProducto}"/></strong>
                                         </td>
                                         <td class="text-center">
-                                            <h:outputText value="#{ventasBean.ventaSeleccionada.cantidad}"/>
+                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 text-blue-700 font-medium">
+                                                <h:outputText value="#{ventasBean.ventaSeleccionada.cantidad}"/>
+                                            </span>
                                         </td>
                                         <td class="text-end">
-                                            $<h:outputText value="#{ventasBean.ventaSeleccionada.producto.precioVenta}">
-                                                <f:convertNumber type="number" pattern="#,##0.00"/>
-                                            </h:outputText>
+                                            <span class="text-gray-700">
+                                                $<h:outputText value="#{ventasBean.ventaSeleccionada.producto.precioVenta}">
+                                                    <f:convertNumber type="number" pattern="#,##0.00"/>
+                                                </h:outputText>
+                                            </span>
                                         </td>
                                         <td class="text-end">
-                                            $<h:outputText value="#{ventasBean.totalProductosSeleccionado}">
-                                                <f:convertNumber type="number" pattern="#,##0.00"/>
-                                            </h:outputText>
+                                            <span class="font-medium">
+                                                $<h:outputText value="#{ventasBean.totalProductosSeleccionado}">
+                                                    <f:convertNumber type="number" pattern="#,##0.00"/>
+                                                </h:outputText>
+                                            </span>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
 
-                            <div class="mt-3">
-                                <div class="d-flex justify-content-end">
-                                    <div style="min-width: 260px;">
-                                        <div class="d-flex justify-content-between">
-                                            <span>Total productos:</span>
-                                            <span>
-                                                $<h:outputText value="#{ventasBean.totalProductosSeleccionado}">
-                                                    <f:convertNumber type="number" pattern="#,##0.00"/>
-                                                </h:outputText>
-                                            </span>
-                                        </div>
-                                        <div class="d-flex justify-content-between">
-                                            <span>IVA (1.5%):</span>
-                                            <span>
-                                                $<h:outputText value="#{ventasBean.totalIvaSeleccionado}">
-                                                    <f:convertNumber type="number" pattern="#,##0.00"/>
-                                                </h:outputText>
-                                            </span>
-                                        </div>
-                                        <div class="d-flex justify-content-between fw-bold border-top pt-2 mt-1">
-                                            <span>Total pagado:</span>
-                                            <span class="text-success">
-                                                $<h:outputText value="#{ventasBean.totalConIvaSeleccionado}">
-                                                    <f:convertNumber type="number" pattern="#,##0.00"/>
-                                                
-                                            </h:outputText>
-                                            </span>
-                                        </div>
-                                    </div>
+                            <!-- Totales -->
+                            <div class="total-section">
+                                <div class="total-row">
+                                    <span>Subtotal:</span>
+                                    <span>
+                                        $<h:outputText value="#{ventasBean.totalProductosSeleccionado}">
+                                            <f:convertNumber type="number" pattern="#,##0.00"/>
+                                        </h:outputText>
+                                    </span>
+                                </div>
+                                <div class="total-row">
+                                    <span>IVA (1.5%):</span>
+                                    <span>
+                                        $<h:outputText value="#{ventasBean.totalIvaSeleccionado}">
+                                            <f:convertNumber type="number" pattern="#,##0.00"/>
+                                        </h:outputText>
+                                    </span>
+                                </div>
+                                <div class="total-row grand-total">
+                                    <span>Total Pagado:</span>
+                                    <span class="amount">
+                                        $<h:outputText value="#{ventasBean.totalConIvaSeleccionado}">
+                                            <f:convertNumber type="number" pattern="#,##0.00"/>
+                                        </h:outputText>
+                                    </span>
                                 </div>
                             </div>
 
-                            <div class="mt-4 text-muted small">
+                            <!-- Nota al pie -->
+                            <p class="note-text">
                                 * Este resumen incluye el IVA aplicado (1.5%) sobre el total de productos.
-                            </div>
-
+                            </p>
                         </div>
                     </p:dialog>
                 </h:panelGroup>
             </h:form>
-
         </div>
+    </div>
 
-    </h:body>
+</h:body>
 </html>
