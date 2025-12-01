@@ -138,6 +138,32 @@
                 background-color: #f3f4f6;
                 color: #9ca3af;
             }
+            .footer {
+    background: linear-gradient(90deg, var(--agrivi-dark-green), var(--agrivi-navy));
+    box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.35);
+    margin-top: 3rem;
+}
+
+.footer h3,
+.footer h4 {
+    font-weight: 700;
+}
+
+.footer p,
+.footer li {
+    font-size: 0.85rem;
+}
+
+.footer a {
+    opacity: 0.85;
+    transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.footer a:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+}
+
         </style>
     </h:head>
 
@@ -155,6 +181,11 @@
                     <h:form id="navForm">
                         <nav>
                             <ul class="flex space-x-4 items-center text-xs">
+                                                            <li>
+                                <h:link outcome="perfilCliente"
+                                        value="Perfil"
+                                        styleClass="nav-link" />
+                            </li>
                                 <li>
                                     <h:commandLink value="Catálogo"
                                                    action="dashboardCliente?faces-redirect=true"
@@ -208,8 +239,6 @@
                             <p class="text-lg text-gray-600 mb-4">
                                 Tu carrito está vacío.
                             </p>
-
-                            <!-- Usamos h:link para ir directo al dashboardCliente -->
                             <h:link outcome="dashboardCliente"
                                     value="Volver al catálogo"
                                     styleClass="btn-primary inline-block py-2 px-6 rounded-full font-medium text-white" />
@@ -338,7 +367,7 @@
                             </p>
 
                             <!-- Resumen del cliente y total -->
-                            <div class="grid grid-cols-1 gap-2 text-gray-600">
+                            <div class="grid grid-cols-1 gap-2 text-gray-600 mb-3">
                                 <div class="flex justify-between">
                                     <span>Cliente:</span>
                                     <span class="font-semibold">#{usuarioBean.usuario.nombre}</span>
@@ -350,79 +379,129 @@
                                 <div class="flex justify-between text-base font-semibold border-t pt-3 text-green-700 mt-2">
                                     <span>Total a pagar:</span>
                                     <span>
-                                        $<h:outputText value="#{carritoBean.totalCompra}">
+                                        $<h:outputText value="#{carritoBean.subtotalCompra}">
                                             <f:convertNumber pattern="#,##0.00" />
                                         </h:outputText>
                                     </span>
                                 </div>
                             </div>
 
-                            <!-- FORMULARIO DE TARJETA -->
-                            <div class="mt-4 space-y-3">
-                                <div>
-                                    <label for="tipoTarjeta" class="block text-gray-700 mb-1">
-                                        Tipo de tarjeta
-                                    </label>
-                                    <p:selectOneMenu id="tipoTarjeta"
-                                                     value="#{carritoBean.tipoTarjeta}"
-                                                     styleClass="w-full"
-                                                     required="true"
-                                                     requiredMessage="Selecciona el tipo de tarjeta.">
-                                        <f:selectItem itemLabel="Selecciona..." itemValue="" noSelectionOption="true" />
-                                        <f:selectItem itemLabel="Visa" itemValue="VISA" />
-                                        <f:selectItem itemLabel="MasterCard" itemValue="MASTERCARD" />
-                                        <f:selectItem itemLabel="American Express" itemValue="AMEX" />
-                                    </p:selectOneMenu>
-                                </div>
+                            <!-- Medio de pago -->
+                            <div class="space-y-2">
+                                <span class="block text-gray-700 font-medium">Medio de pago</span>
+                                <div class="flex space-x-4 text-sm">
+                                    <p:selectOneRadio value="#{carritoBean.medioPago}"
+                                                      layout="grid" columns="3"
+                                                      styleClass="space-x-3"
+                                                      onchange="medioPagoAjax();">
+                                        <f:selectItem itemLabel="Crédito" itemValue="CREDITO"/>
+                                        <f:selectItem itemLabel="Débito" itemValue="DEBITO"/>
+                                        <f:selectItem itemLabel="PSE" itemValue="PSE"/>
+                                    </p:selectOneRadio>
 
-                                <div>
-                                    <label for="nombreTitular" class="block text-gray-700 mb-1">
-                                        Nombre del titular
-                                    </label>
-                                    <p:inputText id="nombreTitular"
-                                                 value="#{carritoBean.nombreTitular}"
-                                                 required="true"
-                                                 requiredMessage="El nombre del titular es obligatorio."
-                                                 styleClass="w-full px-3 py-2 border rounded-md" />
-                                </div>
-
-                                <div>
-                                    <label for="numeroTarjeta" class="block text-gray-700 mb-1">
-                                        Número de tarjeta
-                                    </label>
-                                    <p:inputMask id="numeroTarjeta"
-                                                 value="#{carritoBean.numeroTarjeta}"
-                                                 mask="9999 9999 9999 9999"
-                                                 required="true"
-                                                 requiredMessage="El número de tarjeta es obligatorio."
-                                                 styleClass="w-full px-3 py-2 border rounded-md" />
-                                </div>
-
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label for="fechaExp" class="block text-gray-700 mb-1">
-                                            Fecha expiración (MM/AA)
-                                        </label>
-                                        <p:inputMask id="fechaExp"
-                                                     value="#{carritoBean.fechaExpiracion}"
-                                                     mask="99/99"
-                                                     required="true"
-                                                     requiredMessage="La fecha de expiración es obligatoria."
-                                                     styleClass="w-full px-3 py-2 border rounded-md" />
-                                    </div>
-                                    <div>
-                                        <label for="cvv" class="block text-gray-700 mb-1">
-                                            CVV
-                                        </label>
-                                        <p:inputMask id="cvv"
-                                                     value="#{carritoBean.cvv}"
-                                                     mask="999"
-                                                     required="true"
-                                                     requiredMessage="El CVV es obligatorio."
-                                                     styleClass="w-full px-3 py-2 border rounded-md" />
-                                    </div>
+                                    <!-- Ajax para refrescar los campos al cambiar medio de pago -->
+                                    <p:remoteCommand name="medioPagoAjax"
+                                                     update="pagoTarjeta pagoPse"/>
                                 </div>
                             </div>
+
+                            <!-- CAMPOS TARJETA (se muestran si medioPago != PSE) -->
+                            <h:panelGroup id="pagoTarjeta"
+                                          rendered="#{carritoBean.medioPago ne 'PSE'}">
+                                <div class="mt-4 space-y-3">
+                                    <div>
+                                        <label for="tipoTarjeta" class="block text-gray-700 mb-1">
+                                            Tipo de tarjeta
+                                        </label>
+                                        <p:selectOneMenu id="tipoTarjeta"
+                                                         value="#{carritoBean.tipoTarjeta}"
+                                                         styleClass="w-full"
+                                                         required="true"
+                                                         requiredMessage="Selecciona el tipo de tarjeta.">
+                                            <f:selectItem itemLabel="Selecciona..." itemValue="" noSelectionOption="true" />
+                                            <f:selectItem itemLabel="Visa" itemValue="VISA" />
+                                            <f:selectItem itemLabel="MasterCard" itemValue="MASTERCARD" />
+                                            <f:selectItem itemLabel="American Express" itemValue="AMEX" />
+                                        </p:selectOneMenu>
+                                    </div>
+
+                                    <div>
+                                        <label for="nombreTitular" class="block text-gray-700 mb-1">
+                                            Nombre del titular
+                                        </label>
+                                        <p:inputText id="nombreTitular"
+                                                     value="#{carritoBean.nombreTitular}"
+                                                     required="true"
+                                                     requiredMessage="El nombre del titular es obligatorio."
+                                                     styleClass="w-full px-3 py-2 border rounded-md" />
+                                    </div>
+
+                                    <div>
+                                        <label for="numeroTarjeta" class="block text-gray-700 mb-1">
+                                            Número de tarjeta
+                                        </label>
+                                        <p:inputMask id="numeroTarjeta"
+                                                     value="#{carritoBean.numeroTarjeta}"
+                                                     mask="9999 9999 9999 9999"
+                                                     required="true"
+                                                     requiredMessage="El número de tarjeta es obligatorio."
+                                                     styleClass="w-full px-3 py-2 border rounded-md" />
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label for="fechaExp" class="block text-gray-700 mb-1">
+                                                Fecha expiración (MM/AA)
+                                            </label>
+                                            <p:inputMask id="fechaExp"
+                                                         value="#{carritoBean.fechaExpiracion}"
+                                                         mask="99/99"
+                                                         required="true"
+                                                         requiredMessage="La fecha de expiración es obligatoria."
+                                                         styleClass="w-full px-3 py-2 border rounded-md" />
+                                        </div>
+                                        <div>
+                                            <label for="cvv" class="block text-gray-700 mb-1">
+                                                CVV
+                                            </label>
+                                            <p:inputMask id="cvv"
+                                                         value="#{carritoBean.cvv}"
+                                                         mask="999"
+                                                         required="true"
+                                                         requiredMessage="El CVV es obligatorio."
+                                                         styleClass="w-full px-3 py-2 border rounded-md" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+
+                            <!-- CAMPOS PSE (se muestran si medioPago == PSE) -->
+                            <h:panelGroup id="pagoPse"
+                                          rendered="#{carritoBean.medioPago eq 'PSE'}">
+                                <div class="mt-4 space-y-3">
+                                    <div>
+                                        <label class="block text-gray-700 mb-1">
+                                            Número de identificación
+                                        </label>
+                                        <p:inputText value="#{carritoBean.pseNumero}"
+                                                     styleClass="w-full px-3 py-2 border rounded-md" />
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 mb-1">
+                                            Nombre completo
+                                        </label>
+                                        <p:inputText value="#{carritoBean.pseNombre}"
+                                                     styleClass="w-full px-3 py-2 border rounded-md" />
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 mb-1">
+                                            Correo electrónico
+                                        </label>
+                                        <p:inputText value="#{carritoBean.pseCorreo}"
+                                                     styleClass="w-full px-3 py-2 border rounded-md" />
+                                    </div>
+                                </div>
+                            </h:panelGroup>
 
                             <div class="flex justify-end space-x-2 mt-4">
                                 <p:commandButton value="Cancelar"
@@ -439,21 +518,99 @@
                         </div>
                     </p:dialog>
 
-                    <!-- Zona de comprobante: aparece solo después de un pago -->
+
+                    <!-- PAGO EXITOSO / RESUMEN -->
                     <h:panelGroup rendered="#{not empty carritoBean.ventasUltimoPago}">
                         <div class="mt-8 card p-6">
-                            <h3 class="text-2xl font-bold text-gray-800 mb-2">
-                                Comprobante de pago listo
-                            </h3>
-                            <p class="text-gray-600 mb-4 text-sm">
-                                Tu pago se ha registrado correctamente. Puedes descargar el comprobante en PDF.
+                            <div class="flex items-center mb-4">
+                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                    <span class="text-green-600 text-lg">&#10003;</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-2xl font-bold text-gray-800">
+                                        Pago exitoso
+                                    </h3>
+                                    <p class="text-sm text-gray-600">
+                                        Tu pedido ha sido registrado correctamente. A continuación encontrarás el resumen de tu compra.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Tabla resumen de la compra -->
+                            <table class="w-full text-sm mb-4">
+                                <thead>
+                                    <tr class="text-left border-b">
+                                        <th class="py-2 text-gray-600">Producto</th>
+                                        <th class="py-2 text-center text-gray-600">Cantidad</th>
+                                        <th class="py-2 text-right text-gray-600">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <ui:repeat value="#{carritoBean.ventasUltimoPago}" var="venta">
+                                        <tr class="border-b">
+                                            <td class="py-2">
+                                                #{venta.producto.nombreProducto}
+                                            </td>
+                                            <td class="py-2 text-center">
+                                                #{venta.cantidad}
+                                            </td>
+                                            <td class="py-2 text-right">
+                                                $<h:outputText value="#{venta.totalPagar}">
+                                                    <f:convertNumber pattern="#,##0.00" />
+                                                </h:outputText>
+                                            </td>
+                                        </tr>
+                                    </ui:repeat>
+                                </tbody>
+                            </table>
+
+                            <div class="text-xs text-gray-700 space-y-1 mb-4">
+                                <div class="flex justify-between">
+                                    <span>Total productos:</span>
+                                    <span>
+                                        $<h:outputText value="#{carritoBean.ultimoTotalProductos}">
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputText>
+                                    </span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>IVA (1.5%):</span>
+                                    <span>
+                                        $<h:outputText value="#{carritoBean.ultimoTotalIva}">
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputText>
+                                    </span>
+                                </div>
+                                <div class="flex justify-between font-semibold text-green-700">
+                                    <span>Total pagado:</span>
+                                    <span>
+                                        $<h:outputText value="#{carritoBean.ultimoSubtotalCompra}">
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputText>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <p class="text-xs text-gray-600 mb-6">
+                                Tu pedido llegará entre <strong>2 y 6 días hábiles</strong>.
+                                Te enviaremos actualizaciones al correo
+                                <strong>#{usuarioBean.usuario.correo}</strong>.
                             </p>
-                            <p:commandButton value="Descargar comprobante (PDF)"
-                                             actionListener="#{carritoBean.descargarComprobantePdf}"
-                                             ajax="false"
-                                             styleClass="btn-primary py-2 px-6 rounded-full font-semibold" />
+
+                            <div class="mt-2 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                <p:button outcome="dashboardCliente"
+                                          value="Seguir comprando"
+                                          styleClass="btn-secondary px-8 py-2 rounded-full font-semibold text-center" />
+
+                                <!-- BOTÓN PARA DESCARGAR EL PDF -->
+                                <p:commandButton value="Descargar comprobante (PDF)"
+                                                 actionListener="#{carritoBean.descargarComprobantePdf}"
+                                                 ajax="false"
+                                                 styleClass="btn-primary px-8 py-2 rounded-full font-semibold" />
+                            </div>
                         </div>
                     </h:panelGroup>
+
 
 
                 </h:form>
@@ -491,11 +648,66 @@
                 </h:panelGroup>
             </main>
 
-            <footer class="bg-gray-900 text-white py-4 mt-8">
-                <div class="container mx-auto text-center text-gray-400 text-xs">
-                    <p>&#169; 2025 AgriviApp. Todos los derechos reservados.</p>
+            <footer class="footer text-white py-8">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <span>🌱</span> <span>AgriviApp</span>
+                </h3>
+                <p class="text-gray-200 text-sm leading-relaxed">
+                    Conectando agricultores y productores con soluciones agrícolas seguras y efectivas.
+                </p>
+            </div>
+
+            <div>
+                <h4 class="font-semibold mb-4 text-sm tracking-wide uppercase">
+                    Contacto
+                </h4>
+                <p class="text-gray-200 text-sm leading-relaxed">
+                    Correo: soporte@agriviapp.com<br/>
+                    Teléfono: +57 300 000 0000
+                </p>
+            </div>
+
+            <div>
+                <h4 class="font-semibold mb-4 text-sm tracking-wide uppercase">
+                    Ayuda
+                </h4>
+                <ul class="text-gray-200 text-sm space-y-1">
+                    <li>Preguntas Frecuentes</li>
+                    <li>Soporte técnico</li>
+                    <li>Términos y condiciones</li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="font-semibold mb-4 text-sm tracking-wide uppercase">
+                    Síguenos
+                </h4>
+                <p class="text-gray-200 text-xs mb-2">
+                    Mantente al día con nuestras novedades.
+                </p>
+                <div class="flex space-x-4 text-gray-100 text-base">
+                    <a href="#" class="hover:text-white transition-colors">
+                        <i class="bi bi-facebook"></i>
+                    </a>
+                    <a href="#" class="hover:text-white transition-colors">
+                        <i class="bi bi-instagram"></i>
+                    </a>
+                    <a href="#" class="hover:text-white transition-colors">
+                        <i class="bi bi-twitter"></i>
+                    </a>
                 </div>
-            </footer>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-600 mt-8 pt-4 text-center text-gray-200 text-xs">
+            <p>© 2025 AgriviApp. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+
         </div>
     </h:body>
 </html>

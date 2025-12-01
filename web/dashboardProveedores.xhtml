@@ -47,11 +47,11 @@
                 margin-bottom: 0.5rem;
                 font-weight: 700;
             }
-            
+
             /* Nombre del Panel */
             .sidebar-header p {
-                 font-size: 0.9em;
-                 margin-bottom: 0;
+                font-size: 0.9em;
+                margin-bottom: 0;
             }
 
             .sidebar-nav .nav-link {
@@ -156,19 +156,19 @@
                 font-weight: 600;
                 color: #008631;
             }
-            
+
             /* Ajuste para botones de PrimeFaces/Bootstrap */
             .action-buttons {
-                 margin-bottom: 20px;
-                 display: flex;
-                 justify-content: flex-end;
+                margin-bottom: 20px;
+                display: flex;
+                justify-content: flex-end;
             }
-            
+
             .ui-datatable.table {
-                 border-collapse: separate !important;
-                 border-spacing: 0;
+                border-collapse: separate !important;
+                border-spacing: 0;
             }
-            
+
             /* Ajuste para quitar el borde de la tabla de PrimeFaces */
             .ui-datatable.table > .ui-datatable-tablewrapper > table {
                 border-collapse: collapse;
@@ -186,9 +186,9 @@
 
             <nav class="sidebar-nav">
                 <nav class="sidebar-nav">
-                   <h:link outcome="/HomeAdmin1.xhtml" styleClass="nav-link">
-                    <i class="fas fa-chart-line" style="margin-right: 10px;"></i> Dashboard 
-                </h:link>
+                    <h:link outcome="/HomeAdmin1.xhtml" styleClass="nav-link">
+                        <i class="fas fa-chart-line" style="margin-right: 10px;"></i> Dashboard 
+                    </h:link>
                     <h:link outcome="/HomeAdmin2.xhtml" styleClass="nav-link">
                         <i class="fas fa-jar" style="margin-right: 10px;"></i> Usuarios
                     </h:link>
@@ -210,7 +210,7 @@
                     <h:link outcome="/MovInventario.xhtml" styleClass="nav-link">
                         <i class="fas fa-boxes" style="margin-right: 10px;"></i> Inventario
                     </h:link>
-                    
+
                     <h:link outcome="/PedidosProveedores.xhtml" styleClass="nav-link">
                         <i class="fas fa-truck-loading" style="margin-right: 10px;"></i> Pedidos
                     </h:link>
@@ -220,8 +220,8 @@
                     <h:link outcome="/dashboardPresentacion.xhtml" styleClass="nav-link ">
                         <i class="fas fa-warehouse" style="margin-right: 10px;"></i> presentacion
                     </h:link>
-                    
-                    
+
+
                 </nav>
 
             </nav>
@@ -230,14 +230,14 @@
             <h:form>
                 <div class="sidebar-footer">
                     <h:commandLink action="#{usuarioBean.logout()}" styleClass="btn btn-outline-light btn-sm w-100">
-                           <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-                       </h:commandLink>
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </h:commandLink>
                 </div>
             </h:form>
         </div>
 
         <div class="main-content">
-
+            <h:form>
             <div class="top-bar">
                 <h2><i class="fas fa-truck"></i> Gestión de Proveedores</h2>
                 <div class="user-info">
@@ -261,7 +261,7 @@
                     </div>
                 </div>
             </div>
-
+</h:form>
             <div class="page-content">
 
                 <h:form id="form">
@@ -273,11 +273,6 @@
                                          styleClass="p-button-success ui-button-sm"
                                          oncomplete="PF('dialogoAgregar').show()"
                                          update=":form:messages"/>
-
-                        <p:button value="Crear Pedido"
-                                  icon="fas fa-truck-loading"
-                                  outcome="/crearPedido.xhtml?faces-redirect=true"
-                                  styleClass="ui-button-primary ui-button-sm ms-2" />
                     </div>
 
                     <div class="data-panel">
@@ -287,13 +282,13 @@
                                      value="#{proveedorBean.listaProveedores}"
                                      paginator="false" 
                                      rows="10"
-                                     
+
                                      paginatorTemplate="{FirstPageLink} {PreviousPageLink} {NextPageLink} {LastPageLink}" 
                                      rowsPerPageTemplate="5,10,15"
                                      emptyMessage="No se encontraron proveedores"
                                      styleClass="ui-datatable table table-hover"
                                      widgetVar="tablaProveedores"
-                                     
+
                                      >
 
                             <p:column headerText="ID" style="width: 80px; text-align: center;" sortBy="#{proveedor.idProveedor}">
@@ -335,7 +330,7 @@
                                     </p:selectOneMenu>
                                 </f:facet>
                                 <span class="status-badge #{proveedor.estado == 'Activo' ? 'status-active' : 'status-inactive'}">
-                                       <h:outputText value="#{proveedor.estado}"/>
+                                    <h:outputText value="#{proveedor.estado}"/>
                                 </span>
                             </p:column>
 
@@ -364,8 +359,14 @@
                         </p:dataTable>
 
                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                            <p:commandButton value="Sí" type="button" styleClass="p-button-confirm" icon="fas fa-check"/>
-                            <p:commandButton value="No" type="button" styleClass="p-button-secondary" icon="fas fa-times"/>
+                            <p:commandButton value="Sí"
+                                             type="button"
+                                             styleClass="ui-confirmdialog-yes p-button-confirm"
+                                             icon="fas fa-check" />
+                            <p:commandButton value="No"
+                                             type="button"
+                                             styleClass="ui-confirmdialog-no p-button-secondary"
+                                             icon="fas fa-times" />
                         </p:confirmDialog>
                     </div>
                 </h:form>
@@ -431,11 +432,11 @@
                     <div class="mb-3">
                         <p:outputLabel for="precio" value="Precio *" />
                         <p:inputNumber id="precio" 
-                                        value="#{proveedorBean.nuevoProveedor.precio}"
-                                        required="true"
-                                        requiredMessage="Precio es requerido"
-                                        decimalPlaces="2"
-                                        placeholder="0.00"/>
+                                       value="#{proveedorBean.nuevoProveedor.precio}"
+                                       required="true"
+                                       requiredMessage="Precio es requerido"
+                                       decimalPlaces="2"
+                                       placeholder="0.00"/>
                     </div>
 
                     <div class="mt-4 text-end">
@@ -514,10 +515,10 @@
                     <div class="mb-3">
                         <p:outputLabel for="editPrecio" value="Precio *" />
                         <p:inputNumber id="editPrecio" 
-                                        value="#{proveedorBean.proveedorSeleccionado.precio}"
-                                        required="true"
-                                        requiredMessage="Precio es requerido"
-                                        decimalPlaces="2"/>
+                                       value="#{proveedorBean.proveedorSeleccionado.precio}"
+                                       required="true"
+                                       requiredMessage="Precio es requerido"
+                                       decimalPlaces="2"/>
                     </div>
 
                     <div class="mt-4 text-end">

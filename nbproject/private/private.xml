@@ -3,10 +3,6 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/Controlador/PedidoProveedorBean.java</file>
-            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/DAO/PedidoProveedorDAO.java</file>
-            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/DAO/ProductoDAO.java</file>
-            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/web/PedidosProveedores.xhtml</file>
             <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/Modelo/EnumRoles.java</file>
             <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/DAO/EmpleadoDAO.java</file>
             <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/DAO/MovInventarioDAO.java</file>
@@ -17,8 +13,40 @@
             <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/Controlador/MovInventarioBean.java</file>
             <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/Modelo/MovInventario.java</file>
             <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/web/dashboardPresentacion.xhtml</file>
-            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/web/login.xhtml</file>
-            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/Controlador/UsuarioBean.java</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/web/dashboardCliente.xhtml</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/web/WEB-INF/web.xml</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/Controlador/Conexion.java</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/Modelo/Proveedor.java</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/DAO/ConnBD.java</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/Controlador/PedidoDetalleBean.java</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/Controlador/ProveedorBean.java</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/Modelo/PedidoDetalle.java</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/Modelo/PedidoProveedor.java</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/web/PedidosProveedores_OLD.xhtml</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/web/HomeAdmin1.xhtml</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/web/HomeAdmin3.xhtml</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/web/HomeAdmin5.xhtml</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/web/HomeAdmin4.xhtml</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/web/carrito.xhtml</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/Controlador/CarritoBean.java</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/Controlador/ProductoBean.java</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/Controlador/VentasBean.java</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/Controlador/PedidoProveedorBean.java</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/Controlador/PagoBean.java</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/DAO/ProductoDAO.java</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/Modelo/CarritoItem.java</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/Modelo/Producto.java</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/Controlador/HistorialComprasBean.java</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/web/register.xhtml</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/web/perfil.xhtml</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/web/editarPerfil.xhtml</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/Controlador/EmpleadoBean.java</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/src/java/Modelo/Usuario.java</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/web/HomeAdmin2.xhtml</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/web/PedidosProveedores.xhtml</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/web/crearPedido.xhtml</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/web/detallePedido.xhtml</file>
+            <file>file:/C:/Users/diego/Downloads/pruebassssss/prueba2/web/Correos.xhtml</file>
         </group>
     </open-files>
 </project-private>

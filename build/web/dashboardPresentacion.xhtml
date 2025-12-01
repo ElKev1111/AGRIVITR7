@@ -55,46 +55,88 @@
             }
 
             .product-card {
-                background-color: #ffffff;
-                border-radius: 1rem;
-                box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
-                padding: 1.5rem;
+                position: relative;
+                background: radial-gradient(circle at top left,
+                    rgba(23, 166, 73, 0.15), #ffffff);
+                border-radius: 1.5rem;
+                box-shadow: 0 16px 40px rgba(15, 23, 42, 0.16);
+                padding: 1.5rem 1.5rem 1.25rem;
                 display: flex;
                 flex-direction: column;
                 justify-content: space-between;
-                border: 1px solid rgba(15, 23, 42, 0.04);
-                transition: transform 0.15s ease, box-shadow 0.15s ease;
+                border: 1px solid rgba(15, 23, 42, 0.03);
+                transition: transform 0.18s ease, box-shadow 0.18s ease, translate 0.18s ease;
             }
 
             .product-card:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 16px 32px rgba(15, 23, 42, 0.18);
+                transform: translateY(-6px);
+                box-shadow: 0 22px 50px rgba(15, 23, 42, 0.24);
+            }
+
+            /* Chapita en la esquina superior */
+            .product-badge {
+                position: absolute;
+                top: 1rem;
+                left: 1rem;
+                padding: 0.25rem 0.7rem;
+                background: rgba(22, 163, 74, 0.12);
+                border-radius: 999px;
+                font-size: 0.7rem;
+                font-weight: 600;
+                color: #047857;
             }
 
             .product-image {
                 width: 100%;
-                height: 200px;
-                object-fit: cover;
-                border-radius: 0.75rem;
+                height: 230px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: #f3f4f6;
+                border-radius: 0.9rem;
                 margin-bottom: 1rem;
                 overflow: hidden;
+                padding: 0.5rem;
             }
 
             .product-image img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
+                max-height: 100%;
+                max-width: 100%;
+                width: auto;
+                height: auto;
+                object-fit: contain;
+                transition: transform 0.25s ease;
+            }
+
+            .product-card:hover .product-image img {
+                transform: scale(1.04);
             }
 
             .btn-primary {
-                background-color: var(--agrivi-green);
+                background: radial-gradient(circle at 0% 0%, #34d399, #16a34a);
                 color: #ffffff;
-                transition: background-color 0.2s ease-in-out, transform 0.08s;
+                border: none;
+                padding: 0.55rem 1.6rem;
+                border-radius: 9999px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.45rem;
+                box-shadow: 0 12px 25px rgba(22, 163, 74, 0.35);
+                transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+            }
+
+            .btn-primary::before {
+                content: "\f07a"; /* ícono carrito Font Awesome */
+                font-family: "Font Awesome 6 Free";
+                font-weight: 900;
+                font-size: 0.9rem;
             }
 
             .btn-primary:hover {
-                background-color: var(--agrivi-dark-green);
                 transform: translateY(-1px);
+                filter: brightness(1.05);
+                box-shadow: 0 16px 40px rgba(22, 163, 74, 0.45);
             }
 
             .btn-secondary {
@@ -126,6 +168,7 @@
                 text-align: center;
                 position: relative;
                 overflow: hidden;
+                animation: fadeInUp 0.5s ease-out;
             }
 
             .hero-section::before {
@@ -179,6 +222,18 @@
                 margin: 0 auto 1rem;
                 font-size: 1.5rem;
                 box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+            }
+
+            .chip {
+                display: inline-flex;
+                align-items: center;
+                padding: 0.15rem 0.6rem;
+                border-radius: 999px;
+                background-color: rgba(22, 163, 74, 0.08);
+                color: #047857;
+                font-size: 0.7rem;
+                font-weight: 600;
+                margin-left: 0.4rem;
             }
 
             .cart-count {
@@ -334,6 +389,11 @@
                 background-color: #0f172a;
             }
 
+            @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(12px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
             @media (min-width: 768px) {
                 .hero-section {
                     flex-direction: row;
@@ -363,7 +423,6 @@
                 <h:form id="navForm">
                     <nav>
                         <ul class="flex space-x-4 items-center">
-
                             <li>
                                 <h:link outcome="login.xhtml" value="Iniciar Sesion" styleClass="nav-link" />
                             </li>
@@ -390,7 +449,6 @@
                                         Bienvenid@
                                     </span>
                                 </h:panelGroup>
-
                             </li>
                         </ul>
                     </nav>
@@ -423,9 +481,6 @@
                                          onclick="document.getElementById('about-section').scrollIntoView({behavior: 'smooth'});"
                                          styleClass="btn-secondary py-3 px-6 rounded-full font-medium" />
                     </div>
-                </div>
-                <div class="hero-image">
-                    <img src="\web\resources\images\hero-agriculture.jpg" alt="Agricultura sostenible" class="w-full h-full object-cover rounded-lg" />
                 </div>
             </section>
 
@@ -476,7 +531,9 @@
                         <div class="feature-icon">
                             <i class="fas fa-seedling"></i>
                         </div>
-                        <h3 class="text-xl font-semibold text-gray-800 mb-3">Productos Frescos</h3>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-3">
+                            Productos Frescos <span class="chip">Premium</span>
+                        </h3>
                         <p class="text-gray-600">
                             Trabajamos directamente con agricultores locales para garantizar la máxima frescura en cada producto.
                         </p>
@@ -485,7 +542,9 @@
                         <div class="feature-icon">
                             <i class="fas fa-tractor"></i>
                         </div>
-                        <h3 class="text-xl font-semibold text-gray-800 mb-3">Agricultura Sostenible</h3>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-3">
+                            Agricultura Sostenible <span class="chip">Eco</span>
+                        </h3>
                         <p class="text-gray-600">
                             Promovemos prácticas agrícolas responsables que cuidan el medio ambiente y las comunidades.
                         </p>
@@ -494,7 +553,9 @@
                         <div class="feature-icon">
                             <i class="fas fa-shipping-fast"></i>
                         </div>
-                        <h3 class="text-xl font-semibold text-gray-800 mb-3">Entrega Rápida</h3>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-3">
+                            Entrega Rápida <span class="chip">24/48h</span>
+                        </h3>
                         <p class="text-gray-600">
                             Recibe tus productos en la comodidad de tu hogar con nuestro servicio de entrega eficiente.
                         </p>
@@ -729,12 +790,39 @@
                         </div>
                     </p:dialog>
 
+                    <!-- Barra de filtros visual -->
+                    <div class="flex flex-wrap items-center justify-between mb-8 gap-4">
+                        <div class="flex flex-wrap items-center gap-3">
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-3 flex items-center text-gray-400">
+                                    <i class="fas fa-search text-xs"></i>
+                                </span>
+                                <input type="text"
+                                       placeholder="Buscar producto..."
+                                       class="pl-8 pr-3 py-2 rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                            </div>
+
+                            <select class="text-sm rounded-full border border-gray-300 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                <option value="">Todos los tipos</option>
+                                <option value="Fertilizante">Fertilizantes</option>
+                                <option value="Herbicida">Herbicidas</option>
+                                <option value="Fungicida">Fungicidas</option>
+                            </select>
+                        </div>
+
+                        <span class="text-xs md:text-sm text-gray-500">
+                            #{empty productoBean.listaProductos ? 0 : productoBean.listaProductos.size()} productos disponibles
+                        </span>
+                    </div>
+
                     <!-- GRID DE PRODUCTOS -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         <ui:repeat var="p" value="#{productoBean.listaProductos}">
                             <div class="product-card">
+                                <span class="product-badge">Destacado</span>
+
                                 <div>
-                                    <div class="product-image bg-gray-200 flex items-center justify-center rounded">
+                                    <div class="product-image bg-gray-100 flex items-center justify-center rounded">
                                         <h:graphicImage
                                             value="#{empty p.imagen 
                                                      ? '/resources/images/products/default-product.jpg' 

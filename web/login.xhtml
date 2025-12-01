@@ -10,108 +10,251 @@
     <title>AgriviApp - Iniciar Sesión</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
           rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
     <style>
-        /* Estilos de Coherencia con AgriviApp */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #e6f5ed; /* Fondo claro de la aplicación */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+        :root {
+            --agrivi-navy: #4F5E8C;
+            --agrivi-green: #17A649;
+            --agrivi-dark-green: #16592E;
+            --agrivi-cream: #F2EFDF;
+            --agrivi-sand: #D9A273;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
             margin: 0;
         }
-        .login-card {
-            background-color: #ffffff;
-            /* Sombra con un toque del color principal para darle profundidad */
-            box-shadow: 0 10px 25px rgba(11, 148, 70, 0.15); 
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--agrivi-cream), #d7f0ff);
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .login-container {
+            background: white;
             border-radius: 1rem;
-            width: 100%;
-            max-width: 420px;
             padding: 2.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            max-width: 450px;
         }
-        .btn-primary {
-            background-color: #0b9446; /* Verde primario de AgriviApp */
-            transition: background-color 0.2s ease-in-out;
+
+        .app-header {
+            text-align: center;
+            margin-bottom: 2rem;
         }
-        .btn-primary:hover {
-            background-color: #097a3a; /* Verde más oscuro al pasar el ratón */
+
+        .app-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--agrivi-dark-green);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
-        /* Estilos para h:messages */
+
+        .page-subtitle {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--agrivi-navy);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .page-subtitle i {
+            color: var(--agrivi-green);
+        }
+
         .alert-error {
-            background-color: #fee2e2; /* Rojo suave */
-            color: #ef4444; /* Rojo fuerte */
+            background-color: #fee2e2;
+            color: #ef4444;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+            border-left: 4px solid #ef4444;
         }
+
         .alert-success {
-            background-color: #d1fae5; /* Verde muy claro */
-            color: #0b9446; /* Verde primario */
+            background-color: #d1fae5;
+            color: var(--agrivi-green);
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+            border-left: 4px solid var(--agrivi-green);
         }
-        /* Estilos de enfoque para inputs */
-        .focus-ring-green:focus {
-            border-color: #0b9446;
-            box-shadow: 0 0 0 1px #0b9446, 0 0 0 3px rgba(11, 148, 70, 0.2);
+
+        .form-group {
+            margin-bottom: 1.5rem;
         }
-        .text-green-700 {
-            color: #097a3a; /* Verde secundario para enlaces */
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--agrivi-navy);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group label i {
+            color: var(--agrivi-green);
+            margin-right: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.75rem;
+            background: var(--agrivi-cream);
+            color: #1f2937;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--agrivi-green);
+            box-shadow: 0 0 0 3px rgba(23, 166, 73, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--agrivi-green) 0%, var(--agrivi-dark-green) 100%);
+            color: white;
+            border: none;
+            padding: 0.875rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(23, 166, 73, 0.3);
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(23, 166, 73, 0.4);
+        }
+
+        .register-link {
+            margin-top: 1.5rem;
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .register-link a {
+            color: var(--agrivi-green);
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .register-link a:hover {
+            color: var(--agrivi-dark-green);
+            text-decoration: underline;
+        }
+
+        @media (max-width: 640px) {
+            .login-container {
+                padding: 1.5rem;
+            }
+
+            .app-title {
+                font-size: 2rem;
+            }
+
+            .page-subtitle {
+                font-size: 1rem;
+            }
         }
     </style>
 </h:head>
 
 <h:body>
 
-    <div class="login-card">
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-800">
-                AgriviApp
+    <div class="login-container">
+        <div class="app-header">
+            <h1 class="app-title">
+                🌱 AgriviApp
             </h1>
-            <h2 class="text-xl font-semibold text-green-700 mt-2">
+            <h2 class="page-subtitle">
+                <i class="bi bi-box-arrow-in-right"></i>
                 Inicio de Sesión
             </h2>
         </div>
 
         <h:messages globalOnly="true" layout="table"
-                    styleClass="p-3 rounded-md mb-6 text-sm w-full"
+                    styleClass="messages-container"
                     errorClass="alert-error"
                     infoClass="alert-success"
                     warnClass="alert-error"
                     fatalClass="alert-error"/>
 
-        <h:form styleClass="space-y-6">
+        <h:form>
 
-            <div>
-                <label for="correo" class="block text-sm font-medium text-gray-700 mb-1">
+            <div class="form-group">
+                <label for="correo">
+                    <i class="bi bi-envelope-fill"></i>
                     Correo Electrónico
                 </label>
-               <h:inputText id="correo" 
-                            value="#{usuarioBean.usuario.correo}" 
-                            required="true"
-                            requiredMessage="El Correo es obligatorio."
-                            styleClass="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus-ring-green sm:text-sm"/>
+                <h:inputText id="correo" 
+                             value="#{usuarioBean.usuario.correo}" 
+                             required="true"
+                             requiredMessage="El Correo es obligatorio."
+                             styleClass="form-input"/>
             </div>
 
-            <div>
-                <label for="contraseña" class="block text-sm font-medium text-gray-700 mb-1">
+            <div class="form-group">
+                <label for="contraseña">
+                    <i class="bi bi-lock-fill"></i>
                     Contraseña
                 </label>
                 <h:inputSecret id="contraseña" 
                                value="#{usuarioBean.usuario.password}" 
                                required="true"
                                requiredMessage="La Contraseña es obligatoria."
-                               styleClass="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus-ring-green sm:text-sm"/>
+                               styleClass="form-input"/>
             </div>
 
-            <div>
+            <div class="form-group">
                 <h:commandButton value="Iniciar Sesión"
                                  action="#{usuarioBean.autenticar}"
-                                 styleClass="btn-primary w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-md text-lg font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"/>
+                                 styleClass="btn-primary">
+                    <i class="bi bi-check-circle-fill"></i>
+                </h:commandButton>
             </div>
 
         </h:form>
 
-        <p class="mt-6 text-center text-sm text-gray-600">
+        <p class="register-link">
             ¿No tienes una cuenta?
-            <h:link outcome="register" value="Regístrate aquí"
-                    styleClass="font-medium text-green-700 hover:text-green-900"/>
+            <h:link outcome="register" value="Regístrate aquí"/>
         </p>
     </div>
 
