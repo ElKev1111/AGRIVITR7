@@ -22,7 +22,6 @@ public class VentasBean implements Serializable {
         ventasDAO = new VentasDAO();
         cargarVentas();
     }
-
     // Método para listar las ventas
     public void cargarVentas() {
         listaVentas = ventasDAO.listar(); // Llama al DAO que trae las ventas

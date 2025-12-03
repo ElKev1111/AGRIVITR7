@@ -9,15 +9,15 @@ import Modelo.EnumRoles;
 import Modelo.MovInventario;
 import Modelo.Ventas;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.application.FacesMessage;
+import java.time.LocalDateTime;
 import javax.servlet.http.HttpServletResponse;
+import javax.faces.context.ExternalContext;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Paragraph;
@@ -25,13 +25,15 @@ import com.itextpdf.text.Chunk;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.PostConstruct;
+
 @ManagedBean
 @SessionScoped
 public class CarritoBean implements Serializable {
 
-    private static final float IVA_PORCENTAJE = 0.015f; // 1.5%
-
-    private List<CarritoItem> items = new ArrayList<>();
+    private List<CarritoItem> items;
     private Integer cantidadTemporal = 1;
     private Producto productoTemporal;
     private CarritoItem itemEdicion;
@@ -43,52 +45,44 @@ public class CarritoBean implements Serializable {
     private transient MovInventarioDAO movInventarioDAO = new MovInventarioDAO();
     private boolean simulacionPublicaInicializada;
 
-    // === DATOS PARA SIMULACIÓN DE PAGO EN LÍNEA (TARJETA) ===
+    // === DATOS PARA SIMULACIÓN DE PAGO EN LÍNEA ===
     private String nombreTitular;
     private String numeroTarjeta;
     private String fechaExpiracion;
     private String cvv;
     private String tipoTarjeta;
 
-    // MEDIO DE PAGO (CRÉDITO / DÉBITO / PSE)
-    private String medioPago; // CREDITO, DEBITO, PSE
-
-// Banco PSE
-    private String bancoPse;
-
-// Datos específicos para PSE
-    private String tipoPersona;   // NATURAL / JURIDICA
-    private String tipoDocumento; // CC, NIT, CE...
-    private String pseNumero;     // número de documento
-    private String pseNombre;     // nombre del titular
-    private String pseCorreo;     // correo electrónico
-
-    // Datos del último pago (solo para mostrar info en la vista, si lo necesitas)
     private String codigoOperacionUltimoPago;
     private LocalDateTime fechaUltimoPago;
 
-    // ====================== LÓGICA DE SIMULACIÓN PÚBLICA ======================
     public void prepararSimulacionPublica() {
+
+        if (items == null) {
+            items = new ArrayList<>();
+        }
+
         if (!usuarioAutenticado()
                 && !FacesContext.getCurrentInstance().isPostback()
                 && !simulacionPublicaInicializada) {
+
             items.clear();
             simulacionPublicaInicializada = true;
         }
     }
 
-    // ====================== AGREGAR DESDE CATÁLOGO/MODAL ======================
     public void prepararAgregarProducto(Producto producto) {
+
         this.productoTemporal = producto;
         this.cantidadTemporal = 1;
         System.out.println("✅ Producto preparado: " + producto.getNombreProducto());
     }
 
+    // Método para agregar desde el modal
     public void agregarProductoModal() {
-        if (productoTemporal != null && cantidadTemporal != null && cantidadTemporal > 0) {
+
+        if (productoTemporal != null && cantidadTemporal > 0) {
             agregarProductoConCantidad(productoTemporal, cantidadTemporal);
-            System.out.println("✅ Producto agregado: " + productoTemporal.getNombreProducto()
-                    + ", Cantidad: " + cantidadTemporal);
+            System.out.println("✅ Producto agregado: " + productoTemporal.getNombreProducto() + ", Cantidad: " + cantidadTemporal);
             productoTemporal = null;
         } else {
             FacesContext.getCurrentInstance().addMessage(null,
@@ -98,6 +92,7 @@ public class CarritoBean implements Serializable {
     }
 
     public void agregarProductoConCantidad(Producto producto, int cantidad) {
+
         boolean encontrado = false;
 
         for (CarritoItem item : items) {
@@ -117,7 +112,7 @@ public class CarritoBean implements Serializable {
                         cantidad + " unidad(es) de " + producto.getNombreProducto() + " agregado al carrito."));
     }
 
-    // ====================== ELIMINAR ITEM ======================
+    // Eliminar item completo
     public void eliminarItem(CarritoItem item) {
         String nombreProducto = item.getProducto().getNombreProducto();
         items.remove(item);
@@ -127,7 +122,7 @@ public class CarritoBean implements Serializable {
                         nombreProducto + " eliminado del carrito."));
     }
 
-    // ====================== EDICIÓN DE CANTIDAD EN MODAL ======================
+    // MÉTODOS PARA EDITAR CANTIDAD
     public void prepararEditarCantidad(CarritoItem item) {
         this.itemEdicion = item;
         this.cantidadTemporal = item.getCantidad();
@@ -136,12 +131,13 @@ public class CarritoBean implements Serializable {
     }
 
     public void actualizarCantidad() {
-        if (itemEdicion == null || cantidadTemporal == null || cantidadTemporal <= 0) {
+        if (itemEdicion == null || cantidadTemporal <= 0) {
             return;
         }
 
         int cantidadAnterior = itemEdicion.getCantidad();
 
+        // 1) Actualizamos el objeto de la lista explícitamente
         for (CarritoItem it : items) {
             if (it.getProducto().getIdProducto() == itemEdicion.getProducto().getIdProducto()) {
                 it.setCantidad(cantidadTemporal);
@@ -149,100 +145,81 @@ public class CarritoBean implements Serializable {
             }
         }
 
+        // 2) Por si acaso, también actualizamos la referencia almacenada
         itemEdicion.setCantidad(cantidadTemporal);
 
-        System.out.println("✔ Cantidad actualizada: " + itemEdicion.getProducto().getNombreProducto()
-                + " - Anterior: " + cantidadAnterior
-                + ", Nueva: " + cantidadTemporal);
+        System.out.println("✅ Cantidad actualizada: "
+                + itemEdicion.getProducto().getNombreProducto()
+                + " de " + cantidadAnterior + " a " + cantidadTemporal);
 
         FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO, "Cantidad actualizada",
-                        "La cantidad de " + itemEdicion.getProducto().getNombreProducto()
-                        + " se actualizó a " + cantidadTemporal + " unidades."));
+                new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        "Cantidad Actualizada",
+                        itemEdicion.getProducto().getNombreProducto()
+                        + " actualizado a " + cantidadTemporal + " unidades."));
 
+        // Limpieza
         itemEdicion = null;
     }
 
-    // ====================== MÉTODOS RÁPIDOS PARA CATÁLOGO ======================
-    public void agregarUnidad(Producto p) {
+    public void procederAlPago() {
+        // Validación básica de carrito
+        if (isVacio()) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Carrito vacío",
+                            "No puedes proceder al pago con el carrito vacío."));
+            return;
+        }
+
+        // Validación de sesión
+        if (!usuarioAutenticado()) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Inicia sesión",
+                            "Debes iniciar sesión como cliente para completar el pago."));
+            redirigirALogin();
+            return;
+        }
+
+        // Validar datos de tarjeta (lado servidor)
+        if (!validarDatosTarjeta()) {
+            return; // si hay errores, no continúa
+        }
+
+        // Si JSF marcó errores de validación (por required, regex, etc.)
+        if (FacesContext.getCurrentInstance().isValidationFailed()) {
+            return;
+        }
+
         try {
-            this.prepararAgregarProducto(p);
-            this.cantidadTemporal = 1;
-            this.agregarProductoModal();
+            procesarPago();  // registra ventas, movimientos, etc.
+
+            // Código de operación simulado
+            this.codigoOperacionUltimoPago = "AGV-" + System.currentTimeMillis();
+            this.fechaUltimoPago = LocalDateTime.now();
+
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO,
+                            "Pago exitoso",
+                            "Tu pago se procesó correctamente. Código de operación: " + codigoOperacionUltimoPago));
+
+            limpiarDatosTarjeta();
+
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                            "No se pudo agregar el producto al carrito."));
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Error en pago",
+                            "No se pudo procesar el pago: " + e.getMessage()));
         }
     }
 
-    // === MÉTODOS PARA + / - EN carrito.xhtml SOBRE CarritoItem ===
-    public void incrementarItem(CarritoItem item) {
-        int nuevaCantidad = item.getCantidad() + 1;
-        this.cantidadTemporal = nuevaCantidad;
-        this.itemEdicion = item;
-        this.actualizarCantidad();
+    private void limpiarDatosTarjeta() {
+        nombreTitular = null;
+        numeroTarjeta = null;
+        fechaExpiracion = null;
+        cvv = null;
+        tipoTarjeta = null;
     }
 
-    public void decrementarItem(CarritoItem item) {
-        if (item.getCantidad() <= 1) {
-            return;
-        }
-        int nuevaCantidad = item.getCantidad() - 1;
-        this.cantidadTemporal = nuevaCantidad;
-        this.itemEdicion = item;
-        this.actualizarCantidad();
-    }
-
-    // === MÉTODOS PARA + / - DESDE EL CATÁLOGO (dashboardCliente.xhtml) ===
-    public int obtenerCantidadProducto(Producto p) {
-        if (p == null) {
-            return 0;
-        }
-        for (CarritoItem item : items) {
-            if (item.getProducto() != null
-                    && item.getProducto().getIdProducto() == p.getIdProducto()) {
-                return item.getCantidad();
-            }
-        }
-        return 0;
-    }
-
-    public void incrementarProducto(Producto p) {
-        if (p == null) {
-            return;
-        }
-        agregarProductoConCantidad(p, 1);
-    }
-
-    public void decrementarProducto(Producto p) {
-        if (p == null) {
-            return;
-        }
-
-        CarritoItem itemAEliminar = null;
-
-        for (CarritoItem item : items) {
-            if (item.getProducto() != null
-                    && item.getProducto().getIdProducto() == p.getIdProducto()) {
-
-                int nuevaCantidad = item.getCantidad() - 1;
-
-                if (nuevaCantidad <= 0) {
-                    itemAEliminar = item;
-                } else {
-                    item.setCantidad(nuevaCantidad);
-                }
-                break;
-            }
-        }
-
-        if (itemAEliminar != null) {
-            items.remove(itemAEliminar);
-        }
-    }
-
-    // ====================== LÓGICA DE USUARIO ======================
     private UsuarioBean obtenerUsuarioBean() {
         return FacesContext.getCurrentInstance().getApplication()
                 .evaluateExpressionGet(FacesContext.getCurrentInstance(), "#{usuarioBean}", UsuarioBean.class);
@@ -265,76 +242,11 @@ public class CarritoBean implements Serializable {
         }
     }
 
-    // ====================== PAGO / VALIDACIÓN ======================
-    public void procederAlPago() {
-        if (isVacio()) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Carrito vacío",
-                            "No puedes proceder al pago con el carrito vacío."));
-            return;
-        }
-
-        if (!usuarioAutenticado()) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Inicia sesión",
-                            "Debes iniciar sesión como cliente para completar el pago."));
-            redirigirALogin();
-            return;
-        }
-
-        if (!validarDatosTarjeta()) {
-            return;
-        }
-
-        if (FacesContext.getCurrentInstance().isValidationFailed()) {
-            return;
-        }
-
-        try {
-            procesarPago();
-
-            this.codigoOperacionUltimoPago = "AGV-" + System.currentTimeMillis();
-            this.fechaUltimoPago = LocalDateTime.now();
-
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO,
-                            "Pago exitoso",
-                            "Tu pago se procesó correctamente. Código de operación: " + codigoOperacionUltimoPago));
-
-            limpiarDatosTarjeta();
-
-        } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            "Error en pago",
-                            "No se pudo procesar el pago: " + e.getMessage()));
-        }
-    }
-
-    private void limpiarDatosTarjeta() {
-        // Datos de tarjeta
-        nombreTitular = null;
-        numeroTarjeta = null;
-        fechaExpiracion = null;
-        cvv = null;
-        tipoTarjeta = null;
-
-        // Medio de pago y PSE
-        medioPago = null;
-        bancoPse = null;
-        tipoPersona = null;
-        tipoDocumento = null;
-        pseNumero = null;
-        pseNombre = null;
-        pseCorreo = null;
-
-    }
-
-    // ====================== PAGO / REGISTRO EN BD ======================
     private void procesarPago() {
         UsuarioBean usuarioBean = obtenerUsuarioBean();
 
         try {
+            // Guardamos todas las ventas de este pago para el comprobante
             ventasUltimoPago = new ArrayList<>();
             double totalGeneral = 0;
 
@@ -377,7 +289,6 @@ public class CarritoBean implements Serializable {
                 venta.setProducto(productoDB);
                 venta.setUsuario(usuarioBean.getUsuario());
                 venta.setCantidad(item.getCantidad());
-                // TotalPagar en BD se guarda sin IVA (solo subtotal)
                 venta.setTotalPagar(item.getSubtotal());
                 ventasDAO.registrar(venta);
 
@@ -397,7 +308,6 @@ public class CarritoBean implements Serializable {
         }
     }
 
-    // ====================== COMPROBANTE PDF ======================
     public void descargarComprobantePdf() {
         FacesContext ctx = FacesContext.getCurrentInstance();
 
@@ -420,7 +330,6 @@ public class CarritoBean implements Serializable {
 
             Document document = new Document();
             PdfWriter.getInstance(document, response.getOutputStream());
-
             document.open();
 
             document.add(new Paragraph("AgriviApp - Comprobante de Pago"));
@@ -436,23 +345,18 @@ public class CarritoBean implements Serializable {
             table.addCell("Precio unitario");
             table.addCell("Subtotal");
 
-            double totalProductos = 0;
+            double total = 0;
             for (Ventas v : ventasUltimoPago) {
                 table.addCell(v.getProducto().getNombreProducto());
                 table.addCell(String.valueOf(v.getCantidad()));
                 table.addCell(String.format("%.2f", v.getProducto().getPrecioVenta()));
                 table.addCell(String.format("%.2f", v.getTotalPagar()));
-                totalProductos += v.getTotalPagar();
+                total += v.getTotalPagar();
             }
-
-            double totalIva = totalProductos * IVA_PORCENTAJE;
-            double totalConIva = totalProductos + totalIva;
 
             document.add(table);
             document.add(Chunk.NEWLINE);
-            document.add(new Paragraph("Total productos: $" + String.format("%.2f", totalProductos)));
-            document.add(new Paragraph("IVA (1.5%): $" + String.format("%.2f", totalIva)));
-            document.add(new Paragraph("Total pagado: $" + String.format("%.2f", totalConIva)));
+            document.add(new Paragraph("Total pagado: $" + String.format("%.2f", total)));
 
             document.close();
             ctx.responseComplete();
@@ -465,82 +369,10 @@ public class CarritoBean implements Serializable {
         }
     }
 
-    // ====================== VALIDACIÓN DE TARJETA / PSE ======================
     private boolean validarDatosTarjeta() {
         boolean valido = true;
         FacesContext ctx = FacesContext.getCurrentInstance();
 
-        // Medio de pago obligatorio
-        if (medioPago == null || medioPago.trim().isEmpty()) {
-            ctx.addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_WARN,
-                    "Dato requerido",
-                    "Debes seleccionar un medio de pago."
-            ));
-            return false;
-        }
-
-        // === PSE ===
-        if ("PSE".equals(medioPago)) {
-
-            if (tipoPersona == null || tipoPersona.trim().isEmpty()) {
-                ctx.addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_WARN,
-                        "Dato requerido",
-                        "Debes seleccionar el tipo de persona para PSE."
-                ));
-                valido = false;
-            }
-
-            if (bancoPse == null || bancoPse.trim().isEmpty()) {
-                ctx.addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_WARN,
-                        "Dato requerido",
-                        "Debes seleccionar el banco para PSE."
-                ));
-                valido = false;
-            }
-
-            if (tipoDocumento == null || tipoDocumento.trim().isEmpty()) {
-                ctx.addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_WARN,
-                        "Dato requerido",
-                        "Debes seleccionar el tipo de documento para PSE."
-                ));
-                valido = false;
-            }
-
-            if (pseNumero == null || pseNumero.trim().isEmpty()) {
-                ctx.addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_WARN,
-                        "Dato requerido",
-                        "Debes ingresar el número de identificación para PSE."
-                ));
-                valido = false;
-            }
-
-            if (pseNombre == null || pseNombre.trim().isEmpty()) {
-                ctx.addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_WARN,
-                        "Dato requerido",
-                        "Debes ingresar el nombre del titular para PSE."
-                ));
-                valido = false;
-            }
-
-            if (pseCorreo == null || pseCorreo.trim().isEmpty()) {
-                ctx.addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_WARN,
-                        "Dato requerido",
-                        "Debes ingresar el correo electrónico para PSE."
-                ));
-                valido = false;
-            }
-
-            return valido;
-        }
-
-        // === TARJETA (CRÉDITO / DÉBITO) ===
         if (nombreTitular == null || nombreTitular.trim().isEmpty()) {
             ctx.addMessage(null, new FacesMessage(
                     FacesMessage.SEVERITY_WARN,
@@ -550,29 +382,39 @@ public class CarritoBean implements Serializable {
             valido = false;
         }
 
-        if (numeroTarjeta == null || numeroTarjeta.trim().isEmpty()) {
+        if (numeroTarjeta == null) {
             ctx.addMessage(null, new FacesMessage(
                     FacesMessage.SEVERITY_WARN,
                     "Dato requerido",
                     "El número de tarjeta es obligatorio."
             ));
             valido = false;
+        } else {
+            String soloDigitos = numeroTarjeta.replaceAll("\\s+", "");
+            if (!soloDigitos.matches("\\d{16}")) {
+                ctx.addMessage(null, new FacesMessage(
+                        FacesMessage.SEVERITY_WARN,
+                        "Número de tarjeta inválido",
+                        "La tarjeta debe tener 16 dígitos numéricos."
+                ));
+                valido = false;
+            }
         }
 
-        if (fechaExpiracion == null || fechaExpiracion.trim().isEmpty()) {
+        if (fechaExpiracion == null || !fechaExpiracion.matches("(0[1-9]|1[0-2])/(\\d{2})")) {
             ctx.addMessage(null, new FacesMessage(
                     FacesMessage.SEVERITY_WARN,
-                    "Dato requerido",
-                    "La fecha de expiración es obligatoria."
+                    "Fecha inválida",
+                    "La fecha de expiración debe tener el formato MM/AA."
             ));
             valido = false;
         }
 
-        if (cvv == null || cvv.trim().isEmpty()) {
+        if (cvv == null || !cvv.matches("\\d{3}")) {
             ctx.addMessage(null, new FacesMessage(
                     FacesMessage.SEVERITY_WARN,
-                    "Dato requerido",
-                    "El CVV es obligatorio."
+                    "CVV inválido",
+                    "El CVV debe tener 3 dígitos numéricos."
             ));
             valido = false;
         }
@@ -581,7 +423,7 @@ public class CarritoBean implements Serializable {
             ctx.addMessage(null, new FacesMessage(
                     FacesMessage.SEVERITY_WARN,
                     "Dato requerido",
-                    "Selecciona un tipo de tarjeta."
+                    "Debes seleccionar el tipo de tarjeta."
             ));
             valido = false;
         }
@@ -589,44 +431,22 @@ public class CarritoBean implements Serializable {
         return valido;
     }
 
-    // ====================== CÁLCULOS DE TOTALES ======================
+    public String getCodigoOperacionUltimoPago() {
+        return codigoOperacionUltimoPago;
+    }
+
+    public LocalDateTime getFechaUltimoPago() {
+        return fechaUltimoPago;
+    }
+// Getters y Setters
+    // Cálculos
+
     public float getTotalCompra() {
         float total = 0;
         for (CarritoItem item : items) {
             total += item.getSubtotal();
         }
         return total;
-    }
-
-    public float getTotalProductos() {
-        return getTotalCompra();
-    }
-
-    public float getTotalIva() {
-        return getTotalProductos() * IVA_PORCENTAJE;
-    }
-
-    public float getSubtotalCompra() {
-        return getTotalProductos() + getTotalIva();
-    }
-
-    // Totales del ÚLTIMO PAGO (para el resumen después de pagar)
-    public double getUltimoTotalProductos() {
-        double total = 0;
-        if (ventasUltimoPago != null) {
-            for (Ventas v : ventasUltimoPago) {
-                total += v.getTotalPagar(); // subtotal sin IVA
-            }
-        }
-        return total;
-    }
-
-    public double getUltimoTotalIva() {
-        return getUltimoTotalProductos() * IVA_PORCENTAJE;
-    }
-
-    public double getUltimoSubtotalCompra() {
-        return getUltimoTotalProductos() + getUltimoTotalIva();
     }
 
     public int getTotalItems() {
@@ -637,8 +457,15 @@ public class CarritoBean implements Serializable {
         return items.isEmpty();
     }
 
-    // ====================== GETTERS / SETTERS ======================
+    @PostConstruct
+    public void init() {
+        items = new ArrayList<>();
+    }
+
     public List<CarritoItem> getItems() {
+        if (items == null) {
+            items = new ArrayList<>();
+        }
         return items;
     }
 
@@ -664,10 +491,6 @@ public class CarritoBean implements Serializable {
 
     public void setItemEdicion(CarritoItem itemEdicion) {
         this.itemEdicion = itemEdicion;
-    }
-
-    public List<Ventas> getVentasUltimoPago() {
-        return ventasUltimoPago;
     }
 
     public String getNombreTitular() {
@@ -708,70 +531,6 @@ public class CarritoBean implements Serializable {
 
     public void setTipoTarjeta(String tipoTarjeta) {
         this.tipoTarjeta = tipoTarjeta;
-    }
-
-    public String getMedioPago() {
-        return medioPago;
-    }
-
-    public void setMedioPago(String medioPago) {
-        this.medioPago = medioPago;
-    }
-
-    public String getBancoPse() {
-        return bancoPse;
-    }
-
-    public void setBancoPse(String bancoPse) {
-        this.bancoPse = bancoPse;
-    }
-
-    public String getPseNumero() {
-        return pseNumero;
-    }
-
-    public void setPseNumero(String pseNumero) {
-        this.pseNumero = pseNumero;
-    }
-
-    public String getPseNombre() {
-        return pseNombre;
-    }
-
-    public void setPseNombre(String pseNombre) {
-        this.pseNombre = pseNombre;
-    }
-
-    public String getPseCorreo() {
-        return pseCorreo;
-    }
-
-    public void setPseCorreo(String pseCorreo) {
-        this.pseCorreo = pseCorreo;
-    }
-
-    public String getCodigoOperacionUltimoPago() {
-        return codigoOperacionUltimoPago;
-    }
-
-    public LocalDateTime getFechaUltimoPago() {
-        return fechaUltimoPago;
-    }
-
-    public String getTipoPersona() {
-        return tipoPersona;
-    }
-
-    public void setTipoPersona(String tipoPersona) {
-        this.tipoPersona = tipoPersona;
-    }
-
-    public String getTipoDocumento() {
-        return tipoDocumento;
-    }
-
-    public void setTipoDocumento(String tipoDocumento) {
-        this.tipoDocumento = tipoDocumento;
     }
 
 }

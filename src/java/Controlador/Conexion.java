@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class Conexion {
     // URL de la base de datos (con usuario y SSL deshabilitado)
-    private static final String URL = "jdbc:mysql://localhost:3306/agrivijsf3?useSSL=false";
+    private static final String URL = "jdbc:mysql://localhost:3306/agrivijsf";
     private static final String USUARIO = "root";
     private static final String PASSWORD = ""; 
 

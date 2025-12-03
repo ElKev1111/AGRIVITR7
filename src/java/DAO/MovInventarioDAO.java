@@ -6,8 +6,9 @@ import java.sql.*;
 import java.util.*;
 import java.util.Date;
 
-public class MovInventarioDAO implements Serializable{
-    private static final long serialVersionUID =1L;
+public class MovInventarioDAO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
     private transient PreparedStatement ps;
     private transient ResultSet rs;
 
@@ -17,45 +18,42 @@ public class MovInventarioDAO implements Serializable{
         this.conexion = ConnBD.getConnection();
     }
 
-    public List<MovInventario> listar() {
-        List<MovInventario> lista = new ArrayList<>();
-        String sql = "SELECT * FROM movimientos_inventario ORDER BY COALESCE(fechaEntrada, fechaSalida) DESC";
-
-        try (PreparedStatement ps = conexion.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                MovInventario mov = mapearMovimiento(rs);
-                lista.add(mov);
-            }
-        } catch (SQLException e) {
-            System.err.println("Error al listar movimientos: " + e.getMessage());
-        }
-        return lista;
-    }
-
     public boolean registrarMovimiento(MovInventario mov) {
-         String sql = "INSERT INTO movimientos_inventario (tipoString, cantidadEntrada, cantidadSalida, "
+        String sql = "INSERT INTO movimientos_inventario ("
+                + "tipoString, cantidadEntrada, cantidadSalida, "
                 + "fechaEntrada, fechaSalida, tipoEntrada, tipoSalida, descripcion, "
-                + "proveedor, cliente, precioCompra, precioVenta, numeroFactura, idProducto, stockAnterior, stockNuevo) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "proveedor, cliente, precioCompra, precioVenta, numeroFactura, "
+                + "idProducto, stockAnterior, stockNuevo, archivoFactura, usuarioRegistro) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setString(1, mov.getTipoString());
             ps.setObject(2, mov.getCantidadEntrada(), Types.INTEGER);
             ps.setObject(3, mov.getCantidadSalida(), Types.INTEGER);
-            ps.setDate(4, mov.getFechaEntrada() != null ? new java.sql.Date(mov.getFechaEntrada().getTime()) : null);
-            ps.setDate(5, mov.getFechaSalida() != null ? new java.sql.Date(mov.getFechaSalida().getTime()) : null);
+
+            ps.setDate(4, mov.getFechaEntrada() != null
+                    ? new java.sql.Date(mov.getFechaEntrada().getTime())
+                    : null);
+            ps.setDate(5, mov.getFechaSalida() != null
+                    ? new java.sql.Date(mov.getFechaSalida().getTime())
+                    : null);
+
             ps.setString(6, mov.getTipoEntrada());
             ps.setString(7, mov.getTipoSalida());
             ps.setString(8, mov.getDescripcion());
             ps.setString(9, mov.getProveedor());
             ps.setString(10, mov.getCliente());
+
             ps.setObject(11, mov.getPrecioCompra(), Types.DOUBLE);
             ps.setObject(12, mov.getPrecioVenta(), Types.DOUBLE);
             ps.setString(13, mov.getNumeroFactura());
+
             ps.setObject(14, mov.getIdProducto(), Types.INTEGER);
             ps.setObject(15, mov.getStockAnterior(), Types.INTEGER);
             ps.setObject(16, mov.getStockNuevo(), Types.INTEGER);
+
+            ps.setString(17, mov.getArchivoFactura());
+            ps.setString(18, mov.getUsuarioRegistro());
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -107,10 +105,10 @@ public class MovInventarioDAO implements Serializable{
         return contarSuma(sql);
     }
 
-   public int getTotalSalidas() {
-    String sql = "SELECT COALESCE(SUM(cantidadSalida), 0) FROM movimientos_inventario WHERE tipoString = 'Salida'";
-    return contarSuma(sql);
-}
+    public int getTotalSalidas() {
+        String sql = "SELECT COALESCE(SUM(cantidadSalida), 0) FROM movimientos_inventario WHERE tipoString = 'Salida'";
+        return contarSuma(sql);
+    }
 
     private int contarRegistros(String sql) {
         try (PreparedStatement ps = conexion.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
@@ -121,6 +119,98 @@ public class MovInventarioDAO implements Serializable{
             System.err.println("Error al contar registros: " + e.getMessage());
         }
         return 0;
+    }
+
+    public List<MovInventario> listar() throws Exception {
+        List<MovInventario> lista = new ArrayList<>();
+        String sql = "SELECT * FROM movimientos_inventario ORDER BY fechaRegistro DESC";
+
+        try (PreparedStatement ps = conexion.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                MovInventario mov = new MovInventario();
+                mov.setIdMovInventario(rs.getInt("idMovInventario"));
+                mov.setTipoString(rs.getString("tipoString"));
+
+                mov.setCantidadEntrada(rs.getInt("cantidadEntrada"));
+                mov.setCantidadSalida(rs.getInt("cantidadSalida"));
+                mov.setFechaEntrada(rs.getDate("fechaEntrada"));
+                mov.setFechaSalida(rs.getDate("fechaSalida"));
+                mov.setTipoEntrada(rs.getString("tipoEntrada"));
+                mov.setTipoSalida(rs.getString("tipoSalida"));
+                mov.setDescripcion(rs.getString("descripcion"));
+                mov.setProveedor(rs.getString("proveedor"));
+                mov.setCliente(rs.getString("cliente"));
+                mov.setPrecioCompra(rs.getDouble("precioCompra"));
+                mov.setPrecioVenta(rs.getDouble("precioVenta"));
+
+                // 🔹 columnas que SÍ existen en movimientos_inventario
+                mov.setStockAnterior(rs.getInt("stockAnterior"));
+                mov.setStockNuevo(rs.getInt("stockNuevo"));
+                mov.setIdProducto(rs.getInt("idProducto"));
+                mov.setNumeroFactura(rs.getString("numeroFactura"));
+
+                // 🔹 nuevos campos: archivoFactura, usuarioRegistro, fechaRegistro
+                mov.setArchivoFactura(rs.getString("archivoFactura"));
+                mov.setUsuarioRegistro(rs.getString("usuarioRegistro"));
+                try {
+                    mov.setFechaRegistro(rs.getTimestamp("fechaRegistro"));
+                } catch (SQLException e) {
+                    // por si acaso, no rompemos el listado
+                }
+
+                lista.add(mov);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al listar movimientos: " + e.getMessage());
+        }
+        return lista;
+    }
+
+    //MÉTODO PARA SUMAR CANTIDADES
+    private int contarSuma(String sql) {
+        try (PreparedStatement ps = conexion.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al sumar cantidades: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    // METODO PARA FILTRAR FECHAS POR FECHAS
+    public List<MovInventario> filtrarPorTrimestre(int año, int trimestre) {
+        List<MovInventario> lista = new ArrayList<>();
+
+        // Calcular fechas del trimestre
+        int mesInicio = (trimestre - 1) * 3 + 1; // Enero=1, Abril=4, etc.
+        int mesFin = mesInicio + 2;
+
+        String sql = "SELECT * FROM movimientos_inventario "
+                + "WHERE (YEAR(fechaEntrada) = ? AND MONTH(fechaEntrada) BETWEEN ? AND ?) "
+                + "OR (YEAR(fechaSalida) = ? AND MONTH(fechaSalida) BETWEEN ? AND ?) "
+                + "ORDER BY COALESCE(fechaEntrada, fechaSalida) DESC";
+
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setInt(1, año);
+            ps.setInt(2, mesInicio);
+            ps.setInt(3, mesFin);
+            ps.setInt(4, año);
+            ps.setInt(5, mesInicio);
+            ps.setInt(6, mesFin);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    MovInventario mov = mapearMovimiento(rs);
+                    lista.add(mov);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al filtrar por trimestre: " + e.getMessage());
+        }
+        return lista;
     }
 
     private MovInventario mapearMovimiento(ResultSet rs) throws SQLException {
@@ -150,48 +240,5 @@ public class MovInventarioDAO implements Serializable{
 
         return mov;
     }
-    //MÉTODO PARA SUMAR CANTIDADES
 
-    private int contarSuma(String sql) {
-        try (PreparedStatement ps = conexion.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-        } catch (SQLException e) {
-            System.err.println("Error al sumar cantidades: " + e.getMessage());
-        }
-        return 0;
-    }
-    // METODO PARA FILTRAR FECHAS POR FECHAS
-    public List<MovInventario> filtrarPorTrimestre(int año, int trimestre) {
-    List<MovInventario> lista = new ArrayList<>();
-    
-    // Calcular fechas del trimestre
-    int mesInicio = (trimestre - 1) * 3 + 1; // Enero=1, Abril=4, etc.
-    int mesFin = mesInicio + 2;
-    
-    String sql = "SELECT * FROM movimientos_inventario " +
-                "WHERE (YEAR(fechaEntrada) = ? AND MONTH(fechaEntrada) BETWEEN ? AND ?) " +
-                "OR (YEAR(fechaSalida) = ? AND MONTH(fechaSalida) BETWEEN ? AND ?) " +
-                "ORDER BY COALESCE(fechaEntrada, fechaSalida) DESC";
-    
-    try (PreparedStatement ps = conexion.prepareStatement(sql)) {
-        ps.setInt(1, año);
-        ps.setInt(2, mesInicio);
-        ps.setInt(3, mesFin);
-        ps.setInt(4, año);
-        ps.setInt(5, mesInicio);
-        ps.setInt(6, mesFin);
-        
-        try (ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                MovInventario mov = mapearMovimiento(rs);
-                lista.add(mov);
-            }
-        }
-    } catch (SQLException e) {
-        System.err.println("Error al filtrar por trimestre: " + e.getMessage());
-    }
-    return lista;
-}
 }

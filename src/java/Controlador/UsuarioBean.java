@@ -2,48 +2,40 @@ package Controlador;
 
 import DAO.UsuarioDAO;
 import Modelo.CifradoAES;
-import java.io.Serializable;
-import java.io.File;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Locale;
+import Modelo.Usuario;
+import Modelo.EnumRoles;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
-import Modelo.Usuario;
-import Modelo.EnumRoles;
+import java.io.Serializable;
 import java.io.IOException;
-import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import org.primefaces.model.file.UploadedFile;
+import java.util.Locale;
 
-    
 @ManagedBean
 @SessionScoped
 public class UsuarioBean implements Serializable {
+
     private static final long serialVersionUID = 1L;
-    
 
+    // Usuario LOGUEADO
     private Usuario usuario = new Usuario();
-    private UsuarioDAO usuarioDAO = new UsuarioDAO();
 
-    private UploadedFile archivoFoto;
-    
+    // Acceso a BD
+    private final UsuarioDAO usuarioDAO = new UsuarioDAO();
+
+    // Flag de ayuda
     private boolean autenticado = false;
 
-    public boolean isAutenticado() {
-        return usuario != null && usuario.getId() > 0;
-    }
-
-    // Getter & Setter
+    // =========================
+    //  GETTERS / SETTERS
+    // =========================
     public Usuario getUsuario() {
         return usuario;
     }
@@ -52,94 +44,124 @@ public class UsuarioBean implements Serializable {
         this.usuario = usuario;
     }
 
-    public UploadedFile getArchivoFoto() {
-        return archivoFoto;
+    public boolean isAutenticado() {
+        // Consideramos autenticado si tiene id y el flag está en true
+        return usuario != null && usuario.getId() > 0 && autenticado;
     }
 
-    public void setArchivoFoto(UploadedFile archivoFoto) {
-        this.archivoFoto = archivoFoto;
+    // Texto listo para mostrar / guardar como “UsuarioRegistro”
+    public String getEtiquetaUsuarioActual() {
+        if (usuario == null || usuario.getId() <= 0) {
+            return "";
+        }
+
+        String nombre = usuario.getNombre();
+        EnumRoles rol = usuario.getRol();
+
+        String rolTexto = "";
+        if (rol != null) {
+            // admin -> "Admin", cliente -> "Cliente", etc.
+            String raw = rol.name().toLowerCase(Locale.ROOT);
+            rolTexto = raw.substring(0, 1).toUpperCase(Locale.ROOT) + raw.substring(1);
+        }
+
+        if (nombre == null) {
+            nombre = "";
+        }
+
+        if (rolTexto.isEmpty()) {
+            return nombre;
+        }
+        return nombre + " (" + rolTexto + ")";
     }
 
     public List<Usuario> getListaUsuarios() {
         try {
             return usuarioDAO.listar();
-
         } catch (SQLException e) {
-            System.out.println("Erro al listar usuarios");
+            System.out.println("Error al listar usuarios: " + e.getMessage());
             return null;
         }
     }
 
-    public String editar(Usuario u) {
-        this.usuario = u;
-        return "editarUsuario?faces-redirect=true";
+    public String getEtiquetaUsuario() {
 
-    }
-    
-    public String actualizar(Usuario u){
-        try{
-            u.setFecha_actualizacion(LocalDateTime.now());
-            usuarioDAO.actualizar(u);
-            
-            FacesContext.getCurrentInstance().addMessage(null,
-            new FacesMessage(FacesMessage.SEVERITY_INFO, 
-                "Éxito", "Habitaciónactualizada correctamente"));
-    } catch (Exception e) {
-        FacesContext.getCurrentInstance().addMessage(null,
-          new FacesMessage(FacesMessage.SEVERITY_ERROR, 
-                  "Error", "No se pudo actualizar la habitación"));       
-    }
-        return "HomeAdmin1?faces-redirect=true";
-    }
-    
+        if (usuario == null) {
+            return "Usuario desconocido";
+        }
 
-    // Método de autenticación
+        // nombre del usuario
+        String nombre = usuario.getNombre();
+
+        // nombre del rol desde EnumRoles
+        String rol = (usuario.getRol() != null) ? usuario.getRol().name() : "";
+
+        if (nombre == null || nombre.trim().isEmpty()) {
+            return "Usuario desconocido";
+        }
+
+        if (rol == null || rol.trim().isEmpty()) {
+            return nombre;
+        }
+
+        return nombre + " (" + rol + ")";
+    }
+
+    // =========================
+    //  AUTENTICACIÓN
+    // =========================
     public String autenticar() {
         String destino = null;
 
         try (Connection con = Conexion.conectar()) {
-            String sql = "SELECT * FROM usuario WHERE correo = ? AND password = ? ";
+
+            String sql = "SELECT * FROM usuario WHERE correo = ? AND password = ?";
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, usuario.getCorreo());
 
-            String password = CifradoAES.encriptar(usuario.getPassword()); // aca se encripta el valor ingrasdado como password en el login
+            // password ingresada en el login
+            String password = CifradoAES.encriptar(usuario.getPassword());
             ps.setString(2, password);
 
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                this.usuario = new Usuario();
+                // Rellenar objeto usuario logueado
+                usuario = new Usuario();
                 usuario.setId(rs.getInt("id"));
                 usuario.setNombre(rs.getString("nombre"));
                 usuario.setCorreo(rs.getString("correo"));
                 usuario.setEstado(rs.getString("estado"));
-                usuario.setCelular(rs.getString("celular"));
-                usuario.setDireccion(rs.getString("direccion"));
-                usuario.setPassword(rs.getString("password"));
-                usuario.setFotoPerfil(rs.getString("fotoPerfil"));
-                usuario.setBiografia(rs.getString("biografia"));
 
                 String rolDb = rs.getString("rol");
                 EnumRoles rol = EnumRoles.valueOf(rolDb.trim().toUpperCase(Locale.ROOT));
                 usuario.setRol(rol);
 
-                Usuario usuarioCompleto = usuarioDAO.obtenerPorId(usuario.getId());
-                if (usuarioCompleto != null) {
-                    usuario = usuarioCompleto;
-                    rol = usuario.getRol();
-                }
+                // Validar estado
+                if (usuario.getEstado() != null
+                        && !"ACTIVO".equalsIgnoreCase(usuario.getEstado())) {
 
-                if (usuario.getEstado() != null && !"ACTIVO".equalsIgnoreCase(usuario.getEstado())) {
-                    this.autenticado = false;
-                    FacesContext.getCurrentInstance().addMessage(null,
-                            new FacesMessage(FacesMessage.SEVERITY_WARN, "Aviso", "Tu usuario está inactivo. Contacta con el administrador."));
+                    autenticado = false;
+                    FacesContext.getCurrentInstance().addMessage(
+                            null,
+                            new FacesMessage(
+                                    FacesMessage.SEVERITY_WARN,
+                                    "Aviso",
+                                    "Tu usuario está inactivo. Contacta con el administrador."
+                            )
+                    );
                     return null;
                 }
 
-                this.autenticado = true;
+                autenticado = true;
 
-                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("user", usuario.getNombre());
+                // Guardamos algo en sesión si quieres
+                FacesContext.getCurrentInstance()
+                        .getExternalContext()
+                        .getSessionMap()
+                        .put("user", usuario.getNombre());
 
+                // Redirección según rol
                 if (rol == EnumRoles.ADMINISTRADOR || rol == EnumRoles.EMPLEADO) {
                     destino = "HomeAdmin1?faces-redirect=true";
                 } else {
@@ -147,15 +169,26 @@ public class UsuarioBean implements Serializable {
                 }
 
             } else {
-                this.autenticado = false;
-                
-                FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_WARN, "Aviso", "Id de Usuario y/o Contraseña no válidos"));
+                autenticado = false;
+                FacesContext.getCurrentInstance().addMessage(
+                        null,
+                        new FacesMessage(
+                                FacesMessage.SEVERITY_WARN,
+                                "Aviso",
+                                "Correo y/o contraseña no válidos"
+                        )
+                );
             }
 
         } catch (SQLException e) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "Error en Conexión a Base de Datos"));
+            FacesContext.getCurrentInstance().addMessage(
+                    null,
+                    new FacesMessage(
+                            FacesMessage.SEVERITY_FATAL,
+                            "Error",
+                            "Error en Conexión a Base de Datos"
+                    )
+            );
         }
 
         return destino;
@@ -165,22 +198,25 @@ public class UsuarioBean implements Serializable {
         try {
             FacesContext context = FacesContext.getCurrentInstance();
 
-            // PASO CRUCIAL: Invalidar la sesión HTTP
+            // Invalidar sesión HTTP
             context.getExternalContext().invalidateSession();
 
-            this.usuario = new Usuario();
-            this.autenticado = false;
+            // Limpiar datos en bean
+            usuario = new Usuario();
+            autenticado = false;
 
-            // Redirigir al login (usando faces-redirect=true para limpieza)
+            // Volver a la presentación
             return "dashboardPresentacion?faces-redirect=true";
 
         } catch (Exception e) {
-            // Manejo de errores
             e.printStackTrace();
             return "login?faces-redirect=true";
         }
     }
 
+    // =========================
+    //  REGISTRO DE NUEVO CLIENTE
+    // =========================
     public void agregar() throws IOException {
         try {
             usuario.setFecha_creacion(LocalDateTime.now());
@@ -190,84 +226,84 @@ public class UsuarioBean implements Serializable {
             String passEncriptada = CifradoAES.encriptar(usuario.getPassword());
             usuario.setPassword(passEncriptada);
 
+            // Todo el que se registra aquí es CLIENTE
             usuario.setRol(EnumRoles.CLIENTE);
+
             usuarioDAO.agregar(usuario);
 
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO,
-                            "Éxito", "Usuario registrado correctamente."));
-            this.autenticado = false;
+            FacesContext.getCurrentInstance().addMessage(
+                    null,
+                    new FacesMessage(
+                            FacesMessage.SEVERITY_INFO,
+                            "Éxito",
+                            "Usuario registrado correctamente."
+                    )
+            );
+
+            autenticado = false;
 
             // Limpiar formulario
             usuario = new Usuario();
+
+            // Volver al login
             FacesContext.getCurrentInstance().getExternalContext()
                     .redirect("login.xhtml");
 
         } catch (SQLException e) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO,
-                            "Error", "Usuario no registrado ."));
+            FacesContext.getCurrentInstance().addMessage(
+                    null,
+                    new FacesMessage(
+                            FacesMessage.SEVERITY_ERROR,
+                            "Error",
+                            "Usuario no registrado."
+                    )
+            );
         }
     }
 
-    public String actualizarPerfil() {
-        try {
-            if (archivoFoto != null && archivoFoto.getFileName() != null && !archivoFoto.getFileName().isEmpty()) {
-                String nombreArchivo = System.currentTimeMillis() + "_" + Paths.get(archivoFoto.getFileName()).getFileName().toString();
-                String rutaPerfiles = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resources/img/perfiles");
-                File directorio = new File(rutaPerfiles);
-                if (!directorio.exists()) {
-                    directorio.mkdirs();
-                }
-
-                Path destino = Paths.get(directorio.getAbsolutePath(), nombreArchivo);
-                try (InputStream input = archivoFoto.getInputStream()) {
-                    Files.copy(input, destino, StandardCopyOption.REPLACE_EXISTING);
-                }
-                usuario.setFotoPerfil(nombreArchivo);
-            }
-
-            boolean actualizado = usuarioDAO.actualizarPerfil(usuario);
-            if (actualizado) {
-                FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Perfil actualizado correctamente."));
-                archivoFoto = null;
-                return "perfil?faces-redirect=true";
-            }
-
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Aviso", "No se pudo actualizar el perfil."));
-        } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Ocurrió un problema al actualizar el perfil."));
-        }
-        return null;
-    }
+    // =========================
+    //  GUARDAS DE PÁGINA
+    // =========================
     public void verificarSesionCliente() {
-    try {
-        // Si no está autenticado, redirigir al login
-        if (!isAutenticado() || usuario.getRol() != EnumRoles.CLIENTE) {
-            FacesContext.getCurrentInstance().getExternalContext()
+        try {
+            if (!isAutenticado() || usuario.getRol() != EnumRoles.CLIENTE) {
+                FacesContext.getCurrentInstance().getExternalContext()
                         .redirect("login.xhtml");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    } catch (IOException e) {
-        e.printStackTrace();
     }
-}
 
+    // =========================
+    //  ADMIN: CAMBIAR ESTADO
+    // =========================
     public void cambiarEstado(Usuario u) {
         try {
-            String nuevoEstado = "ACTIVO".equalsIgnoreCase(u.getEstado()) ? "INACTIVO" : "ACTIVO";
+            String nuevoEstado = "ACTIVO".equalsIgnoreCase(u.getEstado())
+                    ? "INACTIVO"
+                    : "ACTIVO";
+
             if (usuarioDAO.actualizarEstado(u.getId(), nuevoEstado)) {
                 u.setEstado(nuevoEstado);
-                FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_INFO, "Estado actualizado", "El usuario ahora está " + nuevoEstado));
+                FacesContext.getCurrentInstance().addMessage(
+                        null,
+                        new FacesMessage(
+                                FacesMessage.SEVERITY_INFO,
+                                "Estado actualizado",
+                                "El usuario ahora está " + nuevoEstado
+                        )
+                );
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo cambiar el estado del usuario"));
+            FacesContext.getCurrentInstance().addMessage(
+                    null,
+                    new FacesMessage(
+                            FacesMessage.SEVERITY_ERROR,
+                            "Error",
+                            "No se pudo cambiar el estado del usuario"
+                    )
+            );
         }
     }
-    
-    
 }

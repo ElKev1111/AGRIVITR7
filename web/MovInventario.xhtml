@@ -3,12 +3,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      lang="es"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      lang="es">
+
     <h:head>
         <title>Movimientos de Inventario</title>
 
-        <!-- Bootstrap, Tailwind y FontAwesome -->
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -22,7 +22,6 @@
                 margin: 0;
             }
 
-            /* Sidebar */
             .sidebar {
                 position: fixed;
                 top: 0;
@@ -76,7 +75,6 @@
                 border-top: 1px solid rgba(255, 255, 255, 0.1);
             }
 
-            /* Main content */
             .main-content {
                 margin-left: 260px;
                 padding: 2rem;
@@ -100,7 +98,6 @@
                 align-items: center;
             }
 
-            /* Cards de estadísticas */
             .stats-cards {
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -123,8 +120,7 @@
             .stat-card.entrada {
                 border-left-color: #28a745;
             }
-
-            .stat-card.salida {
+            .stat-card.salida  {
                 border-left-color: #dc3545;
             }
 
@@ -136,12 +132,10 @@
                 font-size: 2.5em;
                 color: #007bff;
             }
-
             .stat-icon.entrada {
                 color: #28a745;
             }
-
-            .stat-icon.salida {
+            .stat-icon.salida  {
                 color: #dc3545;
             }
 
@@ -158,7 +152,6 @@
                 font-size: 1em;
             }
 
-            /* Filtros */
             .filtros-container {
                 background: #fff;
                 padding: 20px;
@@ -175,30 +168,12 @@
                 font-size: 0.9em;
             }
 
-            /* Tabla */
             .table-container {
                 background: #fff;
                 border-radius: 16px;
                 box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-                overflow: hidden;
-            }
-
-            .badge-entrada {
-                background: #d4edda;
-                color: #155724;
-                padding: 6px 12px;
-                border-radius: 12px;
-                font-size: 0.8em;
-                font-weight: 600;
-            }
-
-            .badge-salida {
-                background: #f8d7da;
-                color: #721c24;
-                padding: 6px 12px;
-                border-radius: 12px;
-                font-size: 0.8em;
-                font-weight: 600;
+                overflow-x: auto;
+                overflow-y: visible;
             }
 
             .btn-action {
@@ -207,31 +182,11 @@
                 font-size: 0.8em;
             }
 
-            /* Formulario radio buttons */
-            .form-check-inline {
-                margin-right: 20px;
-            }
-
-            .form-check-input {
-                margin-right: 8px;
-            }
-
-            /* Estilos para calendarios PrimeFaces */
             .ui-calendar {
                 width: 100%;
             }
-
             .ui-datepicker {
                 font-size: 14px;
-            }
-
-            /* Clases para mostrar/ocultar elementos */
-            .show-element {
-                display: block;
-            }
-
-            .hide-element {
-                display: none;
             }
         </style>
 
@@ -247,48 +202,36 @@
             </div>
 
             <nav class="sidebar-nav">
-                <nav class="sidebar-nav">
-                   <h:link outcome="/HomeAdmin1.xhtml" styleClass="nav-link">
-                    <i class="fas fa-chart-line" style="margin-right: 10px;"></i> Dashboard 
+                <h:link outcome="/HomeAdmin1.xhtml" styleClass="nav-link">
+                    <i class="fas fa-user"></i> Dashboard 
                 </h:link>
-                    <h:link outcome="/HomeAdmin2.xhtml" styleClass="nav-link">
-                        <i class="fas fa-jar" style="margin-right: 10px;"></i> Usuarios
-                    </h:link>
-                    <h:link outcome="/HomeAdmin3.xhtml" styleClass="nav-link">
-                        <i class="fas fa-user" style="margin-right: 10px;"></i> Productos
-                    </h:link>
-                    <h:link outcome="/Correos.xhtml" styleClass="nav-link">
-                        <i class="fas fa-envelope" style="margin-right: 10px;" ></i> Correos
-                    </h:link>
-                    <h:link outcome="/HomeAdmin4.xhtml" styleClass="nav-link">
-                        <i class="fas fa-envelope" style="margin-right: 10px;"></i> Ventas
-                    </h:link>
-                    <h:link outcome="/HomeAdmin5.xhtml" styleClass="nav-link">
-                        <i class="fas fa-users" style="margin-right: 10px;"></i> Empleados
-                    </h:link>
-                    <h:link outcome="/MovInventario.xhtml" styleClass="nav-link">
-                        <i class="fas fa-boxes" style="margin-right: 10px;"></i> Inventario
-                    </h:link>
-                    
-                    <h:link outcome="/PedidosProveedores.xhtml" styleClass="nav-link">
-                        <i class="fas fa-truck-loading" style="margin-right: 10px;"></i> Pedidos
-                    </h:link>
-                    <h:link outcome="/dashboardProveedores.xhtml" styleClass="nav-link ">
-                        <i class="fas fa-warehouse" style="margin-right: 10px;"></i> Vista Proveedores
-                    </h:link>
-                    <h:link outcome="/dashboardPresentacion.xhtml" styleClass="nav-link ">
-                        <i class="fas fa-warehouse" style="margin-right: 10px;"></i> presentacion
-                    </h:link>
-                    
-                    
-                </nav>
-
+                <h:link outcome="/HomeAdmin2.xhtml" styleClass="nav-link">
+                    <i class="fas fa-jar"></i> Usuarios
+                </h:link>
+                <h:link outcome="/HomeAdmin3.xhtml" styleClass="nav-link">
+                    <i class="fas fa-user"></i> Productos 
+                </h:link>
+                <h:link outcome="/Correos.xhtml" styleClass="nav-link">
+                    <i class="fas fa-envelope"></i> Correos
+                </h:link>
+                <h:link outcome="/HomeAdmin4.xhtml" styleClass="nav-link">
+                    <i class="fas fa-envelope"></i> Ventas
+                </h:link>
+                <h:link outcome="/HomeAdmin5.xhtml" styleClass="nav-link">
+                    <i class="fas fa-users"></i> Empleados
+                </h:link>
+                <h:link outcome="/MovInventario.xhtml" styleClass="nav-link active">
+                    <i class="fas fa-boxes"></i> Inventario
+                </h:link>
+                <h:link outcome="/dashboardCliente.xhtml" styleClass="nav-link active">
+                    <i class="fas fa-eye"></i> Vista Cliente
+                </h:link>
             </nav>
-
 
             <h:form id="sidebarForm">
                 <div class="sidebar-footer">
-                    <h:commandLink action="#{usuarioBean.logout()}" styleClass="btn btn-outline-light btn-sm w-100">
+                    <h:commandLink action="#{usuarioBean.logout()}"
+                                   styleClass="btn btn-outline-light btn-sm w-100">
                         <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
                     </h:commandLink>
                 </div>
@@ -298,23 +241,26 @@
         <!-- Main Content -->
         <div class="main-content">
             <div class="top-bar d-flex justify-content-between align-items-center">
-                <h2><i class="fas fa-tachometer-alt"></i> Dashboard Administrativo</h2>
+                <h2><i class="fas fa-warehouse"></i> Movimientos de Inventario</h2>
                 <div class="user-info">
                     <span class="me-3">
                         Bienvenido, <strong>#{usuarioBean.usuario.nombre}</strong>
                     </span>
-
-                    <!-- Botón directo al perfil -->
-                    <h:link outcome="/perfil.xhtml"
-                            styleClass="btn btn-outline-primary">
-                        <i class="fas fa-user-circle"></i>
-                        <span style="margin-left: 6px;">Mi Perfil</span>
-                    </h:link>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user"></i> Perfil</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog"></i> Configuración</a></li>
+                            <li><hr class="dropdown-divider"/></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+                        </ul>
+                    </div>
                 </div>
-
             </div>
 
-            <!-- Cards de Estadísticas -->
+            <!-- Cards -->
             <div class="stats-cards">
                 <div class="stat-card entrada">
                     <div class="stat-icon entrada">
@@ -336,7 +282,7 @@
                 </div>
             </div>
 
-            <!-- Panel de Filtros -->
+            <!-- Panel Filtros -->
             <div class="filtros-container">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0"><i class="fas fa-filter"></i> Filtros</h5>
@@ -348,6 +294,7 @@
                 </div>
 
                 <h:form id="formFiltros">
+                    <!-- Switch trimestre -->
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-check form-switch mb-3">
@@ -364,8 +311,9 @@
                         </div>
                     </div>
 
+                    <!-- Filtros de fechas / trimestre -->
                     <div class="row">
-                        <!-- CAMPOS PARA FILTRO POR TRIMESTRE (SOLO VISIBLE CUANDO ESTÁ ACTIVADO) -->
+                        <!-- Año -->
                         <h:panelGroup styleClass="#{movInventarioBean.usarFiltroTrimestre ? 'col-md-3' : 'd-none'}">
                             <div class="mb-3">
                                 <label class="form-label">Año</label>
@@ -376,6 +324,7 @@
                             </div>
                         </h:panelGroup>
 
+                        <!-- Trimestre -->
                         <h:panelGroup styleClass="#{movInventarioBean.usarFiltroTrimestre ? 'col-md-4' : 'd-none'}">
                             <div class="mb-3">
                                 <label class="form-label">Trimestre</label>
@@ -386,7 +335,7 @@
                             </div>
                         </h:panelGroup>
 
-                        <!-- CAMPOS PARA FILTRO POR FECHAS (SOLO VISIBLE CUANDO TRIMESTRE ESTÁ DESACTIVADO) -->
+                        <!-- Fecha inicio -->
                         <h:panelGroup styleClass="#{not movInventarioBean.usarFiltroTrimestre ? 'col-md-3' : 'd-none'}">
                             <div class="mb-3">
                                 <label class="form-label">Fecha Inicio</label>
@@ -401,6 +350,7 @@
                             </div>
                         </h:panelGroup>
 
+                        <!-- Fecha fin -->
                         <h:panelGroup styleClass="#{not movInventarioBean.usarFiltroTrimestre ? 'col-md-3' : 'd-none'}">
                             <div class="mb-3">
                                 <label class="form-label">Fecha Fin</label>
@@ -414,29 +364,85 @@
                                 </p:calendar>
                             </div>
                         </h:panelGroup>
+                    </div>
 
-                        <!-- BOTONES (SIEMPRE VISIBLES) -->
-                        <div class="col-md-2 d-flex align-items-end">
+                    <!-- Filtros adicionales (Tipo, Producto, Tipo específico, Proveedor/Cliente) -->
+                    <div class="row">
+                        <!-- Tipo -->
+                        <div class="col-md-3">
                             <div class="mb-3">
-                                <h:commandButton value="Aplicar Filtro" 
-                                                 action="#{movInventarioBean.aplicarFiltro}"
-                                                 styleClass="btn btn-primary me-2"
-                                                 update="formFiltros,formTabla,growl"/>
-                                <h:commandButton value="Limpiar" 
-                                                 action="#{movInventarioBean.limpiarFiltro}"
-                                                 styleClass="btn btn-outline-secondary"
-                                                 update="formFiltros,formTabla,growl"/>
+                                <label class="form-label">Tipo</label>
+                                <h:selectOneMenu value="#{movInventarioBean.filtroTipo}" styleClass="form-select">
+                                    <f:selectItem itemLabel="Todos" itemValue="" />
+                                    <f:selectItem itemLabel="Entrada" itemValue="Entrada" />
+                                    <f:selectItem itemLabel="Salida" itemValue="Salida" />
+                                </h:selectOneMenu>
                             </div>
+                        </div>
+
+                        <!-- Producto -->
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label class="form-label">Producto ID</label>
+                                <h:selectOneMenu value="#{movInventarioBean.filtroProductoId}" styleClass="form-select">
+                                    <f:selectItem itemLabel="Todos" itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{movInventarioBean.productoIdsUnicos}"
+                                                   var="idProd"
+                                                   itemValue="#{idProd}"
+                                                   itemLabel="#{idProd}" />
+                                </h:selectOneMenu>
+                            </div>
+                        </div>
+
+                        <!-- Tipo específico -->
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label class="form-label">Tipo específico</label>
+                                <h:selectOneMenu value="#{movInventarioBean.filtroTipoEspecifico}" styleClass="form-select">
+                                    <f:selectItem itemLabel="Todos" itemValue="" />
+                                    <f:selectItem itemLabel="COMPRA" itemValue="COMPRA" />
+                                    <f:selectItem itemLabel="DEVOLUCION" itemValue="DEVOLUCION" />
+                                    <f:selectItem itemLabel="VENTA" itemValue="VENTA" />
+                                    <f:selectItem itemLabel="CADUCADO" itemValue="CADUCADO" />
+                                </h:selectOneMenu>
+                            </div>
+                        </div>
+
+                        <!-- Proveedor/Cliente -->
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label class="form-label">Proveedor/Cliente</label>
+                                <h:selectOneMenu value="#{movInventarioBean.filtroProveedorCliente}" styleClass="form-select">
+                                    <f:selectItem itemLabel="Todos" itemValue="" />
+                                    <f:selectItems value="#{movInventarioBean.proveedoresClientesUnicos}"
+                                                   var="provCli"
+                                                   itemValue="#{provCli}"
+                                                   itemLabel="#{provCli}" />
+                                </h:selectOneMenu>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="row">
+                        <div class="col-md-12 d-flex justify-content-end">
+                            <p:commandButton value="Aplicar Filtro" 
+                                             action="#{movInventarioBean.aplicarFiltro}"
+                                             styleClass="btn btn-primary me-2"
+                                             update="formFiltros,formTabla,growl"/>
+                            <p:commandButton value="Limpiar" 
+                                             action="#{movInventarioBean.limpiarFiltro}"
+                                             styleClass="btn btn-outline-secondary"
+                                             update="formFiltros,formTabla,growl"/>
                         </div>
                     </div>
                 </h:form>
             </div>
 
-            <!-- Botones de Acción -->
+            <!-- Botones de acción -->
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="mb-0"><i class="fas fa-list"></i> Lista de Movimientos</h5>
                 <div class="d-flex gap-2">
-                    <!-- Botón Registrar ENTRADA -->
                     <button type="button" 
                             class="btn btn-success" 
                             data-bs-toggle="modal" 
@@ -444,7 +450,6 @@
                         <i class="fas fa-arrow-down"></i> Registrar Entrada
                     </button>
 
-                    <!-- Botón Registrar SALIDA -->
                     <button type="button" 
                             class="btn btn-danger" 
                             data-bs-toggle="modal" 
@@ -454,226 +459,425 @@
                 </div>
             </div>
 
-            <!-- Tabla de Movimientos -->
+            <!-- Tabla -->
             <div class="table-container">
                 <h:form id="formTabla">
-                    <p:dataTable id="tblMovimientos" 
+                    <p:dataTable id="tablaMov" 
                                  value="#{empty movInventarioBean.movInventariosFiltrados ? movInventarioBean.listaMovInventarios : movInventarioBean.movInventariosFiltrados}"
                                  var="mov"
                                  styleClass="table table-hover"
-                                 paginator="false"
+                                 style="min-width:1400px;"
+                                 paginator="true"
                                  rows="10"
+                                 widgetVar="tablaMov"
+                                 scrollable="true"
+                                 scrollHeight="450"
                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="5,10,15"
                                  emptyMessage="No se encontraron movimientos de inventario">
 
                         <!-- ID -->
-                        <p:column headerText="ID" style="width: 60px; text-align:center;">
-                            <h:outputText value="#{mov.idMovInventario}"/>
+                        <p:column headerText="ID" style="width:60px;text-align:center;">
+                            <h:outputText value="#{mov.idMovInventario}" />
                         </p:column>
 
                         <!-- Tipo -->
-                        <p:column headerText="Tipo" style="width: 100px; text-align:center;">
-                            <span class="#{'Entrada' eq mov.tipoString ? 'badge-entrada' : 'badge-salida'}">
-                                #{mov.tipoString}
-                            </span>
+                        <p:column headerText="Tipo" style="width:80px;text-align:center;">
+                            <h:panelGroup rendered="#{mov.tipoString eq 'Entrada'}">
+                                <span class="badge bg-success">Entrada</span>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{mov.tipoString eq 'Salida'}">
+                                <span class="badge bg-danger">Salida</span>
+                            </h:panelGroup>
                         </p:column>
 
-                        <!-- Producto - NUEVA COLUMNA -->
-                        <p:column headerText="Producto ID" style="width: 100px; text-align:center;">
-                            <h:outputText value="#{mov.idProducto}"/>
+                        <!-- Producto ID -->
+                        <p:column headerText="Producto ID" style="width:80px;text-align:center;">
+                            <h:outputText value="#{mov.idProducto}" />
                         </p:column>
-
-                        <!-- Cantidad -->
-                        <p:column headerText="Cantidad" style="width: 100px; text-align:center;">
-                            <h:outputText value="#{'Entrada' eq mov.tipoString ? mov.cantidadEntrada : mov.cantidadSalida}"/>
+                        <!-- Fecha registro -->
+                        <!-- Fecha de registro -->
+                        <p:column headerText="Fecha registro" style="width:140px;text-align:center;">
+                            <h:outputText value="#{mov.fechaRegistro}">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                            </h:outputText>
                         </p:column>
 
                         <!-- Fecha -->
-                        <p:column headerText="Fecha" style="width: 120px; text-align:center;">
-                            <h:outputText value="#{'Entrada' eq mov.tipoString ? mov.fechaEntrada : mov.fechaSalida}">
+                        <p:column headerText="Fecha de entrada" style="width:160px;text-align:center;">
+                            <h:outputText 
+                                value="#{mov.tipoString eq 'Entrada' ? mov.fechaEntrada : mov.fechaSalida}">
                                 <f:convertDateTime pattern="dd/MM/yyyy" />
                             </h:outputText>
                         </p:column>
 
-                        <!-- Tipo Específico -->
-                        <p:column headerText="Tipo Específico" style="width: 150px; text-align:center;">
-                            <h:outputText value="#{'Entrada' eq mov.tipoString ? mov.tipoEntrada : mov.tipoSalida}"/>
+                        <!-- Tipo específico -->
+                        <p:column headerText="Tipo específico" style="width:160px;text-align:center;">
+                            <h:outputText 
+                                value="#{mov.tipoString eq 'Entrada' ? mov.tipoEntrada : mov.tipoSalida}" />
                         </p:column>
 
                         <!-- Descripción -->
-                        <p:column headerText="Descripción" style="width: 200px;">
-                            <h:outputText value="#{mov.descripcion}"/>
+                        <p:column headerText="Descripción" style="width:160px;text-align:center;">
+                            <h:outputText value="#{mov.descripcion}" />
                         </p:column>
 
-                        <!-- Proveedor/Cliente -->
-                        <p:column headerText="Proveedor/Cliente" style="width: 150px;">
-                            <h:outputText value="#{'Entrada' eq mov.tipoString ? mov.proveedor : mov.cliente}"/>
+                        <!-- Proveedor / Cliente -->
+                        <p:column headerText="Proveedor/Cliente" style="width:165px;text-align:center;">
+                            <h:outputText value="#{mov.proveedor}" />
                         </p:column>
+
 
                         <!-- Precio -->
-                        <p:column headerText="Precio" style="width: 100px; text-align:center;">
-                            <h:outputText value="#{'Entrada' eq mov.tipoString ? mov.precioCompra : mov.precioVenta}">
+                        <p:column headerText="Precio" style="width:110px;text-align:center;">
+                            <h:outputText 
+                                value="#{mov.tipoString eq 'Entrada' ? mov.precioCompra : mov.precioVenta}">
                                 <f:convertNumber type="currency" currencySymbol="$" />
                             </h:outputText>
                         </p:column>
 
-                        <!-- Stock Anterior - NUEVA COLUMNA -->
-                        <p:column headerText="Stock Anterior" style="width: 100px; text-align:center;">
-                            <h:outputText value="#{mov.stockAnterior}"/>
+                        <!-- Cantidad -->
+                        <p:column headerText="Cantidad" style="width:90px;text-align:center;">
+                            <h:outputText 
+                                value="#{mov.tipoString eq 'Entrada' ? mov.cantidadEntrada : mov.cantidadSalida}" />
                         </p:column>
 
-                        <!-- Stock Nuevo - NUEVA COLUMNA -->
-                        <p:column headerText="Stock Nuevo" style="width: 100px; text-align:center;">
-                            <h:outputText value="#{mov.stockNuevo}"/>
+                        <!-- Stock Anterior -->
+                        <p:column headerText="Stock Anterior" style="width:100px;text-align:center;">
+                            <h:outputText value="#{mov.stockAnterior}" />
+                        </p:column>
+
+                        <!-- Stock Nuevo -->
+                        <p:column headerText="Stock Nuevo" style="width:100px;text-align:center;">
+                            <h:outputText value="#{mov.stockNuevo}" />
                         </p:column>
 
                         <!-- Acciones -->
-                        <p:column headerText="Acciones" style="width: 120px; text-align:center;" exportable="false">
+                        <p:column headerText="Acciones" style="width:160px;text-align:center;" exportable="false">
                             <div class="d-flex gap-1 justify-content-center">
-                                <!-- Botón Eliminar -->
-                                <p:commandButton value="Eliminar"
-                                                 icon="fas fa-trash-alt"
-                                                 styleClass="btn btn-danger btn-sm btn-action"
-                                                 action="#{movInventarioBean.eliminar(mov.idMovInventario)}"
-                                                 update="formTabla,growl"
-                                                 onclick="return confirm('¿Está seguro de eliminar este movimiento?');" />
+                                <p:commandButton value="Ver detalles"
+                                                 icon="fas fa-eye"
+                                                 styleClass="btn btn-info btn-sm btn-action"
+                                                 actionListener="#{movInventarioBean.prepararVerDetalle(mov)}"
+                                                 update=":formVerDetalle"
+                                                 oncomplete="PF('dlgDetalles').show();" />
                             </div>
                         </p:column>
 
                     </p:dataTable>
                 </h:form>
+
+                <!-- Dialog Detalles -->
+                <p:dialog header="Detalles del Movimiento"
+                          widgetVar="dlgDetalles"
+                          modal="true"
+                          resizable="false"
+                          width="650">
+
+                    <h:form id="formVerDetalle">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h:panelGrid columns="2" columnClasses="col-label,col-value" cellpadding="4">
+
+                                    <h:outputLabel value="Producto:"/>
+                                    <h:outputText value="#{movInventarioBean.productoDetalle != null
+                                                           ? movInventarioBean.productoDetalle.nombreProducto
+                                                           : ''}" />
+
+                                    <h:outputLabel value="Tipo:"/>
+                                    <h:outputText value="#{movInventarioBean.movSeleccionado.tipoString}" />
+
+                                    <h:outputLabel value="Cantidad:"/>
+                                    <h:outputText 
+                                        value="#{movInventarioBean.movSeleccionado.tipoString eq 'Entrada'
+                                                 ? movInventarioBean.movSeleccionado.cantidadEntrada
+                                                 : movInventarioBean.movSeleccionado.cantidadSalida}" />
+
+                                    <h:outputLabel value="Fecha:"/>
+                                    <h:outputText 
+                                        value="#{movInventarioBean.movSeleccionado.tipoString eq 'Entrada'
+                                                 ? movInventarioBean.movSeleccionado.fechaEntrada
+                                                 : movInventarioBean.movSeleccionado.fechaSalida}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy" />
+                                    </h:outputText>
+
+                                    <h:outputLabel value="Tipo específico:"/>
+                                    <h:outputText 
+                                        value="#{movInventarioBean.movSeleccionado.tipoString eq 'Entrada'
+                                                 ? movInventarioBean.movSeleccionado.tipoEntrada
+                                                 : movInventarioBean.movSeleccionado.tipoSalida}" />
+
+                                    <h:outputLabel value="Descripción:"/>
+                                    <h:outputText value="#{movInventarioBean.movSeleccionado.descripcion}" />
+                                    <h:outputLabel value="Proveedor:"/>
+                                    <h:outputText value="#{movInventarioBean.movSeleccionado.proveedor}" />
+
+
+                                    <h:outputLabel value="Proveedor/Cliente:"/>
+                                    <h:outputText 
+                                        value="#{movInventarioBean.movSeleccionado.tipoString eq 'Entrada'
+                                                 ? movInventarioBean.movSeleccionado.proveedor
+                                                 : movInventarioBean.movSeleccionado.cliente}" />
+
+                                    <h:outputLabel value="Precio:"/>
+                                    <h:outputText 
+                                        value="#{movInventarioBean.movSeleccionado.tipoString eq 'Entrada'
+                                                 ? movInventarioBean.movSeleccionado.precioCompra
+                                                 : movInventarioBean.movSeleccionado.precioVenta}">
+                                        <f:convertNumber type="currency" currencySymbol="$"/>
+                                    </h:outputText>
+
+                                    <h:outputLabel value="Stock anterior:"/>
+                                    <h:outputText value="#{movInventarioBean.movSeleccionado.stockAnterior}" />
+
+                                    <h:outputLabel value="Stock nuevo:"/>
+                                    <h:outputText value="#{movInventarioBean.movSeleccionado.stockNuevo}" />
+
+                                    <h:outputLabel value="Registrado por:"/>
+                                    <h:outputText value="#{movInventarioBean.movSeleccionado.usuarioRegistro}" />
+
+                                    <h:outputLabel value="Factura:" />
+                                    <h:panelGroup>
+                                        <h:outputLink 
+                                            value="#{request.contextPath}#{movInventarioBean.movSeleccionado.archivoFactura}"
+                                            rendered="#{not empty movInventarioBean.movSeleccionado.archivoFactura}">
+                                            Ver factura
+                                        </h:outputLink>
+                                        <br/>
+                                        <h:graphicImage
+                                            value="#{request.contextPath}#{movInventarioBean.movSeleccionado.archivoFactura}"
+                                            rendered="#{not empty movInventarioBean.movSeleccionado.archivoFactura}"
+                                            style="max-width:400px; max-height:400px; margin-top:5px;" />
+                                        <h:outputText value="(Sin archivo)"
+                                                      rendered="#{empty movInventarioBean.movSeleccionado.archivoFactura}" />
+                                    </h:panelGroup>
+
+                                </h:panelGrid>
+                            </div>
+
+                            <div class="col-md-4 text-center">
+                                <h:outputText value="Imagen" styleClass="form-label d-block mb-2" />
+                                <h:graphicImage value="#{movInventarioBean.rutaImagenMovimientoSeleccionado}"
+                                                style="width:180px;height:180px;object-fit:cover;border-radius:8px;"
+                                                rendered="#{not empty movInventarioBean.rutaImagenMovimientoSeleccionado}" />
+                                <h:outputText value="(Sin imagen)"
+                                              rendered="#{empty movInventarioBean.rutaImagenMovimientoSeleccionado}" />
+                            </div>
+                        </div>
+                    </h:form>
+                </p:dialog>
             </div>
         </div>
 
-        <!-- Modal Registrar ENTRADA -->
-        <div class="modal fade" id="modalEntrada" tabindex="-1" aria-labelledby="modalEntradaLabel" aria-hidden="true">
+        <!-- Modal Entrada -->
+        <div class="modal fade" id="modalEntrada" tabindex="-1"
+             aria-labelledby="modalEntradaLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
+
                     <div class="modal-header bg-success text-white">
                         <h5 class="modal-title" id="modalEntradaLabel">
                             <i class="fas fa-arrow-down"></i> Registrar Entrada de Inventario
                         </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
                     </div>
 
-                    <h:form id="formEntrada">
+                    <h:form id="formEntrada" enctype="multipart/form-data">
                         <div class="modal-body">
-                            <!-- Selector de Producto - NUEVO CAMPO -->
+
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="mb-3">
                                         <label for="productoEntrada" class="form-label">Producto *</label>
-                                        <h:selectOneMenu id="productoEntrada" value="#{movInventarioBean.idProductoSeleccionado}" 
-                                                         styleClass="form-select" required="true"
-                                                         requiredMessage="Seleccione un producto">
-                                            <f:selectItem itemLabel="Seleccione un producto" itemValue="" />
-                                            <f:selectItems value="#{movInventarioBean.listaProductos}" 
-                                                          var="prod"
-                                                          itemLabel="#{prod.nombreProducto} (Stock: #{prod.stock})" 
-                                                          itemValue="#{prod.idProducto}" />
+                                        <h:selectOneMenu id="productoEntrada"
+                                                         value="#{movInventarioBean.idProductoSeleccionado}"
+                                                         styleClass="form-select"
+                                                         required="true"
+                                                         requiredMessage="Debe seleccionar un producto">
+                                            <f:selectItem itemLabel="-- Seleccione un producto --" itemValue="" />
+                                            <f:selectItems value="#{movInventarioBean.listaProductos}"
+                                                           var="prod"
+                                                           itemLabel="#{prod.nombreProducto} (Stock: #{prod.stock})"
+                                                           itemValue="#{prod.idProducto}" />
+                                            <f:ajax listener="#{movInventarioBean.onProductoChange}"
+                                                    render="proveedorEntrada precioCompraEntrada precioVentaCalculado" />
                                         </h:selectOneMenu>
-                                        <h:message for="productoEntrada" styleClass="text-danger"/>
                                     </div>
                                 </div>
+
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="tipoEntrada" class="form-label">Tipo de entrada *</label>
+                                        <h:selectOneMenu id="tipoEntrada"
+                                                         value="#{movInventarioBean.movInventario.tipoEntrada}"
+                                                         styleClass="form-select"
+                                                         required="true"
+                                                         requiredMessage="Seleccione el tipo de entrada">
+                                            <f:selectItem itemLabel="-- Seleccione --" itemValue="" />
+                                            <f:selectItem itemLabel="COMPRA" itemValue="COMPRA" />
+                                            <f:selectItem itemLabel="DEVOLUCIÓN" itemValue="DEVOLUCION" />
+                                            <f:ajax render="panelFechas panelPrecios" />
+                                        </h:selectOneMenu>
+                                    </div>
+                                </div>
+
+
                             </div>
 
-                            <!-- Campos para ENTRADA -->
+                            <!-- Descripción -->
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="mb-3">
                                         <label for="descripcionEntrada" class="form-label">Descripción *</label>
-                                        <h:inputText id="descripcionEntrada" value="#{movInventarioBean.movInventario.descripcion}" 
-                                                     required="true" requiredMessage="Descripción es requerida"
-                                                     styleClass="form-control" placeholder="Descripción de la entrada"/>
-                                        <h:message for="descripcionEntrada" styleClass="text-danger"/>
+                                        <p:inputText id="descripcionEntrada"
+                                                     value="#{movInventarioBean.movInventario.descripcion}"
+                                                     required="true"
+                                                     requiredMessage="Descripción es requerida"
+                                                     styleClass="form-control"
+                                                     placeholder="Descripción de la entrada" />
+                                        <p:message for="descripcionEntrada" styleClass="text-danger"/>
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Cantidad / Fechas -->
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="cantidadEntrada" class="form-label">Cantidad *</label>
-                                        <h:inputText id="cantidadEntrada" value="#{movInventarioBean.movInventario.cantidadEntrada}" 
+                                        <p:inputText id="cantidadEntrada"
+                                                     value="#{movInventarioBean.movInventario.cantidadEntrada}"
+                                                     styleClass="form-control"
                                                      required="true"
-                                                     requiredMessage="Cantidad es requerida"
-                                                     styleClass="form-control" type="number" min="1"/>
-                                        <h:message for="cantidadEntrada" styleClass="text-danger"/>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="fechaEntrada" class="form-label">Fecha de Entrada *</label>
-                                        <p:calendar id="fechaEntrada" value="#{movInventarioBean.movInventario.fechaEntrada}" 
-                                                    styleClass="form-control"
-                                                    pattern="dd/MM/yyyy"
-                                                    locale="es"
-                                                    showOn="button"
-                                                    required="true"/>
-                                        <h:message for="fechaEntrada" styleClass="text-danger"/>
+                                                     requiredMessage="Ingrese la cantidad"
+                                                     validator="#{movInventarioBean.validarCantidad}" />
+                                        <h:message for="cantidadEntrada" styleClass="text-danger" />
                                     </div>
                                 </div>
                             </div>
 
+                            <h:panelGroup id="panelFechas" layout="block">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="fechaEntrada" class="form-label">Fecha de Entrada *</label>
+                                            <p:datePicker id="fechaEntrada"
+                                                          value="#{movInventarioBean.movInventario.fechaEntrada}"
+                                                          pattern="dd/MM/yyyy"
+                                                          showIcon="true"
+                                                          required="true"
+                                                          requiredMessage="Seleccione la fecha de entrada"
+                                                          inputStyleClass="form-control" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <h:panelGroup rendered="#{movInventarioBean.devolucion}">
+                                            <div class="mb-3">
+                                                <label for="fechaSalida" class="form-label">Fecha de Salida *</label>
+                                                <p:datePicker id="fechaSalida"
+                                                              value="#{movInventarioBean.movInventario.fechaSalida}"
+                                                              pattern="dd/MM/yyyy"
+                                                              showIcon="true"
+                                                              required="true"
+                                                              requiredMessage="Seleccione la fecha de salida"
+                                                              inputStyleClass="form-control" />
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+
+                            <!-- Proveedor -->
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="tipoEntrada" class="form-label">Tipo de Entrada *</label>
-                                        <h:inputText id="tipoEntrada" value="#{movInventarioBean.movInventario.tipoEntrada}" 
-                                                     required="true"
-                                                     requiredMessage="Tipo de entrada es requerido"
-                                                     styleClass="form-control" placeholder="Ej: Compra, Donación, etc."/>
-                                        <h:message for="tipoEntrada" styleClass="text-danger"/>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="proveedor" class="form-label">Proveedor *</label>
-                                        <h:inputText id="proveedor" value="#{movInventarioBean.movInventario.proveedor}" 
-                                                     required="true"
-                                                     requiredMessage="Proveedor es requerido"
-                                                     styleClass="form-control" placeholder="Nombre del proveedor"/>
-                                        <h:message for="proveedor" styleClass="text-danger"/>
+                                        <label for="proveedorEntrada" class="form-label">Proveedor *</label>
+                                        <p:inputText id="proveedorEntrada"
+                                                     value="#{movInventarioBean.movInventario.proveedor}"
+                                                     styleClass="form-control"
+                                                     readonly="true"
+                                                     placeholder="Nombre del proveedor" />
+                                        <p:message for="proveedorEntrada" styleClass="text-danger" />
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Precios -->
+                            <h:panelGroup id="panelPrecios" layout="block">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h:panelGroup rendered="#{movInventarioBean.compra}">
+                                            <div class="mb-3">
+                                                <label for="precioCompraEntrada" class="form-label">Precio de Compra</label>
+                                                <p:inputText id="precioCompraEntrada"
+                                                             value="#{movInventarioBean.movInventario.precioCompra}"
+                                                             styleClass="form-control"
+                                                             placeholder="0.00"
+                                                             readonly="true">
+                                                    <f:convertNumber maxFractionDigits="0" />
+                                                </p:inputText>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <h:panelGroup rendered="#{movInventarioBean.compra or movInventarioBean.devolucion}">
+                                            <div class="mb-3">
+                                                <label for="precioVentaCalculado" class="form-label">
+                                                    Precio de Venta (+15%)
+                                                </label>
+                                                <p:inputText id="precioVentaCalculado"
+                                                             value="#{movInventarioBean.movInventario.precioVenta}"
+                                                             styleClass="form-control"
+                                                             readonly="true">
+                                                    <f:convertNumber maxFractionDigits="0" />
+                                                </p:inputText>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+
+                            <!-- Archivo factura -->
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="precioCompra" class="form-label">Precio de Compra</label>
-                                        <h:inputText id="precioCompra" value="#{movInventarioBean.movInventario.precioCompra}" 
-                                                     styleClass="form-control" type="number" step="0.01" min="0" placeholder="0.00"/>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="numeroFactura" class="form-label">Número de Factura</label>
-                                        <h:inputText id="numeroFactura" value="#{movInventarioBean.movInventario.numeroFactura}" 
-                                                     styleClass="form-control" placeholder="Número de factura"/>
+                                        <label class="form-label">Archivo de la factura (opcional)</label>
+                                        <p:fileUpload id="archivoFactura"
+                                                      value="#{movInventarioBean.archivoFactura}"
+                                                      mode="simple"
+                                                      skinSimple="true"
+                                                      label="Seleccionar archivo" />
+                                        <h:panelGroup id="previewFactura" layout="block"
+                                                      rendered="#{not empty movInventarioBean.archivoFactura}">
+                                            <small>Archivo cargado:
+                                                #{movInventarioBean.archivoFactura.fileName}
+                                            </small>
+                                        </h:panelGroup>
                                     </div>
                                 </div>
                             </div>
+
                         </div>
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                 <i class="fas fa-times"></i> Cancelar
                             </button>
-                            <h:commandButton value="Registrar Entrada" 
-                                             action="#{movInventarioBean.registrarEntrada}" 
-                                             styleClass="btn btn-success"
-                                             onclick="return confirm('¿Está seguro de registrar esta entrada?');"
-                                             oncomplete="if(!args.validationFailed) { $('#modalEntrada').modal('hide'); }"
-                                             update="formEntrada,formTabla,growl"/>
+                            <p:commandButton value="Registrar Entrada"
+                                             action="#{movInventarioBean.registrarEntrada}"
+                                             update="formEntrada, formTabla, growl"
+                                             styleClass="btn btn-success" />
                         </div>
                     </h:form>
+
                 </div>
             </div>
         </div>
 
-        <!-- Modal Registrar SALIDA -->
+        <!-- Modal Salida -->
         <div class="modal fade" id="modalSalida" tabindex="-1" aria-labelledby="modalSalidaLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -686,144 +890,113 @@
 
                     <h:form id="formSalida">
                         <div class="modal-body">
-                            <!-- Selector de Producto - NUEVO CAMPO -->
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label for="productoSalida" class="form-label">Producto *</label>
-                                        <h:selectOneMenu id="productoSalida" value="#{movInventarioBean.idProductoSeleccionado}" 
-                                                         styleClass="form-select" required="true"
-                                                         requiredMessage="Seleccione un producto">
-                                            <f:selectItem itemLabel="Seleccione un producto" itemValue="" />
-                                            <f:selectItems value="#{movInventarioBean.listaProductos}" 
-                                                          var="prod"
-                                                          itemLabel="#{prod.nombreProducto} (Stock: #{prod.stock})" 
-                                                          itemValue="#{prod.idProducto}" />
-                                        </h:selectOneMenu>
-                                        <h:message for="productoSalida" styleClass="text-danger"/>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <!-- Campos para SALIDA -->
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label for="descripcionSalida" class="form-label">Descripción *</label>
-                                        <h:inputText id="descripcionSalida" value="#{movInventarioBean.movInventario.descripcion}" 
-                                                     required="true" requiredMessage="Descripción es requerida"
-                                                     styleClass="form-control" placeholder="Descripción de la salida"/>
-                                        <h:message for="descripcionSalida" styleClass="text-danger"/>
-                                    </div>
-                                </div>
+                            <div class="mb-3">
+                                <label class="form-label">Producto *</label>
+                                <h:selectOneMenu id="productoSalida"
+                                                 value="#{movInventarioBean.idProductoSeleccionado}"
+                                                 styleClass="form-select"
+                                                 required="true"
+                                                 requiredMessage="Debe seleccionar un producto">
+                                    <f:selectItem itemLabel="-- Seleccione un producto --" itemValue="" />
+                                    <f:selectItems value="#{movInventarioBean.listaProductos}"
+                                                   var="prod"
+                                                   itemLabel="#{prod.nombreProducto} (Stock: #{prod.stock})"
+                                                   itemValue="#{prod.idProducto}" />
+                                    <f:ajax listener="#{movInventarioBean.onProductoCaducadoChange}"
+                                            render="fechaSalidaSalida fechaVencimientoSalida proveedorSalida" />
+
+
+                                </h:selectOneMenu>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="cantidadSalida" class="form-label">Cantidad *</label>
-                                        <h:inputText id="cantidadSalida" value="#{movInventarioBean.movInventario.cantidadSalida}" 
+                                        <p:inputText id="cantidadSalida"
+                                                     value="#{movInventarioBean.movInventario.cantidadSalida}"
                                                      required="true"
                                                      requiredMessage="Cantidad es requerida"
-                                                     styleClass="form-control" type="number" min="1"/>
-                                        <h:message for="cantidadSalida" styleClass="text-danger"/>
+                                                     styleClass="form-control">
+                                            <f:passThroughAttribute name="type" value="number" />
+                                            <f:passThroughAttribute name="min" value="1" />
+                                        </p:inputText>
+                                        <p:message for="cantidadSalida" styleClass="text-danger" />
                                     </div>
                                 </div>
+
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="fechaSalida" class="form-label">Fecha de Salida *</label>
-                                        <p:calendar id="fechaSalida" value="#{movInventarioBean.movInventario.fechaSalida}" 
-                                                    styleClass="form-control"
-                                                    pattern="dd/MM/yyyy"
-                                                    locale="es"
-                                                    showOn="button"
-                                                    required="true"/>
-                                        <h:message for="fechaSalida" styleClass="text-danger"/>
+                                        <label for="fechaSalidaSalida" class="form-label">Fecha de Salida *</label>
+                                        <p:datePicker id="fechaSalidaSalida"
+                                                      value="#{movInventarioBean.movInventario.fechaSalida}"
+                                                      pattern="dd/MM/yyyy"
+                                                      showIcon="true"
+                                                      required="true"
+                                                      requiredMessage="Seleccione la fecha de salida"
+                                                      inputStyleClass="form-control" />
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Fecha de vencimiento (solo lectura) y Proveedor -->
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="tipoSalida" class="form-label">Tipo de Salida *</label>
-                                        <h:inputText id="tipoSalida" value="#{movInventarioBean.movInventario.tipoSalida}" 
-                                                     required="true"
-                                                     requiredMessage="Tipo de salida es requerido"
-                                                     styleClass="form-control" placeholder="Ej: Venta, Consumo, etc."/>
-                                        <h:message for="tipoSalida" styleClass="text-danger"/>
+                                        <label class="form-label">Fecha de vencimiento</label>
+                                        <p:datePicker id="fechaVencimientoSalida"
+                                                      value="#{movInventarioBean.fechaVencimientoProducto}"
+                                                      pattern="dd/MM/yyyy"
+                                                      showIcon="true"
+                                                      readonly="true"
+                                                      inputStyleClass="form-control" />
                                     </div>
                                 </div>
-                                
+
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="proveedorSalida" class="form-label">Proveedor</label>
+                                        <p:inputText id="proveedorSalida"
+                                                     value="#{movInventarioBean.movInventario.proveedor}"
+                                                     styleClass="form-control"
+                                                     readonly="true" />
+                                    </div>
+                                </div>
                             </div>
+
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Tipo específico de salida</label>
+                                        <div class="form-control-plaintext">CADUCADO</div>
+                                        <h:inputHidden id="tipoSalidaHidden"
+                                                       value="#{movInventarioBean.movInventario.tipoSalida}" />
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                 <i class="fas fa-times"></i> Cancelar
                             </button>
-                            <h:commandButton value="Registrar Salida" 
-                                             action="#{movInventarioBean.registrarSalida}" 
+
+                            <p:commandButton value="Registrar Salida"
+                                             action="#{movInventarioBean.registrarSalida}"
                                              styleClass="btn btn-danger"
+                                             process="@form"
                                              onclick="return confirm('¿Está seguro de registrar esta salida?');"
-                                             oncomplete="if(!args.validationFailed) { $('#modalSalida').modal('hide'); }"
-                                             update="formSalida,formTabla,growl"/>
+                                             update="formSalida formTabla growl" />
                         </div>
                     </h:form>
                 </div>
             </div>
         </div>
 
-        <!-- Mensajes de Faces -->
         <p:growl id="growl" showDetail="true" life="3000" />
-
-        <!-- Script para funcionalidades adicionales -->
-        <script>
-            // Función para actualizar el formulario cuando cambie el tipo de movimiento
-            function actualizarFormulario() {
-                // Solo actualizar via AJAX sin cerrar el modal
-                PrimeFaces.abort({source: 'formCrearMovimiento:tipoMovimiento'});
-                PrimeFaces.ajax.AjaxRequest({
-                    formId: 'formCrearMovimiento',
-                    execute: 'formCrearMovimiento:tipoMovimiento',
-                    update: 'formCrearMovimiento'
-                });
-            }
-
-            // Agregar evento change a los radio buttons del tipo de movimiento
-            document.addEventListener('DOMContentLoaded', function () {
-                var radioButtons = document.querySelectorAll('input[type="radio"][name*="tipoMovimiento"]');
-                radioButtons.forEach(function (radio) {
-                    radio.addEventListener('change', function () {
-                        // Usar setTimeout para evitar conflicto con PrimeFaces
-                        setTimeout(function () {
-                            actualizarFormulario();
-                        }, 300);
-                    });
-                });
-
-                // Prevenir que el modal se cierre cuando se hace click en los radios
-                var modal = document.getElementById('modalCrear');
-                if (modal) {
-                    modal.addEventListener('click', function (e) {
-                        if (e.target.type === 'radio' || e.target.closest('input[type="radio"]')) {
-                            e.stopPropagation();
-                        }
-                    });
-                }
-            });
-
-            // Función para manejar el cierre del modal solo cuando sea necesario
-            function manejarCierreModal() {
-                var modal = document.getElementById('modalCrear');
-                if (modal) {
-                    var bsModal = bootstrap.Modal.getInstance(modal);
-                    if (bsModal) {
-                        bsModal.hide();
-                    }
-                }
-            }
-        </script>
 
     </h:body>
 </html>

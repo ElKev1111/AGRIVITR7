@@ -9,6 +9,8 @@ import java.io.Serializable;
 public class MovInventario implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private String archivoFactura;
+    private String usuarioRegistro;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -69,6 +71,9 @@ public class MovInventario implements Serializable {
     @Column(name = "stockNuevo")
     private Integer stockNuevo;
 
+    @Column(name = "imagenProducto")
+    private String imagenProducto;
+
     // Constructores
     public MovInventario() {
     }
@@ -84,6 +89,10 @@ public class MovInventario implements Serializable {
 
     public String getTipoString() {
         return tipoString;
+    }
+
+    public String getImagenProducto() {
+        return imagenProducto;
     }
 
     public void setTipoString(String tipoString) {
@@ -106,6 +115,10 @@ public class MovInventario implements Serializable {
         this.cantidadSalida = cantidadSalida;
     }
 
+    public void setImagenProducto(String imagenProducto) {
+        this.imagenProducto = imagenProducto;
+    }
+
     public Date getFechaEntrada() {
         return fechaEntrada;
     }
@@ -124,6 +137,22 @@ public class MovInventario implements Serializable {
 
     public String getTipoEntrada() {
         return tipoEntrada;
+    }
+
+    public String getUsuarioRegistro() {
+        return usuarioRegistro;
+    }
+
+    public void setUsuarioRegistro(String usuarioRegistro) {
+        this.usuarioRegistro = usuarioRegistro;
+    }
+
+    public String getArchivoFactura() {
+        return archivoFactura;
+    }
+
+    public void setArchivoFactura(String archivoFactura) {
+        this.archivoFactura = archivoFactura;
     }
 
     public void setTipoEntrada(String tipoEntrada) {

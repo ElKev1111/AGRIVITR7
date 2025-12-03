@@ -7,13 +7,16 @@ import Modelo.Proveedor;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.List;
+import java.util.Calendar;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.component.UIComponent;
+import java.util.ArrayList;
+import java.util.List;
+import javax.faces.validator.ValidatorException;
 
 @ManagedBean
 @ViewScoped
@@ -22,37 +25,88 @@ public class ProductoBean implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Producto producto = new Producto();
-    private ProductoDAO productoDAO = new ProductoDAO();
+    private final ProductoDAO productoDAO = new ProductoDAO();
+    private final ProveedorDAO proveedorDAO = new ProveedorDAO();
 
-    private ProveedorDAO proveedorDAO = new ProveedorDAO();
+    private List<Producto> listaProductos;     // <-- NUEVO: cache de productos
     private List<Proveedor> listaProveedores;
     private Integer idProveedorSeleccionado;
 
+    // Se ejecuta cuando se crea el bean (ViewScoped)
     @PostConstruct
     public void init() {
+        listaProductos = new ArrayList<>();
         try {
-            listaProveedores = proveedorDAO.listarActivos();
-            System.out.println(">>> Proveedores cargados: " + listaProveedores.size());
+            List<Producto> desdeBD = productoDAO.listar();
+            if (desdeBD != null) {
+                listaProductos = desdeBD;
+            }
         } catch (SQLException e) {
-            System.out.println("Error al cargar proveedores: " + e.getMessage());
-            mostrarError("Error al cargar proveedores: " + e.getMessage());
+            System.out.println("Error al listar los productos: " + e.getMessage());
+            // dejamos listaProductos como lista vacía
         }
     }
 
     public Producto getProducto() {
         return producto;
     }
+    // Fecha mínima de vencimiento: hoy + 1 mes (a la medianoche)
+
+    public Date getMinFechaVencimiento() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        // Sumar 1 mes
+        cal.add(Calendar.MONTH, 1);
+
+        return cal.getTime();
+    }
+
+    public void validarFechaVencimiento(FacesContext context,
+            UIComponent component,
+            Object value) throws ValidatorException {
+        if (value == null) {
+            return; // ya se validará como requerido si corresponde
+        }
+
+        Date fecha = (Date) value;
+
+        // Calculamos el mínimo permitido: hoy + 1 mes (a la medianoche)
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        cal.add(Calendar.MONTH, 1);
+        Date minimo = cal.getTime();
+
+        if (fecha.before(minimo)) {
+            throw new ValidatorException(
+                    new FacesMessage(
+                            FacesMessage.SEVERITY_ERROR,
+                            "Fecha de vencimiento inválida",
+                            "La fecha de vencimiento debe ser al menos un mes después de hoy."
+                    )
+            );
+        }
+    }
 
     public void setProducto(Producto producto) {
         this.producto = producto;
     }
 
+    // IMPORTANTE: nunca retorna null
     public List<Producto> getListaProductos() {
+        System.out.println(">>> EJECUTANDO getter getListaProductos()");
         try {
-            return productoDAO.listar();
-        } catch (SQLException e) {
-            System.out.println("Error al listar los productos");
-            return null;
+            List<Producto> lista = productoDAO.listar();
+            return (lista != null) ? lista : new ArrayList<>();
+        } catch (Exception e) {
+            System.out.println("Error al listar los productos: " + e.getMessage());
+            return new ArrayList<>();
         }
     }
 
@@ -78,28 +132,37 @@ public class ProductoBean implements Serializable {
                 return null;
             }
 
-            // 🔹 Fecha de ingreso
+            // Fecha de ingreso
             producto.setFechaIngreso(new Date());
 
-            // 🔹 Cargar proveedor desde la BD
-            Proveedor proveedor = proveedorDAO.buscar(idProveedorSeleccionado); // o buscarPorId, según tu DAO
+            // Cargar proveedor desde la BD
+            Proveedor proveedor = proveedorDAO.buscar(idProveedorSeleccionado);
             if (proveedor == null) {
                 mostrarError("No se encontró el proveedor seleccionado");
                 return null;
             }
 
-            // 🔹 Asignar datos de proveedor al producto
+            // Asignar datos de proveedor al producto
             producto.setIdProveedor(proveedor.getIdProveedor());
             producto.setNombreProveedor(proveedor.getNombreProveedor());
 
-            // Si el stock viene nulo o negativo, normalizamos
+            // Normalizar stock
             if (producto.getStock() < 0) {
                 producto.setStock(0);
             }
 
             productoDAO.agregar(producto);
+
+            // refrescar lista en memoria para que la vista no quede desactualizada
+            try {
+                List<Producto> desdeBD = productoDAO.listar();
+                listaProductos = (desdeBD != null) ? desdeBD : new ArrayList<>();
+            } catch (SQLException ex) {
+                listaProductos = new ArrayList<>();
+            }
+
             producto = new Producto();
-            idProveedorSeleccionado = null;   // limpiamos la selección
+            idProveedorSeleccionado = null;
 
             mostrarExito("Producto creado correctamente");
             return "HomeAdmin3?faces-redirect=true";
@@ -113,61 +176,63 @@ public class ProductoBean implements Serializable {
 
     public void editar(Producto p) {
         this.producto = p;
-
     }
 
     public void actualizar() {
-    try {
-        System.out.println("STOCK ANTES DE ACTUALIZAR = " + producto.getStock());
+        try {
+            productoDAO.actualizar(producto);
 
-        productoDAO.actualizar(producto);
+            // refrescar lista
+            try {
+                List<Producto> desdeBD = productoDAO.listar();
+                listaProductos = (desdeBD != null) ? desdeBD : new ArrayList<>();
+            } catch (SQLException ex) {
+                listaProductos = new ArrayList<>();
+            }
 
-        FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Producto actualizado correctamente"));
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Producto actualizado correctamente"));
 
-        producto = new Producto(); // Limpiar el formulario
+            producto = new Producto();
 
-    } catch (Exception e) {
-        System.out.println("Error al actualizar producto: " + e.getMessage());
-        e.printStackTrace();
-        FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo actualizar el producto: " + e.getMessage()));
+        } catch (Exception e) {
+            System.out.println("Error al actualizar producto: " + e.getMessage());
+            e.printStackTrace();
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo actualizar el producto: " + e.getMessage()));
+        }
     }
-}
-
 
     public void eliminar(Producto p) {
         try {
-            // 1. Verificar si tiene movimientos de inventario
-            if (productoDAO.tieneMovimientosInventario(p.getIdProducto())) {
-                FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                "Aviso",
-                                "No se puede eliminar el producto '" + p.getNombreProducto()
-                                + "' porque tiene movimientos de inventario registrados."));
-                return; // Salimos sin eliminar
+            productoDAO.eliminar(p);
+
+            // refrescar lista
+            try {
+                List<Producto> desdeBD = productoDAO.listar();
+                listaProductos = (desdeBD != null) ? desdeBD : new ArrayList<>();
+            } catch (SQLException ex) {
+                listaProductos = new ArrayList<>();
             }
 
-            // 2. Si no tiene movimientos, sí se elimina
-            productoDAO.eliminar(p);
             FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO,
-                            "Éxito", "Producto eliminado correctamente"));
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito", "Producto eliminado correctamente"));
 
         } catch (SQLException e) {
             System.out.println("Error al eliminar producto: " + e.getMessage());
             FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            "Error", "No se pudo eliminar el producto: " + e.getMessage()));
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo eliminar el producto: " + e.getMessage()));
         }
     }
 
+    // IMPORTANTE: nunca retorna null
     public List<Producto> getProductosPorProveedor(int idProveedor) {
         try {
-            return productoDAO.listarPorProveedor(idProveedor);
+            List<Producto> lista = productoDAO.listarPorProveedor(idProveedor);
+            return (lista != null) ? lista : new ArrayList<>();
         } catch (SQLException e) {
             mostrarError("Error al listar productos por proveedor");
-            return null;
+            return new ArrayList<>();
         }
     }
 
@@ -190,15 +255,17 @@ public class ProductoBean implements Serializable {
     }
 
     public List<Proveedor> getListaProveedores() {
-    try {
-        listaProveedores = proveedorDAO.listar();
-    } catch (SQLException e) {
-        mostrarError("Error al cargar proveedores: " + e.getMessage());
+        if (listaProveedores == null) {
+            listaProveedores = new ArrayList<>();
+            try {
+                List<Proveedor> desdeBD = proveedorDAO.listar();
+                if (desdeBD != null) {
+                    listaProveedores = desdeBD;
+                }
+            } catch (SQLException e) {
+                mostrarError("Error al cargar proveedores: " + e.getMessage());
+            }
+        }
+        return listaProveedores;
     }
-    return listaProveedores;
-}
-
-
-    
-
 }

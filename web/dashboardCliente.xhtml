@@ -7,234 +7,96 @@
       xmlns:p="http://primefaces.org/ui">
 
     <h:head>
-        <title>AgriviApp - Catálogo de Productos</title>
+        <title>AgriviApp - Productos Agrícolas</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
-        <!-- Iconos -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
 
         <style>
-            :root {
-                --agrivi-navy: #4F5E8C;
-                --agrivi-green: #17A649;
-                --agrivi-dark-green: #16592E;
-                --agrivi-cream: #F2EFDF;
-                --agrivi-sand: #D9A273;
-            }
-
-            html, body {
-                height: 100%;
-                margin: 0;
-            }
-
             body {
                 font-family: 'Inter', sans-serif;
-                background: linear-gradient(135deg, var(--agrivi-cream), #d7f0ff);
-                color: #1f2937;
+                background-color: #e6f5ed;
             }
-
             .header {
-                background: linear-gradient(90deg, var(--agrivi-dark-green), var(--agrivi-navy));
+                background-color: #0b9446;
             }
-
             .nav-link {
                 color: #ffffff;
                 padding: 0.5rem 1rem;
-                border-radius: 9999px;
-                transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
-                font-size: 0.85rem;
-                display: inline-flex;
-                align-items: center;
-                gap: 0.35rem;
+                border-radius: 0.375rem;
+                transition: background-color 0.2s;
             }
-
             .nav-link:hover {
-                background-color: rgba(255, 255, 255, 0.18);
-                box-shadow: 0 0 0 1px rgba(255,255,255,0.28);
-                transform: translateY(-1px);
+                background-color: #097a3a;
             }
-
-            .nav-link-active {
-                background-color: rgba(255, 255, 255, 0.22);
-                box-shadow: 0 0 0 1px rgba(255,255,255,0.35);
-            }
-
-            .cart-count {
+            .product-card {
                 background-color: #ffffff;
-                color: var(--agrivi-dark-green);
-                border-radius: 9999px;
-                min-width: 22px;
-                height: 22px;
+                border-radius: 1rem;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+                padding: 1.5rem;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+            }
+            .product-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+            }
+            .product-image {
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+                border-radius: 0.5rem;
+                margin-bottom: 1rem;
+            }
+            .btn-add-cart {
+                background-color: #0b9446;
+                color: white;
+                transition: background-color 0.2s ease-in-out;
+            }
+            .btn-add-cart:hover {
+                background-color: #097a3a;
+            }
+            .text-green-700 {
+                color: #097a3a;
+            }
+            .text-emerald-600 {
+                color: #097a3a;
+            }
+            .hero-section-top {
+                background-color: #ffffff;
+                border-radius: 1rem;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                padding: 2rem;
+                margin-bottom: 2rem;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .cart-count {
+                background-color: white;
+                color: #0b9446;
+                border-radius: 50%;
+                width: 24px;
+                height: 24px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 font-size: 0.75rem;
-                font-weight: 700;
+                font-weight: bold;
+                margin-left: 0.5rem;
             }
-
-            main {
-                flex: 1 0 auto;
-            }
-
-            .card {
-                background-color: #ffffff;
-                border-radius: 1rem;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
-            }
-
-            /* CARD DE PRODUCTO (igual estilo que dashboardPresentacion) */
-            .product-card {
-                position: relative;
-                background: radial-gradient(circle at top left,
-                    rgba(23, 166, 73, 0.15), #ffffff);
-                border-radius: 1.5rem;
-                box-shadow: 0 16px 40px rgba(15, 23, 42, 0.16);
-                padding: 1.5rem 1.5rem 1.25rem;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                border: 1px solid rgba(15, 23, 42, 0.04);
-                transition: transform 0.18s ease, box-shadow 0.18s ease;
-            }
-
-            .product-card:hover {
-                transform: translateY(-6px);
-                box-shadow: 0 22px 50px rgba(15, 23, 42, 0.24);
-            }
-
-            /* Chapita en la esquina superior */
-            .product-badge {
-                position: absolute;
-                top: 1rem;
-                left: 1rem;
-                padding: 0.25rem 0.7rem;
-                background: rgba(22, 163, 74, 0.12);
-                border-radius: 999px;
-                font-size: 0.7rem;
-                font-weight: 600;
-                color: #047857;
-            }
-
-            .product-image {
-                width: 100%;
-                height: 230px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                background-color: #f3f4f6;
-                border-radius: 0.75rem;
-                margin-bottom: 1rem;
-                overflow: hidden;
-                padding: 0.5rem;
-            }
-
-            .product-image img {
-                max-height: 100%;
-                max-width: 100%;
-                width: auto;
-                height: auto;
-                object-fit: contain;
-                transition: transform 0.25s ease;
-            }
-
-            .product-card:hover .product-image img {
-                transform: scale(1.04);
-            }
-
-            .badge-stock {
-                display: inline-flex;
-                align-items: center;
-                padding: 0.15rem 0.55rem;
-                border-radius: 9999px;
-                font-size: 0.7rem;
-                font-weight: 600;
-                background-color: rgba(22, 89, 46, 0.08);
-                color: var(--agrivi-dark-green);
-            }
-
-            /* Botón principal con gradiente e icono de carrito */
-            .btn-primary {
-                background: radial-gradient(circle at 0% 0%, #34d399, #16a34a);
-                color: #ffffff;
-                border: none;
-                padding: 0.55rem 1.6rem;
-                border-radius: 9999px;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                gap: 0.45rem;
-                box-shadow: 0 12px 25px rgba(22, 163, 74, 0.35);
-                transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
-                font-weight: 600;
-            }
-
-            .btn-primary::before {
-                content: "\f07a"; /* ícono carrito Font Awesome */
-                font-family: "Font Awesome 6 Free";
-                font-weight: 900;
-                font-size: 0.9rem;
-            }
-
-            .btn-primary:hover {
-                transform: translateY(-1px);
-                filter: brightness(1.05);
-                box-shadow: 0 16px 40px rgba(22, 163, 74, 0.45);
-            }
-
-            .btn-secondary {
-                background-color: #ffffff;
-                color: var(--agrivi-dark-green);
-                border: 1px solid rgba(15, 23, 42, 0.1);
-                transition: background-color 0.2s ease-in-out, color 0.2s, box-shadow 0.2s;
-            }
-
-            .btn-secondary:hover {
-                background-color: #f9fafb;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            }
-
-            .qty-control {
-                display: inline-flex;
-                align-items: center;
-                gap: 0.4rem;
-                background-color: var(--agrivi-cream);
-                border-radius: 9999px;
-                padding: 0.15rem 0.4rem;
-            }
-
-            .qty-number {
-                min-width: 2rem;
-                text-align: center;
-                font-weight: 600;
-                color: var(--agrivi-dark-green);
-            }
-
-            .qty-btn {
-                width: 1.6rem;
-                height: 1.6rem;
-                border-radius: 9999px;
-                font-size: 0.9rem;
-                border: none;
-                background-color: #ffffff;
-                color: var(--agrivi-dark-green);
-                box-shadow: 0 0 0 1px rgba(0,0,0,0.06);
-            }
-
-            .qty-btn:hover {
-                background-color: var(--agrivi-sand);
-                color: #ffffff;
-            }
-
-            .qty-btn:disabled {
-                opacity: 0.4;
-                cursor: not-allowed;
-                background-color: #f3f4f6;
-                color: #9ca3af;
-            }
-
-            footer {
-                background-color: #0f172a;
+            @media (min-width: 768px) {
+                .hero-section-top {
+                    flex-direction: row;
+                    text-align: left;
+                    padding: 4rem;
+                }
+                .hero-content-top {
+                    flex: 1;
+                    padding-right: 2rem;
+                }
             }
         </style>
     </h:head>
@@ -247,29 +109,26 @@
         <!-- HEADER -->
         <header class="header text-white p-4 shadow-md">
             <div class="container mx-auto flex justify-between items-center">
-                <h1 class="text-2xl font-bold tracking-tight">AgriviApp</h1>
-
+                <h1 class="text-2xl font-bold">AgriviApp</h1>
                 <h:form id="navForm">
                     <nav>
-                        <ul class="flex space-x-3 items-center text-sm">
+                        <ul class="flex space-x-4 items-center">
                             <li>
-                                <h:link outcome="perfilCliente"
-                                        value="Perfil"
-                                        styleClass="nav-link" />
-                            </li>
-                            <li>
-                                <h:link outcome="dashboardCliente"
-                                        value="Catálogo"
-                                        styleClass="nav-link nav-link-active" />
+                                <h:link outcome="dashboardCliente" value="Catálogo" styleClass="nav-link" />
                             </li>
                             <li>
                                 <p:link outcome="carrito" styleClass="nav-link flex items-center">
                                     <i class="pi pi-shopping-cart mr-2"></i>
-                                    <span>Mi carrito</span>
+                                    <span>Mi Carrito</span>
                                     <span class="cart-count">
                                         <h:outputText value="#{carritoBean.totalItems}" />
                                     </span>
                                 </p:link>
+                            </li>
+                            <li>
+                                <span class="nav-link font-semibold">
+                                    Hola, #{usuarioBean.usuario.nombre}
+                                </span>
                             </li>
                             <li>
                                 <p:commandLink value="Cerrar Sesión"
@@ -284,157 +143,151 @@
         </header>
 
         <!-- CONTENIDO PRINCIPAL -->
-        <main class="container mx-auto px-4 py-8 md:py-10">
+        <main class="container mx-auto p-8">
             <h:messages id="globalMessages"
                         globalOnly="true"
-                        infoStyle="color:#15803d; font-weight:bold; margin-bottom:0.75rem;"
-                        warnStyle="color:#b45309; font-weight:bold; margin-bottom:0.75rem;"
-                        errorStyle="color:#b91c1c; font-weight:bold; margin-bottom:0.75rem;" />
+                        infoStyle="color: #097a3a; font-weight: bold;"
+                        warnStyle="color: orange;"
+                        errorStyle="color: red; font-weight: bold;" />
 
-            <!-- Encabezado de catálogo -->
-            <section class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
-                <div>
-                    <h2 class="text-3xl font-bold text-gray-800 mb-1">
-                        Catálogo de productos
-                    </h2>
-                    <p class="text-gray-600 text-sm">
-                        Elige los productos que necesitas y ajusta las cantidades directamente desde aquí.
-                    </p>
-                </div>
-            </section>
+            <!-- Catálogo -->
+            <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">
+                Nuestros Productos Agrícolas
+            </h2>
 
-            <!-- CATÁLOGO -->
             <h:form id="catalogoForm">
-                <h:panelGroup rendered="#{not empty productoBean.listaProductos}">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        <ui:repeat var="p" value="#{productoBean.listaProductos}">
-                            <div class="product-card">
-                                <!-- chapita -->
-                                <span class="product-badge">
-                                    #{p.tipo}
-                                </span>
-
-                                <div>
-                                    <div class="product-image bg-gray-150 flex items-center justify-center rounded">
-                                        <h:graphicImage
-                                            value="#{empty p.imagen 
-                                                     ? '/resources/images/products/default-product.jpg' 
-                                                     : '/resources/images/products/'.concat(p.imagen)}"
-                                            alt="Imagen no disponible" />
-                                    </div>
-
-                                    <p class="text-xs uppercase tracking-wide text-gray-400 mb-1">
-                                        #{p.tipo}
-                                    </p>
-                                    <h3 class="text-xl font-semibold text-gray-800">
-                                        #{p.nombreProducto}
-                                    </h3>
-                                    <p class="text-gray-600 mb-4 text-sm">
-                                        #{p.descripcion}
-                                    </p>
-                                </div>
-
-                                <div class="mt-2">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <p class="text-2xl font-bold text-emerald-600">
-                                            $
-                                            <h:outputText value="#{p.precioVenta}">
-                                                <f:convertNumber pattern="#,##0.00" />
-                                            </h:outputText>
-                                        </p>
-                                        <span class="badge-stock">
-                                            Stock: #{p.stock}
-                                        </span>
-                                    </div>
-
-                                    <!-- Control de cantidad + / - por producto -->
-                                    <div class="flex items-center justify-between mt-3">
-                                        <div class="qty-control">
-                                            <p:commandButton value="-"
-                                                             title="Quitar una unidad"
-                                                             process="@this"
-                                                             actionListener="#{carritoBean.decrementarProducto(p)}"
-                                                             update=":catalogoForm :navForm :globalMessages"
-                                                             disabled="#{carritoBean.obtenerCantidadProducto(p) le 0}"
-                                                             styleClass="qty-btn" />
-                                            <span class="qty-number">
-                                                <h:outputText value="#{carritoBean.obtenerCantidadProducto(p)}" />
-                                            </span>
-                                            <p:commandButton value="+"
-                                                             title="Agregar una unidad"
-                                                             process="@this"
-                                                             actionListener="#{carritoBean.incrementarProducto(p)}"
-                                                             update=":catalogoForm :navForm :globalMessages"
-                                                             styleClass="qty-btn" />
-                                        </div>
-
-                                        <p:commandButton value="Agregar al carrito"
-                                                         process="@this"
-                                                         actionListener="#{carritoBean.agregarUnidad(p)}"
-                                                         update=":catalogoForm :navForm :globalMessages"
-                                                         styleClass="btn-primary px-4 py-2 rounded-full text-sm font-semibold ml-3" />
-                                    </div>
-                                </div>
-                            </div>
-                        </ui:repeat>
+                <p:dialog header="Seleccionar Cantidad" widgetVar="quantityDialog" modal="true" resizable="false">
+                    <div class="p-4">
+                        <p id="modalProductName">¿Cuántas unidades deseas agregar al carrito?</p>
+                        <p:inputNumber id="cantidadInput"
+                                       value="#{carritoBean.cantidadTemporal}" 
+                                       minValue="1" 
+                                       decimalPlaces="0"
+                                       styleClass="w-full mt-2" />
+                        <div class="flex justify-end mt-4 space-x-2">
+                            <p:commandButton value="Cancelar" 
+                                             onclick="PF('quantityDialog').hide()" 
+                                             styleClass="bg-gray-500 text-white px-4 py-2 rounded" />
+                            <p:commandButton value="Agregar" 
+                                             action="#{carritoBean.agregarProductoModal}"
+                                             update=":navForm :globalMessages"
+                                             oncomplete="PF('quantityDialog').hide()"
+                                             styleClass="bg-green-600 text-white px-4 py-2 rounded" />
+                        </div>
                     </div>
-                </h:panelGroup>
+                </p:dialog>
 
-                <h:panelGroup rendered="#{empty productoBean.listaProductos}">
-                    <div class="card text-center py-10 px-6">
-                        <p class="text-gray-600">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <ui:repeat var="p" value="#{productoBean.listaProductos}">
+                        <div class="product-card">
+                            <div class="product-image bg-gray-200 flex items-center justify-center rounded">
+                                <p:graphicImage value="#{producto.imagen}" style="width:100px;height:100px;object-fit:cover;" />
+
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">
+                                #{p.nombreProducto}
+                            </h3>
+                            <p class="text-gray-600 mb-4">
+                                #{p.descripcion}
+                            </p>
+                            <p class="text-2xl font-bold text-emerald-600 mb-4">
+                                $
+                                <h:outputText value="#{p.precioVenta}">
+                                    <f:convertNumber pattern="#,##0.00" />
+                                </h:outputText>
+                            </p>
+                            <p:commandButton value="Agregar al Carrito"
+                                             action="#{carritoBean.prepararAgregarProducto(p)}"
+                                             oncomplete="document.getElementById('modalProductName').textContent = '¿Cuántas unidades de #{p.nombreProducto} deseas agregar?'; PF('quantityDialog').show();"
+                                             styleClass="w-full py-2 px-4 rounded-md text-white font-medium btn-add-cart" />
+                        </div>
+                    </ui:repeat>
+
+                    <h:panelGroup rendered="#{empty productoBean.listaProductos}">
+                        <p class="text-center text-gray-600 text-lg col-span-full">
                             No hay productos disponibles en este momento.
                         </p>
-                    </div>
-                </h:panelGroup>
+                    </h:panelGroup>
+                </div>
             </h:form>
 
+            <h:panelGroup rendered="#{historialComprasBean.compras.size() > 0}" styleClass="mt-12 block">
+                <div class="bg-white rounded-xl shadow p-6">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Historial de compras</h3>
+                    <table class="w-full">
+                        <thead>
+                            <tr class="text-left text-green-700 border-b">
+                                <th class="py-2">Fecha</th>
+                                <th class="py-2">Producto</th>
+                                <th class="py-2 text-center">Cantidad</th>
+                                <th class="py-2 text-right">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ui:repeat value="#{historialComprasBean.compras}" var="venta">
+                                <tr class="border-b">
+                                    <td class="py-2">
+                                        <h:outputText value="#{venta.fechaVentaFormateada}" />
+                                    </td>
+                                    <td class="py-2">#{venta.producto.nombreProducto}</td>
+                                    <td class="py-2 text-center">#{venta.cantidad}</td>
+                                    <td class="py-2 text-right font-semibold">
+                                        $<h:outputText value="#{venta.totalPagar}">
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputText>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                        </tbody>
+                    </table>
+                </div>
+            </h:panelGroup>
         </main>
 
-        <!-- FOOTER -->
-        <footer class="text-white py-8">
-            <div class="container mx-auto px-4">
+        <footer class="bg-gray-800 text-white p-8 mt-12">
+            <div class="container mx-auto">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div>
-                        <h3 class="text-xl font-bold mb-4">🌱 AgriviApp</h3>
-                        <p class="text-gray-300 text-sm">
-                            Conectando agricultores y productores con soluciones agrícolas seguras y efectivas.
+                        <h3 class="text-xl font-bold mb-4">AgriviApp</h3>
+                        <p class="text-gray-300">
+                            Conectando agricultores y consumidores con productos frescos y sostenibles.
                         </p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-4">Enlaces Rápidos</h4>
+                        <ul class="space-y-2">
+                            <li><h:link outcome="index" value="Inicio" styleClass="text-gray-300 hover:text-white" /></li>
+                            <li><h:link outcome="catalogo" value="Catálogo" styleClass="text-gray-300 hover:text-white" /></li>
+                            <li><a href="#about-section" class="text-gray-300 hover:text-white">Sobre Nosotros</a></li>
+                        </ul>
                     </div>
                     <div>
                         <h4 class="font-semibold mb-4">Contacto</h4>
-                        <p class="text-gray-300 text-sm">
-                            Correo: soporte@agriviapp.com<br/>
-                            Teléfono: +57 300 000 0000
-                        </p>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold mb-4">Ayuda</h4>
-                        <ul class="text-gray-300 text-sm space-y-1">
-                            <li>Preguntas Frecuentes</li>
-                            <li>Soporte técnico</li>
-                            <li>Términos y condiciones</li>
+                        <ul class="space-y-2 text-gray-300">
+                            <li class="flex items-center">
+                                <span>Av. Agricultura 123, Ciudad</span>
+                            </li>
+                            <li class="flex items-center">
+                                <span>+1 234 567 890</span>
+                            </li>
+                            <li class="flex items-center">
+                                <span>info@agriviapp.com</span>
+                            </li>
                         </ul>
                     </div>
                     <div>
                         <h4 class="font-semibold mb-4">Síguenos</h4>
-                        <div class="flex space-x-4 text-gray-300 text-sm">
-                            <a href="#" class="hover:text-white transition-colors">
-                                <i class="bi bi-facebook"></i>
-                            </a>
-                            <a href="#" class="hover:text-white transition-colors">
-                                <i class="bi bi-instagram"></i>
-                            </a>
-                            <a href="#" class="hover:text-white transition-colors">
-                                <i class="bi bi-twitter"></i>
-                            </a>
+                        <div class="flex space-x-4">
+                            <a href="#" class="text-gray-300 hover:text-white">FB</a>
+                            <a href="#" class="text-gray-300 hover:text-white">TW</a>
+                            <a href="#" class="text-gray-300 hover:text-white">IG</a>
                         </div>
                     </div>
                 </div>
-                <div class="border-t border-gray-700 mt-8 pt-4 text-center text-gray-400 text-xs">
-                    <p>© 2025 AgriviApp. Todos los derechos reservados.</p>
+                <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
+                    <p>&#169; 2025 AgriviApp. Todos los derechos reservados.</p>
                 </div>
             </div>
         </footer>
-    </h:body>
+    </h:body>        
 </html>
