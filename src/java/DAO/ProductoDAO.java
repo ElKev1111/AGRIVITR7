@@ -264,4 +264,16 @@ public class ProductoDAO implements Serializable {
 
         return p;
     }
+    public boolean tieneMovimientosInventario(int idProducto) throws SQLException {
+    String sql = "SELECT 1 FROM movimientos_inventario WHERE idProducto = ? LIMIT 1";
+    try (Connection con = Conexion.conectar();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setInt(1, idProducto);
+        try (ResultSet rs = ps.executeQuery()) {
+            return rs.next();
+        }
+    }
+}
+
 }

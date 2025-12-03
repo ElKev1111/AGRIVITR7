@@ -3,518 +3,826 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
-      lang="es"
-      xmlns:p="http://primefaces.org/ui">
-    <h:head>
-        <title>Gestión de Productos</title>
-        <!-- Bootstrap, Tailwind y FontAwesome -->
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
-        <style>
-            body {
-                font-family: 'Poppins', sans-serif;
-                background-color: #f4f6f9;
-                margin: 0;
-            }
+      xmlns:p="http://primefaces.org/ui"
+      lang="es">
 
-            /* Sidebar */
+<h:head>
+    <title>Gestión de Productos - AgriviApp</title>
+
+    <!-- Tailwind + Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+
+    <!-- Bootstrap y FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+    <style>
+        :root {
+            --agrivi-navy: #4F5E8C;
+            --agrivi-green: #17A649;
+            --agrivi-dark-green: #16592E;
+            --agrivi-cream: #F2EFDF;
+            --agrivi-sand: #D9A273;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--agrivi-cream), #d7f0ff);
+            margin: 0;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 250px;
+            background: linear-gradient(180deg, var(--agrivi-dark-green), var(--agrivi-navy));
+            color: white;
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: 4px 0 20px rgba(22, 89, 46, 0.2);
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            text-align: center;
+        }
+
+        .sidebar-header h4 {
+            margin: 0 0 0.5rem 0;
+            font-weight: 700;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar-header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 0.875rem;
+        }
+
+        .sidebar-nav .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            font-size: 0.95rem;
+        }
+
+        .sidebar-nav .nav-link:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+            border-left-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .sidebar-nav .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-left-color: #ffd700;
+            font-weight: 600;
+        }
+
+        .sidebar-nav .nav-link i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .sidebar-footer .btn-logout {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-footer .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            background: white;
+            padding: 1.5rem 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-bar h2 {
+            margin: 0;
+            color: #1f2937;
+            font-weight: 700;
+            font-size: 1.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .top-bar h2 i {
+            color: var(--agrivi-green);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info span {
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+
+        .user-info strong {
+            color: #1f2937;
+        }
+
+        .btn-outline-primary {
+            background: transparent;
+            border: 2px solid var(--agrivi-green);
+            color: var(--agrivi-green);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--agrivi-green);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(23, 166, 73, 0.3);
+        }
+
+        /* CARD CONTAINER */
+        .table-container {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+            padding: 2rem;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .table-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .ui-button-success {
+            background: var(--agrivi-green) !important;
+            border-color: var(--agrivi-green) !important;
+        }
+
+        .ui-button-danger {
+            background: #dc3545 !important;
+            border-color: #dc3545 !important;
+        }
+
+        /* Estilos para la tabla PrimeFaces */
+        .ui-datatable {
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .ui-datatable thead th {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0) !important;
+            color: #1f2937 !important;
+            font-weight: 600 !important;
+            border-bottom: 2px solid var(--agrivi-green) !important;
+            padding: 1rem !important;
+        }
+
+        .ui-datatable tbody td {
+            padding: 0.875rem 1rem !important;
+            border-bottom: 1px solid #e5e7eb !important;
+        }
+
+        .ui-datatable tbody tr:hover {
+            background-color: #f8fafc !important;
+        }
+
+        /* Botones de acción */
+        .btn-xs {
+            padding: 0.375rem 0.75rem !important;
+            font-size: 0.875rem !important;
+            border-radius: 0.5rem !important;
+            font-weight: 500 !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .btn-warning {
+            background-color: #f59e0b !important;
+            border-color: #f59e0b !important;
+            color: white !important;
+        }
+
+        .btn-warning:hover {
+            background-color: #d97706 !important;
+            border-color: #d97706 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-danger {
+            background-color: #dc3545 !important;
+            border-color: #dc3545 !important;
+            color: white !important;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333 !important;
+            border-color: #bd2130 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-primary {
+            background-color: var(--agrivi-green) !important;
+            border-color: var(--agrivi-green) !important;
+        }
+
+        .btn-primary:hover {
+            background-color: #148b3c !important;
+            border-color: #148b3c !important;
+        }
+
+        /* MODAL STYLES */
+        .modal-header.bg-primary {
+            background: linear-gradient(135deg, var(--agrivi-green), var(--agrivi-dark-green)) !important;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            border-radius: 0.5rem;
+            border: 1px solid #d1d5db;
+            padding: 0.625rem 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--agrivi-green);
+            box-shadow: 0 0 0 3px rgba(23, 166, 73, 0.1);
+        }
+
+        /* PrimeFaces components */
+        .ui-selectonemenu-panel,
+        .ui-datepicker,
+        .ui-datepicker.ui-widget {
+            z-index: 1065 !important;
+        }
+
+        /* Diálogo de edición con scroll */
+        .dialog-editar-producto .ui-dialog-content {
+            max-height: 65vh;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
             .sidebar {
-                position: fixed;
-                top: 0;
-                left: 0;
-                height: 100vh;
-                width: 230px;
-                background: #008631;
-                color: white;
-                z-index: 1000;
-                overflow-y: auto;
-                transition: all 0.3s ease;
+                width: 220px;
             }
-
-            .sidebar-header {
-                padding: 2rem 1.5rem;
-                padding-bottom: 10px;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                text-align: center;
-            }
-
-            .sidebar-header h4 {
-                margin-bottom: 0.5rem;
-                font-weight: 700;
-            }
-
-            .sidebar-nav .nav-link {
-                display: flex;
-                align-items: center;
-                padding: 10px 18px;
-                color: rgba(255, 255, 255, 0.8);
-                text-decoration: none;
-            }
-
-            .sidebar-nav .nav-link:hover {
-                background: rgba(255, 255, 255, 0.1);
-                color: white;
-            }
-
-            .sidebar-nav .nav-link.active {
-                background: rgba(255, 255, 255, 0.2);
-                color: white;
-                border-right: 4px solid #ffd700;
-            }
-
-            .sidebar-footer {
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                padding: 1.5rem;
-                border-top: 1px solid rgba(255, 255, 255, 0.1);
-            }
-
-            /* Main content */
             .main-content {
-                margin-left: 260px;
-                padding: 2rem;
-                min-height: 100vh;
+                margin-left: 220px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
             }
 
             .top-bar {
-                background-color: gainsboro;
-                padding: 1.5rem 2rem;
-                border-bottom: 1px solid #e9ecef;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
             }
 
-            .top-bar h2 {
-                margin: 0;
-                color: #495057;
-                font-weight: 600;
+            .table-container {
+                padding: 1.5rem;
             }
 
-            .user-info {
-                display: flex;
-                align-items: center;
+            .table-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
             }
 
-            /* Tabla responsive */
-            .table-responsive {
-                background: white;
-                border-radius: 8px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                overflow-x: auto;
+            .action-buttons {
+                flex-wrap: wrap;
             }
 
-            .btn-xs {
-                padding: 0.25rem 0.5rem;
-                font-size: 0.75rem;
+            .action-buttons button {
+                width: 100%;
             }
-        </style>
-    </h:head>
+        }
+    </style>
+</h:head>
 
-    <h:body>
+<h:body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h4><i class="bi bi-flower1"></i> Agrivi</h4>
+            <p>Panel Admin</p>
+        </div>
 
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h4><i class="fa fa-leaf"></i> Agrivi</h4>
-                <p>Panel Admin</p>
+        <nav class="sidebar-nav">
+            <h:link outcome="/HomeAdmin1.xhtml" styleClass="nav-link">
+                <i class="bi bi-graph-up"></i> Dashboard
+            </h:link>
+            <h:link outcome="/HomeAdmin2.xhtml" styleClass="nav-link">
+                <i class="bi bi-people-fill"></i> Usuarios
+            </h:link>
+            <h:link outcome="/HomeAdmin3.xhtml" styleClass="nav-link active">
+                <i class="bi bi-box-seam"></i> Productos
+            </h:link>
+            <h:link outcome="/Correos.xhtml" styleClass="nav-link">
+                <i class="bi bi-envelope-fill"></i> Correos
+            </h:link>
+            <h:link outcome="/HomeAdmin4.xhtml" styleClass="nav-link">
+                <i class="bi bi-cart-check-fill"></i> Ventas
+            </h:link>
+            <h:link outcome="/HomeAdmin5.xhtml" styleClass="nav-link">
+                <i class="bi bi-person-badge-fill"></i> Empleados
+            </h:link>
+            <h:link outcome="/MovInventario.xhtml" styleClass="nav-link">
+                <i class="bi bi-boxes"></i> Inventario
+            </h:link>
+            <h:link outcome="/PedidosProveedores.xhtml" styleClass="nav-link">
+                <i class="bi bi-truck"></i> Pedidos
+            </h:link>
+            <h:link outcome="/dashboardProveedores.xhtml" styleClass="nav-link">
+                <i class="bi bi-building"></i> Vista Proveedores
+            </h:link>
+            <h:link outcome="/dashboardPresentacion.xhtml" styleClass="nav-link">
+                <i class="bi bi-easel"></i> Presentación
+            </h:link>
+        </nav>
+
+        <h:form>
+            <div class="sidebar-footer">
+                <h:commandLink action="#{usuarioBean.logout()}" styleClass="btn-logout">
+                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                </h:commandLink>
+            </div>
+        </h:form>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-bar">
+            <h2>
+                <i class="bi bi-box-seam"></i>
+                Gestión de Productos
+            </h2>
+            <div class="user-info">
+                <span>
+                    Bienvenido, <strong>#{usuarioBean.usuario.nombre}</strong>
+                </span>
+                <h:link outcome="/perfil.xhtml" styleClass="btn-outline-primary">
+                    <i class="bi bi-person-circle"></i>
+                    <span>Mi Perfil</span>
+                </h:link>
+            </div>
+        </div>
+
+        <!-- Contenedor principal -->
+        <div class="table-container">
+            <div class="table-header">
+                <div class="table-title">
+                    <i class="bi bi-list-ul"></i>
+                    Lista de Productos
+                </div>
+                <div class="action-buttons">
+                    <!-- Exportar Excel -->
+                    <h:form styleClass="d-inline">
+                        <p:commandButton value="Excel" ajax="false" icon="pi pi-file-excel"
+                                         styleClass="ui-button-success"
+                                         title="Exportar Excel">
+                            <p:dataExporter type="xls" target="tblProductos" fileName="Productos" />
+                        </p:commandButton>
+                    </h:form>
+
+                    <!-- Exportar PDF -->
+                    <h:form styleClass="d-inline">
+                        <p:commandButton value="PDF" ajax="false" icon="pi pi-file-pdf"
+                                         styleClass="ui-button-danger"
+                                         title="Exportar PDF">
+                            <p:dataExporter type="pdf" target="tblProductos" fileName="Productos" />
+                        </p:commandButton>
+                    </h:form>
+
+                    <!-- Botón Crear Producto -->
+                    <button type="button" class="btn btn-primary"
+                            data-bs-toggle="modal" data-bs-target="#modalCrear">
+                        <i class="bi bi-plus-circle"></i> Crear Producto
+                    </button>
+                </div>
             </div>
 
-            <nav class="sidebar-nav">
-                <h:link outcome="/HomeAdmin1.xhtml" styleClass="nav-link">
-                    <i class="fas fa-user"></i> Dashboard 
-                </h:link>
-                <h:link outcome="/HomeAdmin2.xhtml" styleClass="nav-link">
-                    <i class="fas fa-jar"></i> Usuarios
-                </h:link>
-                <h:link outcome="/HomeAdmin3.xhtml" styleClass="nav-link">
-                    <i class="fas fa-user"></i> Productos 
-                </h:link>
-                <h:link outcome="/Correos.xhtml" styleClass="nav-link">
-                    <i class="fas fa-envelope"></i> Correos
-                </h:link>
-                <h:link outcome="/HomeAdmin4.xhtml" styleClass="nav-link">
-                    <i class="fas fa-envelope"></i> Ventas
-                </h:link>
-                <h:link outcome="/HomeAdmin5.xhtml" styleClass="nav-link">
-                    <i class="fas fa-users"></i> Empleados
-                </h:link>
-                <h:link outcome="/MovInventario.xhtml" styleClass="nav-link active">
-                    <i class="fas fa-boxes"></i> Inventario
-                </h:link>
-                <h:link outcome="/dashboardCliente.xhtml" styleClass="nav-link active">
-                    <i class="fas fa-eye"></i> Vista Cliente
-                </h:link>
-            </nav>
+            <!-- Tabla de productos -->
+            <h:form id="formProductos">
+                <p:dataTable id="tblProductos"
+                             value="#{productoBean.listaProductos}"
+                             var="p"
+                             styleClass="table table-hover"
+                             paginator="false"
+                             rows="20"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                             rowsPerPageTemplate="1000"
+                             style="width:100%;">
 
-            <!-- Cerrar Sesión siempre al final -->
-            <div class="sidebar-footer">
-                <h:form>
-                    <h:commandLink action="#{usuarioBean.logout()}" 
-                                   styleClass="btn btn-outline-light btn-sm w-100">
-                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-                    </h:commandLink>
+                    <!-- Columnas de la tabla -->
+                    <p:column headerText="ID" style="width: 80px; text-align:center;">
+                        <h:outputText value="#{p.idProducto}"/>
+                    </p:column>
+
+                    <!-- Imagen -->
+                    <p:column headerText="Imagen" style="width: 110px; text-align:center;">
+                        <h:panelGroup rendered="#{not empty p.imagen}">
+                            <h:graphicImage value="/resources/images/products/#{p.imagen}"
+                                            style="width:60px;height:60px;object-fit:cover;border-radius:0.5rem;box-shadow:0 2px 6px rgba(0,0,0,0.15);" />
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{empty p.imagen}">
+                            <i class="bi bi-image" style="font-size:1.5rem;color:#9ca3af;"></i>
+                        </h:panelGroup>
+                    </p:column>
+
+                    <p:column headerText="Nombre Producto" style="width: 150px;">
+                        <h:outputText value="#{p.nombreProducto}"/>
+                    </p:column>
+                    <p:column headerText="Id Proveedor" style="width: 120px; text-align: center;">
+                        <h:outputText value="#{p.idProveedor}"/>
+                    </p:column>
+                    <p:column headerText="Precio" style="width: 100px;text-align: center;">
+                        <h:outputText value="S/. #{p.precioProducto}"/>
+                    </p:column>
+                    <p:column headerText="Descripción" style="width: 200px;">
+                        <h:outputText value="#{p.descripcion}"/>
+                    </p:column>
+                    <p:column headerText="Tipo" style="width: 100px;text-align: center;">
+                        <h:outputText value="#{p.tipo}"/>
+                    </p:column>
+                    <p:column headerText="Stock" style="width: 80px; text-align: center;">
+                        <h:outputText value="#{p.stock}"/>
+                    </p:column>
+                    <p:column headerText="Fecha de Registro" style="width: 160px; text-align: center;">
+                        <h:outputText value="#{p.fechaIngreso}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Fecha de vencimiento" style="width: 160px; text-align: center;">
+                        <h:outputText value="#{p.fechaVencimiento}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                        </h:outputText>
+                    </p:column>
+
+                    <!-- Acciones -->
+                    <p:column headerText="Acciones" style="width: 150px; text-align:center;" exportable="false">
+                        <div class="d-flex gap-1 justify-content-center">
+                            <!-- Botón Editar -->
+                            <p:commandButton value="Editar" icon="bi bi-pencil-square"
+                                             styleClass="btn btn-warning btn-xs"
+                                             action="#{productoBean.editar(p)}"
+                                             update=":formEditarProducto"
+                                             oncomplete="PF('modalEditarProducto').show();">
+                                <f:setPropertyActionListener target="#{productoBean.producto}" value="#{p}" />
+                            </p:commandButton>
+
+                            <!-- Botón Eliminar -->
+                            <p:commandButton value="Eliminar" icon="bi bi-trash"
+                                             styleClass="btn btn-danger btn-xs"
+                                             action="#{productoBean.eliminar(p)}"
+                                             update="tblProductos,growl"
+                                             onclick="return confirm('¿Seguro que deseas eliminar el producto #{p.nombreProducto}?');">
+                                <f:setPropertyActionListener target="#{productoBean.producto}" value="#{p}" />
+                            </p:commandButton>
+                        </div>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </div>
+    </div>
+
+    <!-- Modal Crear Producto -->
+    <div class="modal fade" id="modalCrear" tabindex="-1" aria-labelledby="modalCrearLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalCrearLabel">
+                        <i class="bi bi-plus-circle"></i> Crear Producto
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <h:form id="formCrearProducto" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <!-- Nombre Producto -->
+                        <div class="mb-3">
+                            <label class="form-label">Nombre Producto</label>
+                            <h:inputText value="#{productoBean.producto.nombreProducto}"
+                                         styleClass="form-control"
+                                         required="true"
+                                         requiredMessage="El nombre del producto es obligatorio"/>
+                        </div>
+
+                        <!-- Proveedor (lista con nombre e ID) -->
+                        <div class="mb-3">
+                            <label class="form-label">Proveedor</label>
+                            <p:selectOneMenu value="#{productoBean.idProveedorSeleccionado}"
+                                             styleClass="form-control"
+                                             filter="true" filterMatchMode="contains"
+                                             required="true"
+                                             requiredMessage="Debe seleccionar un proveedor"
+                                             appendTo="@(body)">
+                                <f:selectItem itemLabel="-- Seleccione un proveedor --" itemValue="#{null}" noSelectionOption="true"/>
+                                <f:selectItems value="#{productoBean.listaProveedores}"
+                                               var="prov"
+                                               itemValue="#{prov.idProveedor}"
+                                               itemLabel="#{prov.nombreProveedor} (ID: #{prov.idProveedor})"/>
+                            </p:selectOneMenu>
+                        </div>
+
+                        <!-- Precio -->
+                        <div class="mb-3">
+                            <label class="form-label">Precio</label>
+                            <p:inputNumber value="#{productoBean.producto.precioProducto}"
+                                           styleClass="form-control"
+                                           minValue="0"
+                                           decimalPlaces="0"
+                                           required="true"
+                                           requiredMessage="El precio es obligatorio"/>
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="mb-3">
+                            <label class="form-label">Descripción</label>
+                            <h:inputText value="#{productoBean.producto.descripcion}"
+                                         styleClass="form-control"
+                                         required="true"
+                                         requiredMessage="Agrega una descripción del producto."/>
+                        </div>
+
+                        <!-- Imagen -->
+                        <div class="mb-3">
+                            <label class="form-label">Imagen del producto</label>
+                            <p:fileUpload value="#{productoBean.archivoFotoProducto}"
+                                          mode="simple"
+                                          skinSimple="true"
+                                          accept="image/*"
+                                          label="Seleccionar imagen"/>
+                        </div>
+
+                        <!-- Tipo -->
+                        <div class="mb-3">
+                            <label class="form-label">Tipo de producto</label>
+                            <h:selectOneMenu id="tipoProducto"
+                                             value="#{productoBean.producto.tipo}"
+                                             styleClass="form-select"
+                                             required="true"
+                                             requiredMessage="Seleccione el tipo de producto">
+                                <f:selectItem itemLabel="-- Seleccione --" itemValue="" />
+                                <f:selectItem itemLabel="PESTICIDA"   itemValue="PESTICIDA" />
+                                <f:selectItem itemLabel="INSECTICIDA" itemValue="INSECTICIDA" />
+                                <f:selectItem itemLabel="FUNGICIDA"   itemValue="FUNGICIDA" />
+                                <f:selectItem itemLabel="HERBICIDA"   itemValue="HERBICIDA" />
+                            </h:selectOneMenu>
+                            <h:message for="tipoProducto" styleClass="text-danger" />
+                        </div>
+
+                        <!-- Stock inicial -->
+                        <div class="mb-3">
+                            <label class="form-label">Stock inicial</label>
+                            <p:inputNumber value="#{productoBean.producto.stock}"
+                                           styleClass="form-control"
+                                           decimalPlaces="0"
+                                           minValue="0"
+                                           required="true"
+                                           requiredMessage="El stock inicial es obligatorio"/>
+                        </div>
+
+                        <!-- Fecha de vencimiento con validación -->
+                        <div class="mb-3">
+                            <label class="form-label">Fecha de vencimiento</label>
+                            <p:calendar id="fechaVencimiento"
+                                        value="#{productoBean.producto.fechaVencimiento}"
+                                        pattern="dd/MM/yyyy"
+                                        locale="es"
+                                        showOn="button"
+                                        required="true"
+                                        requiredMessage="Seleccione la fecha de vencimiento"
+                                        mindate="#{productoBean.minFechaVencimiento}"
+                                        validator="#{productoBean.validarFechaVencimiento}"
+                                        inputStyleClass="form-control"
+                                        appendTo="@(body)"/>
+                            <p:message for="fechaVencimiento" styleClass="text-danger" />
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-lg"></i> Cancelar
+                        </button>
+
+                        <p:commandButton value="Guardar"
+                                         action="#{productoBean.agregar}"
+                                         process="@form"
+                                         ajax="false"
+                                         styleClass="btn btn-success"/>
+                    </div>
                 </h:form>
             </div>
         </div>
+    </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="top-bar d-flex justify-content-between align-items-center">
-                <h2><i class="fas fa-box"></i> Gestion de Productos</h2>
-                <div class="user-info">
-                    <span class="me-3">Bienvenido, <strong>#{usuarioBean.usuario.nombre}</strong></span>
-                    <div class="dropdown">
-                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user-circle"></i>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-user"></i> Perfil</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog"></i> Configuración</a></li>
-                            <li><hr class="dropdown-divider"/></li>
-                        </ul>
+    <!-- Modal Editar Producto -->
+    <p:dialog id="dlgEditarProducto"
+              widgetVar="modalEditarProducto"
+              modal="true"
+              header="Editar Producto"
+              resizable="false"
+              width="800"
+              styleClass="dialog-editar-producto">
+
+        <h:form id="formEditarProducto" enctype="multipart/form-data">
+            <div class="p-fluid">
+                <div class="p-field mb-3">
+                    <label class="form-label"><strong>Nombre Producto:</strong></label>
+                    <h:inputText value="#{productoBean.producto.nombreProducto}"
+                                 styleClass="form-control"
+                                 required="true"/>
+                </div>
+
+                <div class="p-field mb-3">
+                    <label class="form-label"><strong>ID Proveedor:</strong></label>
+                    <h:inputText value="#{productoBean.producto.idProveedor}"
+                                 styleClass="form-control"
+                                 required="true"/>
+                </div>
+
+                <div class="p-field mb-3">
+                    <label class="form-label"><strong>Nombre Proveedor:</strong></label>
+                    <h:inputText value="#{productoBean.producto.nombreProveedor}"
+                                 styleClass="form-control"
+                                 required="true"/>
+                </div>
+
+                <div class="p-field mb-3">
+                    <label class="form-label"><strong>Precio:</strong></label>
+                    <h:inputText value="#{productoBean.producto.precioProducto}"
+                                 styleClass="form-control"
+                                 required="true"/>
+                </div>
+
+                <div class="p-field mb-3">
+                    <label class="form-label"><strong>Descripción:</strong></label>
+                    <h:inputTextarea value="#{productoBean.producto.descripcion}"
+                                     styleClass="form-control"
+                                     rows="3"/>
+                </div>
+
+                <!-- Imagen -->
+                <div class="p-field mb-3">
+                    <label class="form-label"><strong>Imagen:</strong></label>
+
+                    <div class="mb-2">
+                        <h:panelGroup rendered="#{not empty productoBean.producto.imagen}">
+                            <h:graphicImage value="/resources/images/products/#{productoBean.producto.imagen}"
+                                            style="width:80px;height:80px;object-fit:cover;border-radius:0.5rem;box-shadow:0 2px 6px rgba(0,0,0,0.2);" />
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{empty productoBean.producto.imagen}">
+                            <span class="text-muted">Este producto aún no tiene imagen.</span>
+                        </h:panelGroup>
                     </div>
+
+                    <p:fileUpload value="#{productoBean.archivoFotoProducto}"
+                                  mode="simple"
+                                  skinSimple="true"
+                                  accept="image/*"
+                                  label="Seleccionar nueva imagen"/>
+                </div>
+
+                <div class="p-field mb-3">
+                    <label class="form-label"><strong>Tipo:</strong></label>
+                    <h:inputText value="#{productoBean.producto.tipo}"
+                                 styleClass="form-control"
+                                 required="true"/>
+                </div>
+
+                <div class="p-field mb-3">
+                    <label class="form-label"><strong>Stock:</strong></label>
+                    <p:inputNumber value="#{productoBean.producto.stock}"
+                                   styleClass="form-control"
+                                   decimalPlaces="0"
+                                   minValue="0"
+                                   required="false"/>
+                </div>
+
+                <div class="p-field mb-3">
+                    <label class="form-label"><strong>Fecha de Vencimiento:</strong></label>
+                    <p:calendar value="#{productoBean.producto.fechaVencimiento}"
+                                styleClass="form-control"
+                                pattern="dd/MM/yyyy"
+                                locale="es"
+                                showOn="button"/>
                 </div>
             </div>
 
-            <div class="mt-5">
-                <!-- Botones de acción -->
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div class="d-flex gap-2">
-                        <!-- Exportar Excel -->
-                        <h:form styleClass="d-inline">
-                            <p:commandButton value="Excel" ajax="false" icon="pi pi-file-excel" 
-                                             styleClass="ui-button-success" style="margin-right:8px"
-                                             title="Exportar Excel">
-                                <p:dataExporter type="xls" target="tblProductos" fileName="Productos" />
-                            </p:commandButton>
-                        </h:form>
+            <div class="p-dialog-footer mt-3">
+                <p:commandButton value="Cancelar"
+                                 icon="pi pi-times"
+                                 styleClass="ui-button-secondary"
+                                 onclick="PF('modalEditarProducto').hide();"
+                                 type="button"/>
 
-                        <!-- Exportar PDF -->
-                        <h:form styleClass="d-inline">
-                            <p:commandButton value="PDF" ajax="false" icon="pi pi-file-pdf" 
-                                             styleClass="ui-button-danger"
-                                             title="Exportar PDF">
-                                <p:dataExporter type="pdf" target="tblProductos" fileName="Productos" />
-                            </p:commandButton>
-                        </h:form>
-
-                        <!-- Botón Crear Producto -->
-                        <button type="button" class="btn btn-primary btn-sm" 
-                                data-bs-toggle="modal" data-bs-target="#modalCrear">
-                            <i class="fas fa-plus-circle"></i> Crear Producto
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Tabla de productos -->
-                <div class="table-responsive">
-                    <h:form id="formProductos">
-                        <p:dataTable id="tblProductos" 
-                                     value="#{productoBean.listaProductos}"
-                                     var="p"
-                                     styleClass="table table-hover table-bordered"
-                                     paginator="false"
-                                     rows="20"
-                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
-                                     rowsPerPageTemplate="1000"
-                                     style="width:100%;">
-
-
-
-                            <!-- Columnas de la tabla -->
-                            <p:column headerText="ID" style="width: 80px; text-align:center;">
-                                <h:outputText value="#{p.idProducto}"/>
-                            </p:column>
-                            <p:column headerText="Nombre Producto" style="width: 150px;">
-                                <h:outputText value="#{p.nombreProducto}"/>
-                            </p:column>
-                            <p:column headerText="Nombre Proveedor" style="width: 150px;">
-                                <h:outputText value="#{p.nombreProveedor}"/>
-                            </p:column>
-                            <p:column headerText="Precio" style="width: 100px;text-align: center;">
-                                <h:outputText value="S/. #{p.precioProducto}"/>
-                            </p:column>
-                            <p:column headerText="Descripción" style="width: 200px;">
-                                <h:outputText value="#{p.descripcion}"/>
-                            </p:column>
-                            <p:column headerText="Tipo" style="width: 100px;text-align: center;">
-                                <h:outputText value="#{p.tipo}"/>
-                            </p:column>
-                            <p:column headerText="Stock" style="width: 80px; text-align: center;">
-                                <h:outputText value="#{p.stock}"/>
-                            </p:column>
-                            <p:column headerText="Fecha de Registro" style="width: 160px; text-align: center;">
-                                <h:outputText value="#{p.fechaIngreso}">
-                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
-                                </h:outputText>
-                            </p:column>
-                            <p:column headerText="Fecha de vencimiento" style="width: 160px; text-align: center;">
-                                <h:outputText value="#{p.fechaVencimiento}">
-                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
-                                </h:outputText>
-                            </p:column>
-
-                            <!-- Acciones CORREGIDAS -->
-                            <p:column headerText="Acciones" style="width: 150px; text-align:center;" exportable="false">
-                                <div class="d-flex gap-1 justify-content-center">
-                                    <!-- Botón Editar CORREGIDO -->
-                                    <p:commandButton value="Editar" icon="fas fa-edit"
-                                                     styleClass="btn btn-warning btn-xs"
-                                                     action="#{productoBean.editar(p)}"
-                                                     update=":formEditarProducto"
-                                                     oncomplete="PF('modalEditarProducto').show();">
-                                        <f:setPropertyActionListener target="#{productoBean.producto}" value="#{p}" />
-                                    </p:commandButton>
-
-                                    <!-- Botón Eliminar CORREGIDO -->
-                                    <p:commandButton value="Eliminar" icon="fas fa-trash-alt"
-                                                     styleClass="btn btn-danger btn-xs"
-                                                     action="#{productoBean.eliminar(p)}"
-                                                     update="tblProductos,growl"
-                                                     onclick="return confirm('¿Seguro que deseas eliminar el producto #{p.nombreProducto}?');">
-                                        <f:setPropertyActionListener target="#{productoBean.producto}" value="#{p}" />
-                                    </p:commandButton>
-                                </div>
-                            </p:column>
-                        </p:dataTable>
-                    </h:form>
-                </div>
+                <p:commandButton value="Guardar Cambios"
+                                 icon="pi pi-check"
+                                 styleClass="ui-button-success"
+                                 action="#{productoBean.actualizar}"
+                                 ajax="false"/>
             </div>
-        </div>
+        </h:form>
+    </p:dialog>
 
-        <!-- Modal Crear Producto -->
-        <div class="modal fade" id="modalCrear" tabindex="-1" aria-labelledby="modalCrearLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title" id="modalCrearLabel">
-                            <i class="fas fa-plus-circle"></i> Crear Producto
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-
-                    <h:form id="formCrearProducto" enctype="multipart/form-data">
-                        <div class="modal-body">
-                            <!-- Nombre Producto -->
-                            <div class="mb-3">
-                                <label class="form-label">Nombre Producto</label>
-                                <h:inputText value="#{productoBean.producto.nombreProducto}"
-                                             styleClass="form-control"
-                                             required="true"
-                                             requiredMessage="El nombre del producto es obligatorio"/>
-                            </div>
-
-                            <!-- Proveedor (lista) -->
-                            <div class="mb-3">
-                                <label class="form-label" for="proveedorProducto">Proveedor</label>
-
-                                <h:selectOneMenu id="proveedorProducto"
-                                                 value="#{productoBean.idProveedorSeleccionado}"
-                                                 styleClass="form-select"
-                                                 required="true"
-                                                 requiredMessage="Debe seleccionar un proveedor">
-
-                                    <f:selectItem itemLabel="-- Seleccione un proveedor --" itemValue="" />
-
-                                    <f:selectItems value="#{productoBean.listaProveedores}"
-                                                   var="prov"
-                                                   itemLabel="#{prov.nombreProveedor} (ID: #{prov.idProveedor})"
-                                                   itemValue="#{prov.idProveedor}" />
-                                </h:selectOneMenu>
-                            </div>
-
-
-                            <!-- Precio -->
-                            <div class="mb-3">
-                                <label class="form-label">Precio</label>
-                                <p:inputNumber value="#{productoBean.producto.precioProducto}"
-                                               styleClass="form-control"
-                                               minValue="0"
-                                               decimalPlaces="0"
-                                               required="true"
-                                               requiredMessage="El precio es obligatorio"/>
-                            </div>
-
-                            <!-- Descripción -->
-                            <div class="mb-3">
-                                <label class="form-label">Descripción</label>
-                                <h:inputText value="#{productoBean.producto.descripcion}"
-                                             styleClass="form-control"
-                                             required="true"
-                                             requiredMessage="Agrega una descripción del producto."/>
-                                <h:message for="descripcion" styleClass="text-danger" />
-
-                            </div>
-
-                            <!-- Tipo -->
-                            <div class="mb-3">
-                                <label class="form-label">Tipo de producto</label><h:selectOneMenu id="tipoProducto"
-                                                                                                   value="#{productoBean.producto.tipo}"
-                                                                                                   styleClass="form-select"
-                                                                                                   required="true"
-                                                                                                   requiredMessage="Seleccione el tipo de producto">
-                                    <f:selectItem itemLabel="-- Seleccione --" itemValue="" />
-                                    <f:selectItem itemLabel="PESTICIDA"   itemValue="PESTICIDA" />
-                                    <f:selectItem itemLabel="INSECTICIDA" itemValue="INSECTICIDA" />
-                                    <f:selectItem itemLabel="FUNGICIDA"   itemValue="FUNGICIDA" />
-                                    <f:selectItem itemLabel="HERBICIDA"   itemValue="HERBICIDA" />
-                                </h:selectOneMenu>
-                                <h:message for="tipoProducto" styleClass="text-danger" />
-
-                            </div>
-
-                            <!-- Fecha de vencimiento -->
-                            <div class="mb-3">
-                                <label class="form-label">Fecha de vencimiento</label>
-                                <p:calendar id="fechaVencimiento"
-                                              value="#{productoBean.producto.fechaVencimiento}"
-                                              pattern="dd/MM/yyyy"
-                                              showOn="true"
-                                              required="true"
-                                              requiredMessage="Seleccione la fecha de vencimiento"
-                                              mindate="#{productoBean.minFechaVencimiento}"
-                                              validator="#{productoBean.validarFechaVencimiento}"
-                                              inputStyleClass="form-control" />
-                                <p:message for="fechaVencimiento" styleClass="text-danger" />
-
-                            </div>
-
-                            <!-- Imagen Producto -->
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label class="form-label">Imagen del producto</label>
-                                        <p:fileUpload id="imagenProducto"
-                                                      value="#{productoBean.imagenProducto}"
-                                                      mode="simple"
-                                                      skinSimple="true"
-                                                      label="Seleccionar imagen"
-                                                      allowTypes="/(\.|\/)(png|jpe?g)$/"
-                                                      auto="false" />
-
-                                        <h:panelGroup id="previewImagen" layout="block"
-                                                      rendered="#{not empty movInventarioBean.imagenProducto}">
-                                            <small>Archivo cargado:
-                                                #{movInventarioBean.imagenProducto.fileName}
-                                            </small>
-                                        </h:panelGroup>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                <i class="fas fa-times"></i> Cancelar
-                            </button>
-
-                            <p:commandButton value="Guardar"
-                                             actionListener="#{productoBean.agregar}"
-                                             update=":formProductos:tblProductos,:growl"
-                                             process="@form"
-                                             styleClass="btn btn-success"
-                                             oncomplete="if (!args.validationFailed) $('#modalCrear').modal('hide');"/>
-                        </div>
-                    </h:form>
-                </div>
-            </div>
-        </div>
-
-
-        <!-- Modal Editar Producto - VERSIÓN CORREGIDA -->
-        <p:dialog id="dlgEditarProducto" 
-                  widgetVar="modalEditarProducto" 
-                  modal="true" 
-                  header="Editar Producto" 
-                  resizable="false"
-                  width="800">
-
-            <h:form id="formEditarProducto">
-                <div class="p-fluid">
-                    <!-- Campos de edición -->
-                    <div class="p-field mb-3">
-                        <label class="form-label"><strong>Nombre Producto:</strong></label>
-                        <h:inputText value="#{productoBean.producto.nombreProducto}" 
-                                     styleClass="form-control" 
-                                     required="true"/>
-                    </div>
-
-                    <div class="p-field mb-3">
-                        <label class="form-label"><strong>ID Proveedor:</strong></label>
-                        <h:inputText value="#{productoBean.producto.idProveedor}" 
-                                     styleClass="form-control" 
-                                     required="true"/>
-                    </div>
-
-                    <div class="p-field mb-3">
-                        <label class="form-label"><strong>Nombre Proveedor:</strong></label>
-                        <h:inputText value="#{productoBean.producto.nombreProveedor}" 
-                                     styleClass="form-control" 
-                                     required="true"/>
-                    </div>
-
-                    <div class="p-field mb-3">
-                        <label class="form-label"><strong>Precio:</strong></label>
-                        <h:inputText value="#{productoBean.producto.precioProducto}" 
-                                     styleClass="form-control" 
-                                     required="true"/>
-                    </div>
-
-                    <div class="p-field mb-3">
-                        <label class="form-label"><strong>Descripción:</strong></label>
-                        <h:inputTextarea value="#{productoBean.producto.descripcion}" 
-                                         styleClass="form-control" 
-                                         rows="3"/>
-                    </div>
-
-                    <div class="p-field mb-3">
-                        <label class="form-label"><strong>Tipo:</strong></label>
-                        <h:inputText value="#{productoBean.producto.tipo}" 
-                                     styleClass="form-control" 
-                                     required="true"/>
-                    </div>
-
-                    <div class="p-field mb-3">
-                        <label class="form-label"><strong>Stock:</strong></label>
-                        <p:inputNumber value="#{productoBean.producto.stock}" 
-                                       styleClass="form-control"
-                                       decimalPlaces="0"
-                                       minValue="0"
-                                       required="false"/>
-                    </div>
-
-                    <div class="p-field mb-3">
-                        <label class="form-label"><strong>Fecha de Vencimiento:</strong></label>
-                        <p:calendar value="#{productoBean.producto.fechaVencimiento}" 
-                                    styleClass="form-control" 
-                                    pattern="dd/MM/yyyy" 
-                                    locale="es" 
-                                    showOn="button"/>
-                    </div> 
-                </div>
-
-                <div class="p-dialog-footer mt-3">
-                    <p:commandButton value="Cancelar" 
-                                     icon="pi pi-times"
-                                     styleClass="ui-button-secondary"
-                                     onclick="PF('modalEditarProducto').hide();"
-                                     type="button"/>
-
-                    <p:commandButton value="Guardar Cambios" 
-                                     icon="pi pi-check"
-                                     styleClass="ui-button-success"
-                                     action="#{productoBean.actualizar}"
-                                     update=":formProductos:tblProductos,:growl" 
-                                     oncomplete="if(!args.validationFailed) { PF('modalEditarProducto').hide(); }"/>
-                </div>
-            </h:form>
-        </p:dialog>
-        <!-- Mensajes -->
-        <p:growl id="growl" showDetail="true" life="3000" />
-
-    </h:body>
+    <!-- Mensajes -->
+    <p:growl id="growl" showDetail="true" life="3000" />
+</h:body>
 </html>

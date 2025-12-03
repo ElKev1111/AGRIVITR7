@@ -118,3 +118,4 @@ public class Producto implements Serializable {
         return precioProducto + (precioProducto * MARGEN_VENTA);
     }
 }
+    

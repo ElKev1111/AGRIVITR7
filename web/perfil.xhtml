@@ -396,16 +396,19 @@
             <div class="profile-container">
                 <!-- Sidebar perfil -->
                 <div class="profile-sidebar">
+                    <!-- Avatar -->
                     <h:panelGroup rendered="#{empty usuarioBean.usuario.fotoPerfil}">
                         <div class="profile-avatar">
                             <i class="bi bi-person"></i>
                         </div>
                     </h:panelGroup>
+
                     <h:panelGroup rendered="#{not empty usuarioBean.usuario.fotoPerfil}">
                         <div class="profile-avatar">
-                            <h:graphicImage value="/resources/img/perfiles/#{usuarioBean.usuario.fotoPerfil}" />
+                            <h:graphicImage value="/resources/images/perfiles/#{usuarioBean.usuario.fotoPerfil}" />
                         </div>
                     </h:panelGroup>
+
 
                     <div class="profile-name">#{usuarioBean.usuario.nombre}</div>
                     <div class="profile-role">

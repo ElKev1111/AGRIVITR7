@@ -4,6 +4,7 @@ import DAO.UsuarioDAO;
 import Modelo.CifradoAES;
 import Modelo.Usuario;
 import Modelo.EnumRoles;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -18,6 +19,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 
+// Para subir foto de perfil
+import org.primefaces.model.file.UploadedFile;
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
 @ManagedBean
 @SessionScoped
 public class UsuarioBean implements Serializable {
@@ -29,6 +39,9 @@ public class UsuarioBean implements Serializable {
 
     // Acceso a BD
     private final UsuarioDAO usuarioDAO = new UsuarioDAO();
+
+    // Archivo de foto de perfil
+    private UploadedFile archivoFoto;
 
     // Flag de ayuda
     private boolean autenticado = false;
@@ -47,6 +60,14 @@ public class UsuarioBean implements Serializable {
     public boolean isAutenticado() {
         // Consideramos autenticado si tiene id y el flag está en true
         return usuario != null && usuario.getId() > 0 && autenticado;
+    }
+
+    public UploadedFile getArchivoFoto() {
+        return archivoFoto;
+    }
+
+    public void setArchivoFoto(UploadedFile archivoFoto) {
+        this.archivoFoto = archivoFoto;
     }
 
     // Texto listo para mostrar / guardar como “UsuarioRegistro”
@@ -85,7 +106,6 @@ public class UsuarioBean implements Serializable {
     }
 
     public String getEtiquetaUsuario() {
-
         if (usuario == null) {
             return "Usuario desconocido";
         }
@@ -259,6 +279,69 @@ public class UsuarioBean implements Serializable {
                     )
             );
         }
+    }
+
+    // =========================
+    //  ACTUALIZAR PERFIL + FOTO
+    // =========================
+    public String actualizarPerfil() {
+        try {
+            // 1. Si el usuario subió una nueva foto
+            if (archivoFoto != null
+                    && archivoFoto.getFileName() != null
+                    && !archivoFoto.getFileName().isEmpty()) {
+
+                // Nombre de archivo único
+                String nombreArchivo = System.currentTimeMillis() + "_"
+                        + Paths.get(archivoFoto.getFileName())
+                               .getFileName().toString();
+
+                // Ruta física a /resources/images/perfiles
+                String rutaPerfiles = FacesContext.getCurrentInstance()
+                        .getExternalContext()
+                        .getRealPath("/resources/images/perfiles");
+
+                File directorio = new File(rutaPerfiles);
+                if (!directorio.exists()) {
+                    directorio.mkdirs();
+                }
+
+                Path destino = Paths.get(directorio.getAbsolutePath(), nombreArchivo);
+
+                try (InputStream input = archivoFoto.getInputStream()) {
+                    Files.copy(input, destino, StandardCopyOption.REPLACE_EXISTING);
+                }
+
+                // Guardar el nombre del archivo en el usuario
+                usuario.setFotoPerfil(nombreArchivo);
+            }
+
+            // 2. Actualizar datos en BD
+            boolean actualizado = usuarioDAO.actualizarPerfil(usuario);
+            if (actualizado) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                "Éxito", "Perfil actualizado correctamente."));
+                archivoFoto = null;
+
+                // 3. Redirigir según el rol (para que funcione en perfil y perfilCliente)
+                if (usuario.getRol() == EnumRoles.CLIENTE) {
+                    return "perfilCliente?faces-redirect=true";
+                } else {
+                    return "perfil?faces-redirect=true";
+                }
+            }
+
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_WARN,
+                            "Aviso", "No se pudo actualizar el perfil."));
+        } catch (Exception e) {
+            e.printStackTrace();
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Error", "Ocurrió un problema al actualizar el perfil."));
+        }
+        return null;
     }
 
     // =========================
